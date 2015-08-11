@@ -7,7 +7,7 @@ This will allow you to handle the Ajax requests sent by DataTables for each draw
 
 ```
 <dependency>
-	<groupId>com.darrachequesne</groupId>
+	<groupId>com.github.darrachequesne</groupId>
 	<artifactId>spring-data-jpa-datatables</artifactId>
 	<version>1.0</version>
 </dependency>
