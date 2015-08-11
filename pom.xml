@@ -46,7 +46,17 @@
 	</scm>
 
 	<properties>
-		<file.encoding>UTF-8</file.encoding>
+		<!-- Version of maven plugins -->
+		<version.plugin.maven-compiler-plugin>3.3</version.plugin.maven-compiler-plugin>
+		<version.plugin.maven-resources-plugin>2.7</version.plugin.maven-resources-plugin>
+		<version.plugin.maven-source-plugin>2.4</version.plugin.maven-source-plugin>
+		<version.plugin.maven-javadoc-plugin>2.10.3</version.plugin.maven-javadoc-plugin>
+		<version.plugin.maven-release-plugin>2.5.2</version.plugin.maven-release-plugin>
+		<version.plugin.nexus-staging-maven-plugin>1.6.5</version.plugin.nexus-staging-maven-plugin>
+		<version.plugin.maven-gpg-plugin>1.6</version.plugin.maven-gpg-plugin>
+
+		<!-- Source encoding -->
+		<source.encoding>UTF-8</source.encoding>
 
 		<spring.version>4.2.0.RELEASE</spring.version>
 		<spring.data.jpa.version>1.8.2.RELEASE</spring.data.jpa.version>
@@ -169,18 +179,124 @@
 		<plugins>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-surefire-plugin</artifactId>
-				<version>2.18.1</version>
-			</plugin>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-compiler-plugin</artifactId>
-				<version>3.3</version>
+				<version>${version.plugin.maven-compiler-plugin}</version>
 				<configuration>
 					<source>1.6</source>
 					<target>1.6</target>
+					<encoding>${source.encoding}</encoding>
+				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-resources-plugin</artifactId>
+				<version>${version.plugin.maven-resources-plugin}</version>
+				<configuration>
+					<encoding>${source.encoding}</encoding>
+				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-source-plugin</artifactId>
+				<version>${version.plugin.maven-source-plugin}</version>
+				<configuration>
+					<encoding>${source.encoding}</encoding>
+				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-release-plugin</artifactId>
+				<version>${version.plugin.maven-release-plugin}</version>
+				<configuration>
+					<autoVersionSubmodules>true</autoVersionSubmodules>
+					<useReleaseProfile>false</useReleaseProfile>
+					<releaseProfiles>release</releaseProfiles>
+					<goals>deploy</goals>
+				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-javadoc-plugin</artifactId>
+				<version>${version.plugin.maven-javadoc-plugin}</version>
+			</plugin>
+			<!-- Nexus Staging Maven Plugin for Deployment and Release into Sonatype 
+				OSSRH -->
+			<plugin>
+				<groupId>org.sonatype.plugins</groupId>
+				<artifactId>nexus-staging-maven-plugin</artifactId>
+				<version>${version.plugin.nexus-staging-maven-plugin}</version>
+				<extensions>true</extensions>
+				<configuration>
+					<serverId>ossrh</serverId>
+					<nexusUrl>https://oss.sonatype.org/</nexusUrl>
+					<autoReleaseAfterClose>true</autoReleaseAfterClose>
 				</configuration>
 			</plugin>
 		</plugins>
 	</build>
+
+	<!-- Deploy snapshots to the Sonatype OSSRH (OSS Repository Hosting) -->
+	<distributionManagement>
+		<downloadUrl>https://github.com/arey/spring-batch-toolkit</downloadUrl>
+		<snapshotRepository>
+			<id>ossrh</id>
+			<url>https://oss.sonatype.org/content/repositories/snapshots</url>
+		</snapshotRepository>
+		<repository>
+			<id>ossrh</id>
+			<url>https://oss.sonatype.org/service/local/staging/deploy/maven2/</url>
+		</repository>
+	</distributionManagement>
+
+	<profiles>
+		<profile>
+			<!-- Specific profile for release or artifact deployment -->
+			<!-- Sources et javadoc are packaged -->
+			<id>release</id>
+			<build>
+				<plugins>
+					<plugin>
+						<groupId>org.apache.maven.plugins</groupId>
+						<artifactId>maven-source-plugin</artifactId>
+						<executions>
+							<execution>
+								<id>attach-sources</id>
+								<goals>
+									<goal>jar</goal>
+								</goals>
+							</execution>
+						</executions>
+					</plugin>
+					<plugin>
+						<groupId>org.apache.maven.plugins</groupId>
+						<artifactId>maven-javadoc-plugin</artifactId>
+						<executions>
+							<execution>
+								<id>attach-sources</id>
+								<goals>
+									<goal>jar</goal>
+								</goals>
+							</execution>
+						</executions>
+					</plugin>
+
+					<!-- GPG Signed Artefacts required by Maven Central -->
+					<plugin>
+						<groupId>org.apache.maven.plugins</groupId>
+						<artifactId>maven-gpg-plugin</artifactId>
+						<version>${version.plugin.maven-gpg-plugin}</version>
+						<executions>
+							<execution>
+								<id>sign-artifacts</id>
+								<phase>verify</phase>
+								<goals>
+									<goal>sign</goal>
+								</goals>
+							</execution>
+						</executions>
+					</plugin>
+				</plugins>
+			</build>
+		</profile>
+	</profiles>
 </project>
