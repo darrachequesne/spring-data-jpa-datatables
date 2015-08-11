@@ -9,6 +9,7 @@
 
 	<name>Spring Data JPA for DataTables</name>
 	<description>Spring Data JPA extension to work with the great jQuery plug-in DataTables (http://datatables.net/)</description>
+	<url>https://github.com/darrachequesne/spring-data-jpa-datatables</url>
 
 	<developers>
 		<developer>
