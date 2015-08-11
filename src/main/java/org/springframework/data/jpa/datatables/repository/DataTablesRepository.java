@@ -22,7 +22,8 @@ public interface DataTablesRepository<T, ID extends Serializable> extends
 	 * Returns the filtered list for the given {@link DataTablesInput}.
 	 * 
 	 * @param input
-	 * @return
+	 *            the {@link DataTablesInput} mapped from the Ajax request
+	 * @return a {@link DataTablesOutput}
 	 */
 	DataTablesOutput<T> findAll(DataTablesInput input);
 

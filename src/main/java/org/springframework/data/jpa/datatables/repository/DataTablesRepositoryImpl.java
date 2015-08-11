@@ -55,6 +55,7 @@ public class DataTablesRepositoryImpl<T, ID extends Serializable> extends
 	 * {@link DataTablesInput}.
 	 * 
 	 * @param input
+	 *            the {@link DataTablesInput} mapped from the Ajax request
 	 * @return a {@link Pageable}, must not be {@literal null}.
 	 */
 	private Pageable getPageable(DataTablesInput input) {

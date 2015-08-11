@@ -30,8 +30,6 @@ public class DataTablesSpecification<T> implements Specification<T> {
 	/**
 	 * Creates a WHERE clause for the given {@link DataTablesInput}.
 	 * 
-	 * @param root
-	 * @param query
 	 * @return a {@link Predicate}, must not be {@literal null}.
 	 */
 	@Override
