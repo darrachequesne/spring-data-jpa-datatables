@@ -12,6 +12,8 @@ import org.springframework.data.jpa.datatables.mapping.DataTablesInput;
 import org.springframework.data.jpa.datatables.mapping.DataTablesOutput;
 import org.springframework.data.jpa.datatables.parameter.ColumnParameter;
 import org.springframework.data.jpa.datatables.parameter.OrderParameter;
+import org.springframework.data.jpa.domain.Specification;
+import org.springframework.data.jpa.domain.Specifications;
 import org.springframework.data.jpa.repository.support.JpaEntityInformation;
 import org.springframework.data.jpa.repository.support.SimpleJpaRepository;
 
@@ -32,12 +34,19 @@ public class DataTablesRepositoryImpl<T, ID extends Serializable> extends
 
 	@Override
 	public DataTablesOutput<T> findAll(DataTablesInput input) {
+		return findAll(input, null);
+	}
+
+	@Override
+	public DataTablesOutput<T> findAll(DataTablesInput input,
+			Specification<T> additionalSpecification) {
 		DataTablesOutput<T> output = new DataTablesOutput<T>();
 		output.setDraw(input.getDraw());
 
 		try {
-			Page<T> data = findAll(new DataTablesSpecification<T>(input),
-					getPageable(input));
+			Page<T> data = findAll(
+					Specifications.where(new DataTablesSpecification<T>(input))
+							.and(additionalSpecification), getPageable(input));
 
 			output.setData(data.getContent());
 			output.setRecordsFiltered(data.getTotalElements());
@@ -73,4 +82,5 @@ public class DataTablesRepositoryImpl<T, ID extends Serializable> extends
 					input.getLength());
 		}
 	}
+
 }

@@ -21,6 +21,7 @@ import org.springframework.data.jpa.datatables.model.User.UserStatus;
 import org.springframework.data.jpa.datatables.parameter.ColumnParameter;
 import org.springframework.data.jpa.datatables.parameter.OrderParameter;
 import org.springframework.data.jpa.datatables.parameter.SearchParameter;
+import org.springframework.data.jpa.datatables.specification.TestSpecification;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
@@ -55,6 +56,7 @@ public class UserRepositoryTest {
 			user.setStatus(UserStatus.values()[i % 2]);
 			if (i > 3)
 				user.setHome(homes.get(i % 4));
+			user.setVisible(i % 2 == 0);
 			userRepository.save(user);
 		}
 	}
@@ -197,6 +199,19 @@ public class UserRepositoryTest {
 		User lastUser = users.get(4);
 		assertEquals("john4", firstUser.getUsername());
 		assertEquals("john20", lastUser.getUsername());
+	}
+
+	@Test
+	public void testWithAdditionalSpecification() {
+		DataTablesInput input = getBasicInput();
+
+		DataTablesOutput<User> output = userRepository.findAll(input,
+				new TestSpecification<User>());
+		assertNotNull(output);
+		assertNull(output.getError());
+		assertEquals(12, (long) output.getRecordsFiltered());
+		assertEquals(24, (long) output.getRecordsTotal());
+
 	}
 
 	/**

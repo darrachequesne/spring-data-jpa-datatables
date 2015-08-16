@@ -27,6 +27,8 @@ public class User {
 	@JoinColumn(name = "id_home")
 	private Home home;
 
+	private boolean visible;
+
 	public User() {
 		super();
 	}
@@ -73,6 +75,14 @@ public class User {
 
 	public void setHome(Home home) {
 		this.home = home;
+	}
+
+	public boolean isVisible() {
+		return visible;
+	}
+
+	public void setVisible(boolean visible) {
+		this.visible = visible;
 	}
 
 }
