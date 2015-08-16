@@ -5,6 +5,8 @@ import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 
 @Entity
 public class User {
@@ -21,38 +23,20 @@ public class User {
 	@Enumerated(EnumType.STRING)
 	private UserStatus status;
 
+	@ManyToOne
+	@JoinColumn(name = "id_home")
+	private Home home;
+
 	public User() {
 		super();
 	}
 
 	public enum UserRole {
-		ADMIN("admin"), AUTHOR("author"), USER("user");
-
-		private String role;
-
-		private UserRole(String role) {
-			this.role = role;
-		}
-
-		public String getRole() {
-			return role;
-		}
-
+		ADMIN, AUTHOR, USER;
 	}
 
 	public enum UserStatus {
-		ACTIVE("active"), BLOCKED("blocked");
-
-		private String status;
-
-		private UserStatus(String status) {
-			this.status = status;
-		}
-
-		public String getStatus() {
-			return status;
-		}
-
+		ACTIVE, BLOCKED;
 	}
 
 	public Integer getId() {
@@ -81,6 +65,14 @@ public class User {
 
 	public void setStatus(UserStatus status) {
 		this.status = status;
+	}
+
+	public Home getHome() {
+		return home;
+	}
+
+	public void setHome(Home home) {
+		this.home = home;
 	}
 
 }

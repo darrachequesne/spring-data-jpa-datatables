@@ -14,6 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.jpa.datatables.Config;
 import org.springframework.data.jpa.datatables.mapping.DataTablesInput;
 import org.springframework.data.jpa.datatables.mapping.DataTablesOutput;
+import org.springframework.data.jpa.datatables.model.Home;
 import org.springframework.data.jpa.datatables.model.User;
 import org.springframework.data.jpa.datatables.model.User.UserRole;
 import org.springframework.data.jpa.datatables.model.User.UserStatus;
@@ -30,6 +31,9 @@ public class UserRepositoryTest {
 	@Autowired
 	private UserRepository userRepository;
 
+	@Autowired
+	private HomeRepository homeRepository;
+
 	/**
 	 * Insert sample data at the beginning of all tests
 	 */
@@ -37,11 +41,20 @@ public class UserRepositoryTest {
 	public void setUp() {
 		if (userRepository.count() > 0)
 			return;
+		List<Home> homes = new ArrayList<Home>();
+		for (int i = 0; i < 4; i++) {
+			Home home = new Home();
+			home.setTown("town" + i);
+			home = homeRepository.save(home);
+			homes.add(home);
+		}
 		for (int i = 0; i < 24; i++) {
 			User user = new User();
 			user.setUsername("john" + i);
 			user.setRole(UserRole.values()[i % 3]);
 			user.setStatus(UserStatus.values()[i % 2]);
+			if (i > 3)
+				user.setHome(homes.get(i % 4));
 			userRepository.save(user);
 		}
 	}
@@ -163,6 +176,29 @@ public class UserRepositoryTest {
 		assertEquals("USER", lastUser.getRole().toString());
 	}
 
+	@Test
+	public void testFilterOnManyToOneRelationship() {
+		DataTablesInput input = getBasicInput();
+
+		input.getColumns().get(4).getSearch().setValue("town0");
+
+		DataTablesOutput<User> output = userRepository.findAll(input);
+		assertNotNull(output);
+		assertEquals(1, (int) output.getDraw());
+		assertNull(output.getError());
+		assertEquals(5, (long) output.getRecordsFiltered());
+		assertEquals(24, (long) output.getRecordsTotal());
+
+		List<User> users = output.getData();
+		assertNotNull(users);
+		assertEquals(5, users.size());
+
+		User firstUser = users.get(0);
+		User lastUser = users.get(4);
+		assertEquals("john4", firstUser.getUsername());
+		assertEquals("john20", lastUser.getUsername());
+	}
+
 	/**
 	 * 
 	 * @return basic input parameters
@@ -188,6 +224,9 @@ public class UserRepositoryTest {
 						new SearchParameter("", false)));
 		input.getColumns().add(
 				new ColumnParameter("status", "", true, true,
+						new SearchParameter("", false)));
+		input.getColumns().add(
+				new ColumnParameter("home__town", "", true, true,
 						new SearchParameter("", false)));
 
 		return input;

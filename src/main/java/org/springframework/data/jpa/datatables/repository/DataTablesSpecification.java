@@ -4,6 +4,8 @@ import java.util.Arrays;
 
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Expression;
+import javax.persistence.criteria.JoinType;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 
@@ -20,6 +22,8 @@ import org.springframework.util.StringUtils;
 public class DataTablesSpecification<T> implements Specification<T> {
 
 	private final static String OR_SEPARATOR = "+";
+
+	private final static String ATTRIBUTE_SEPARATOR = "__";
 
 	private final DataTablesInput input;
 
@@ -42,21 +46,21 @@ public class DataTablesSpecification<T> implements Specification<T> {
 		for (ColumnParameter column : input.getColumns()) {
 			String filterValue = column.getSearch().getValue();
 			if (column.getSearchable() && StringUtils.hasText(filterValue)) {
+				Expression<String> expression = getExpression(root,
+						column.getData());
+
 				if (filterValue.contains(OR_SEPARATOR)) {
 					// the filter contains multiple values, add a 'WHERE .. IN'
 					// clause
 					// Note: "\\" is added to escape special character '+'
 					String[] values = filterValue.split("\\" + OR_SEPARATOR);
-					predicate = criteriaBuilder.and(
-							predicate,
-							root.get(column.getData()).as(String.class)
-									.in(Arrays.asList(values)));
+					predicate = criteriaBuilder.and(predicate,
+							expression.in(Arrays.asList(values)));
 				} else {
 					// the filter contains only one value, add a 'WHERE .. ='
 					// clause
-					predicate = criteriaBuilder.and(predicate, criteriaBuilder
-							.equal(root.get(column.getData()).as(String.class),
-									filterValue));
+					predicate = criteriaBuilder.and(predicate,
+							criteriaBuilder.equal(expression, filterValue));
 				}
 			}
 		}
@@ -68,15 +72,30 @@ public class DataTablesSpecification<T> implements Specification<T> {
 			// add a 'WHERE .. LIKE' clause on each searchable column
 			for (ColumnParameter column : input.getColumns()) {
 				if (column.getSearchable()) {
+					Expression<String> expression = getExpression(root,
+							column.getData());
+
 					matchOneColumnPredicate = criteriaBuilder.or(
-							matchOneColumnPredicate, criteriaBuilder.like(root
-									.get(column.getData()).as(String.class),
-									"%" + globalFilterValue + "%"));
+							matchOneColumnPredicate,
+							criteriaBuilder.like(expression, "%"
+									+ globalFilterValue + "%"));
 				}
 			}
 			predicate = criteriaBuilder.and(predicate, matchOneColumnPredicate);
 		}
 
 		return predicate;
+	}
+
+	private Expression<String> getExpression(Root<T> root, String columnData) {
+		if (columnData.contains(ATTRIBUTE_SEPARATOR)) {
+			// columnData is like "joinedEntity__attribute" so add a join clause
+			String[] values = columnData.split("\\" + ATTRIBUTE_SEPARATOR);
+			return root.join(values[0], JoinType.LEFT).get(values[1])
+					.as(String.class);
+		} else {
+			// columnData is like "attribute" so nothing particular to do
+			return root.get(columnData).as(String.class);
+		}
 	}
 }
