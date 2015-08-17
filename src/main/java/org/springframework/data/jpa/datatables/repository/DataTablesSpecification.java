@@ -57,10 +57,12 @@ public class DataTablesSpecification<T> implements Specification<T> {
 					predicate = criteriaBuilder.and(predicate,
 							expression.in(Arrays.asList(values)));
 				} else {
-					// the filter contains only one value, add a 'WHERE .. ='
+					// the filter contains only one value, add a 'WHERE .. LIKE'
 					// clause
-					predicate = criteriaBuilder.and(predicate,
-							criteriaBuilder.equal(expression, filterValue));
+					predicate = criteriaBuilder.and(
+							predicate,
+							criteriaBuilder.like(expression, "%" + filterValue
+									+ "%"));
 				}
 			}
 		}

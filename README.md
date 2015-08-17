@@ -70,4 +70,4 @@ $(document).ready(function() {
 Features :
 - Paging
 - Ordering
-- Searching by global value (LIKE clause) or per-column (EQUALS or IN clause)
+- Searching by global value (LIKE clause) or per-column (LIKE or IN clause)
