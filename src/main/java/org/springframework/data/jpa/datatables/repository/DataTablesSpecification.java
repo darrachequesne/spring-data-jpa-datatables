@@ -23,7 +23,7 @@ public class DataTablesSpecification<T> implements Specification<T> {
 
 	private final static String OR_SEPARATOR = "+";
 
-	private final static String ATTRIBUTE_SEPARATOR = "__";
+	private final static String ATTRIBUTE_SEPARATOR = ".";
 
 	private final DataTablesInput input;
 
@@ -89,7 +89,7 @@ public class DataTablesSpecification<T> implements Specification<T> {
 
 	private Expression<String> getExpression(Root<T> root, String columnData) {
 		if (columnData.contains(ATTRIBUTE_SEPARATOR)) {
-			// columnData is like "joinedEntity__attribute" so add a join clause
+			// columnData is like "joinedEntity.attribute" so add a join clause
 			String[] values = columnData.split("\\" + ATTRIBUTE_SEPARATOR);
 			return root.join(values[0], JoinType.LEFT).get(values[1])
 					.as(String.class);
