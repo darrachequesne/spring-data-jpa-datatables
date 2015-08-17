@@ -52,7 +52,7 @@ public class UserRestController {
 }
 ```
 
-5/ And last but not least, do not forget to include the JavaScript file jquery.spring-friendly.js, overriding jQuery data serialization to allow Spring MVC to correctly map input parameters (changing column[0][data] to column[0].data)
+5/ And last but not least, do not forget to include the JavaScript file jquery.spring-friendly.js, overriding jQuery data serialization to allow Spring MVC to correctly map input parameters (changing column[0]\[data] to column[0].data)
 
 
 On the client-side, you can now define your table loading data dynamically :
