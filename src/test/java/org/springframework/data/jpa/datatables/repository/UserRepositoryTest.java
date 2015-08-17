@@ -241,7 +241,7 @@ public class UserRepositoryTest {
 				new ColumnParameter("status", "", true, true,
 						new SearchParameter("", false)));
 		input.getColumns().add(
-				new ColumnParameter("home__town", "", true, true,
+				new ColumnParameter("home.town", "", true, true,
 						new SearchParameter("", false)));
 
 		return input;
