@@ -54,15 +54,32 @@ public class DataTablesSpecification<T> implements Specification<T> {
 					// clause
 					// Note: "\\" is added to escape special character '+'
 					String[] values = filterValue.split("\\" + OR_SEPARATOR);
-					predicate = criteriaBuilder.and(predicate,
-							expression.in(Arrays.asList(values)));
+					if (values.length > 0 && isBoolean(values[0])) {
+						Object[] booleanValues = new Boolean[values.length];
+						for (int i = 0; i < values.length; i++) {
+							booleanValues[i] = Boolean.valueOf(values[i]);
+						}
+						predicate = criteriaBuilder.and(predicate, expression
+								.as(Boolean.class).in(booleanValues));
+					} else {
+						predicate = criteriaBuilder.and(predicate,
+								expression.in(Arrays.asList(values)));
+					}
 				} else {
 					// the filter contains only one value, add a 'WHERE .. LIKE'
 					// clause
-					predicate = criteriaBuilder.and(
-							predicate,
-							criteriaBuilder.like(expression, "%" + filterValue
-									+ "%"));
+					if (isBoolean(filterValue)) {
+						predicate = criteriaBuilder.and(
+								predicate,
+								criteriaBuilder.equal(
+										expression.as(Boolean.class),
+										Boolean.valueOf(filterValue)));
+					} else {
+						predicate = criteriaBuilder.and(
+								predicate,
+								criteriaBuilder.like(expression, "%"
+										+ filterValue + "%"));
+					}
 				}
 			}
 		}
@@ -87,6 +104,11 @@ public class DataTablesSpecification<T> implements Specification<T> {
 		}
 
 		return predicate;
+	}
+
+	private boolean isBoolean(String filterValue) {
+		return "TRUE".equalsIgnoreCase(filterValue)
+				|| "FALSE".equalsIgnoreCase(filterValue);
 	}
 
 	private Expression<String> getExpression(Root<T> root, String columnData) {
