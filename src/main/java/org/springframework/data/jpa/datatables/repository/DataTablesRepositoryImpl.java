@@ -44,16 +44,18 @@ public class DataTablesRepositoryImpl<T, ID extends Serializable> extends
 		output.setDraw(input.getDraw());
 
 		try {
+			output.setRecordsTotal(count());
+
 			Page<T> data = findAll(
 					Specifications.where(new DataTablesSpecification<T>(input))
 							.and(additionalSpecification), getPageable(input));
 
 			output.setData(data.getContent());
 			output.setRecordsFiltered(data.getTotalElements());
-			output.setRecordsTotal(count());
 
 		} catch (Exception e) {
-			output.setError(e.getMessage());
+			output.setError(e.toString());
+			output.setRecordsFiltered(0L);
 		}
 
 		return output;
