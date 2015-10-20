@@ -77,8 +77,10 @@ public class DataTablesSpecification<T> implements Specification<T> {
 					} else {
 						predicate = criteriaBuilder.and(
 								predicate,
-								criteriaBuilder.like(expression, "%"
-										+ filterValue + "%"));
+								criteriaBuilder.like(
+										criteriaBuilder.lower(expression), "%"
+												+ filterValue.toLowerCase()
+												+ "%"));
 					}
 				}
 			}
@@ -96,8 +98,10 @@ public class DataTablesSpecification<T> implements Specification<T> {
 
 					matchOneColumnPredicate = criteriaBuilder.or(
 							matchOneColumnPredicate,
-							criteriaBuilder.like(expression, "%"
-									+ globalFilterValue + "%"));
+							criteriaBuilder.like(
+									criteriaBuilder.lower(expression), "%"
+											+ globalFilterValue.toLowerCase()
+											+ "%"));
 				}
 			}
 			predicate = criteriaBuilder.and(predicate, matchOneColumnPredicate);

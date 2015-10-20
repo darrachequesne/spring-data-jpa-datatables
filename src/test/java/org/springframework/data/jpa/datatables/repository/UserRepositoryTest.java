@@ -156,6 +156,28 @@ public class UserRepositoryTest {
 	}
 
 	@Test
+	public void testFilterGlobalIgnoreCase() {
+		DataTablesInput input = getBasicInput();
+
+		input.getSearch().setValue("OhN1");
+
+		DataTablesOutput<User> output = userRepository.findAll(input);
+		assertNotNull(output);
+		assertEquals(11, (long) output.getRecordsFiltered());
+	}
+
+	@Test
+	public void testFilterOnOneColumnIgnoreCase() {
+		DataTablesInput input = getBasicInput();
+
+		input.getColumns().get(1).getSearch().setValue("OhN1");
+
+		DataTablesOutput<User> output = userRepository.findAll(input);
+		assertNotNull(output);
+		assertEquals(11, (long) output.getRecordsFiltered());
+	}
+
+	@Test
 	public void testFilterOnSeveralColumns() {
 		DataTablesInput input = getBasicInput();
 
