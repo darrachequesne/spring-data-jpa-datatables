@@ -103,6 +103,36 @@ public class UserRepositoryTest {
 	}
 
 	@Test
+	public void testMultipleSort() {
+		DataTablesInput input = getBasicInput();
+
+		input.getOrder().add(0, new OrderParameter(3, "desc"));
+
+		// sorting by id asc and status desc
+		DataTablesOutput<User> output = userRepository.findAll(input);
+		assertNotNull(output);
+		List<User> users = output.getData();
+		assertNotNull(users);
+		assertEquals(10, users.size());
+
+		User firstUser = users.get(0);
+		User lastUser = users.get(9);
+		assertEquals(2, (int) firstUser.getId());
+		assertEquals(20, (int) lastUser.getId());
+	}
+
+	@Test
+	public void testWithoutSort() {
+		DataTablesInput input = getBasicInput();
+
+		input.getOrder().clear();
+
+		DataTablesOutput<User> output = userRepository.findAll(input);
+		assertNotNull(output);
+		assertNull(output.getError());
+	}
+
+	@Test
 	public void testFilterGlobal() {
 		DataTablesInput input = getBasicInput();
 

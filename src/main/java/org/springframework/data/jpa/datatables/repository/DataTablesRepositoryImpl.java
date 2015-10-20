@@ -1,13 +1,17 @@
 package org.springframework.data.jpa.datatables.repository;
 
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.persistence.EntityManager;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.data.domain.Sort.Direction;
+import org.springframework.data.domain.Sort.Order;
 import org.springframework.data.jpa.datatables.mapping.DataTablesInput;
 import org.springframework.data.jpa.datatables.mapping.DataTablesOutput;
 import org.springframework.data.jpa.datatables.parameter.ColumnParameter;
@@ -70,19 +74,18 @@ public class DataTablesRepositoryImpl<T, ID extends Serializable> extends
 	 * @return a {@link Pageable}, must not be {@literal null}.
 	 */
 	private Pageable getPageable(DataTablesInput input) {
-		OrderParameter order = input.getOrder().get(0);
-		ColumnParameter column = input.getColumns().get(order.getColumn());
-
-		if (column.getOrderable()) {
-			String sortColumn = column.getData();
-			Direction sortDirection = Direction.fromString(order.getDir());
-
-			return new PageRequest(input.getStart() / input.getLength(),
-					input.getLength(), sortDirection, sortColumn);
-		} else {
-			return new PageRequest(input.getStart() / input.getLength(),
-					input.getLength());
+		List<Order> orders = new ArrayList<Order>();
+		for (OrderParameter order : input.getOrder()) {
+			ColumnParameter column = input.getColumns().get(order.getColumn());
+			if (column.getOrderable()) {
+				String sortColumn = column.getData();
+				Direction sortDirection = Direction.fromString(order.getDir());
+				orders.add(new Order(sortDirection, sortColumn));
+			}
 		}
-	}
+		Sort sort = orders.isEmpty() ? null : new Sort(orders);
 
+		return new PageRequest(input.getStart() / input.getLength(),
+				input.getLength(), sort);
+	}
 }
