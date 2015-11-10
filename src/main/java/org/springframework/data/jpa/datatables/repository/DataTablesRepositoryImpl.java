@@ -85,6 +85,10 @@ public class DataTablesRepositoryImpl<T, ID extends Serializable> extends
 		}
 		Sort sort = orders.isEmpty() ? null : new Sort(orders);
 
+		if (input.getLength() == -1) {
+			input.setStart(0);
+			input.setLength(Integer.MAX_VALUE);
+		}
 		return new PageRequest(input.getStart() / input.getLength(),
 				input.getLength(), sort);
 	}

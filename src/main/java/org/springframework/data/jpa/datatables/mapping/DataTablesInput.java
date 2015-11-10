@@ -39,7 +39,7 @@ public class DataTablesInput {
 	 * negates any benefits of server-side processing!)
 	 */
 	@NotNull
-	@Min(0)
+	@Min(-1)
 	private Integer length;
 
 	/**

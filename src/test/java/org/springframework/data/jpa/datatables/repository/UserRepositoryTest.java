@@ -266,6 +266,30 @@ public class UserRepositoryTest {
 
 	}
 
+	@Test
+	public void testWithZeroLength() {
+		DataTablesInput input = getBasicInput();
+
+		input.setLength(0);
+		DataTablesOutput<User> output = userRepository.findAll(input);
+		assertNotNull(output);
+		assertNotNull(output.getError());
+		assertEquals(output.getError(),
+				"java.lang.ArithmeticException: / by zero");
+	}
+
+	@Test
+	public void testWithNegativeLength() {
+		DataTablesInput input = getBasicInput();
+
+		input.setLength(-1);
+		DataTablesOutput<User> output = userRepository.findAll(input);
+		assertNotNull(output);
+		assertNull(output.getError());
+		assertEquals(24, (long) output.getRecordsFiltered());
+		assertEquals(24, (long) output.getRecordsTotal());
+	}
+
 	/**
 	 * 
 	 * @return basic input parameters
