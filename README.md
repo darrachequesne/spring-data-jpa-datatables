@@ -12,7 +12,7 @@ This will allow you to handle the Ajax requests sent by DataTables for each draw
 <dependency>
 	<groupId>com.github.darrachequesne</groupId>
 	<artifactId>spring-data-jpa-datatables</artifactId>
-	<version>1.2</version>
+	<version>1.3</version>
 </dependency>
 ```
 
