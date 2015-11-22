@@ -40,8 +40,10 @@ public class DataTablesRepositoryFactoryBean<R extends JpaRepository<T, ID>, T, 
 		protected Object getTargetRepository(RepositoryMetadata metadata) {
 			JpaEntityInformation<T, Serializable> entityInformation = (JpaEntityInformation<T, Serializable>) getEntityInformation(metadata
 					.getDomainType());
-			return new DataTablesRepositoryImpl<T, ID>(entityInformation,
-					entityManager);
+			Class<?> repositoryInterface = metadata.getRepositoryInterface();
+			return DataTablesRepository.class.isAssignableFrom(repositoryInterface)
+					? new DataTablesRepositoryImpl<T, ID>(entityInformation, entityManager)
+					: super.getTargetRepository(metadata);
 		}
 
 		protected Class<?> getRepositoryBaseClass(RepositoryMetadata metadata) {
