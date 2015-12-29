@@ -122,6 +122,16 @@ $(document).ready(function() {
 			render: function (data, type, row) {
 				return data || '';
 			}
+		}, {
+			// add another column which will not be persisted on the server-side
+			data : 'anothercolumn',
+			// ordering and filtering are not available
+			// (but could be implemented with additional specifications)
+			orderable : false,
+			searchable : false,
+			render : function(data, type, row) {
+				return row.id ? 'Your id is ' + row.id : '';
+			}
 		}]
 	});
 }
