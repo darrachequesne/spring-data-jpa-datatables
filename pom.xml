@@ -57,6 +57,9 @@
 		<version.plugin.maven-gpg-plugin>1.6</version.plugin.maven-gpg-plugin>
 
 		<!-- Source encoding -->
+		<java.version>1.6</java.version>
+		<maven.compiler.source>${java.version}</maven.compiler.source>
+		<maven.compiler.target>${java.version}</maven.compiler.target>
 		<source.encoding>UTF-8</source.encoding>
 
 		<spring.version>4.2.0.RELEASE</spring.version>
@@ -64,6 +67,7 @@
 		<hibernate.version>4.3.10.Final</hibernate.version>
 		<hibernate.validator.version>5.2.0.Final</hibernate.validator.version>
 		<jackson.version>2.6.0</jackson.version>
+		<javax.el.api.version>2.2.5</javax.el.api.version>
 		<slf4j.version>1.7.10</slf4j.version>
 	</properties>
 
@@ -142,7 +146,7 @@
 		<dependency>
 			<groupId>javax.el</groupId>
 			<artifactId>javax.el-api</artifactId>
-			<version>3.0.0</version>
+			<version>${javax.el.api.version}</version>
 		</dependency>
 
 		<!-- Test -->
@@ -183,8 +187,8 @@
 				<artifactId>maven-compiler-plugin</artifactId>
 				<version>${version.plugin.maven-compiler-plugin}</version>
 				<configuration>
-					<source>1.7</source>
-					<target>1.7</target>
+					<source>${maven.compiler.source}</source>
+					<target>${maven.compiler.target}</target>
 					<encoding>${source.encoding}</encoding>
 				</configuration>
 			</plugin>
