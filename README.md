@@ -6,6 +6,22 @@ This project is an extension of the [Spring Data JPA](https://github.com/spring-
 
 This will allow you to handle the Ajax requests sent by DataTables for each draw of the information on the page (i.e. when paging, ordering, searching, etc.) from Spring **@RestController**.
 
+Example:
+```java
+@RestController
+public class UserRestController {
+
+	@Autowired
+	private UserRepository userRepository;
+
+	@JsonView(DataTablesOutput.View.class)
+	@RequestMapping(value = "/data/users", method = RequestMethod.GET)
+	public DataTablesOutput<User> getUsers(@Valid DataTablesInput input) {
+		return userRepository.findAll(input);
+	}
+}
+```
+
 ## Maven dependency
 
 ```
@@ -35,7 +51,7 @@ You can restrict the scope of the factory with `@EnableJpaRepositories(repositor
 
 #### 2. Extend the DataTablesRepository interface
 
-```
+```java
 public interface UserRepository extends DataTablesRepository<User, Integer> {
   ...
 }
@@ -45,7 +61,7 @@ The `DataTablesRepository` interface extends both `PagingAndSortingRepository` a
 
 #### 3. Expose your class' attributes
 
-```
+```java
 public class User {
 
 	@JsonView(DataTablesOutput.View.class)
@@ -77,19 +93,21 @@ The repositories now expose the following methods:
 
 Your controllers should be able to handle the parameters sent by DataTables:
 
-```
+```java
 @RestController
 public class UserRestController {
 
 	@Autowired
 	private UserRepository userRepository;
 
+	@JsonView(DataTablesOutput.View.class)
 	@RequestMapping(value = "/data/users", method = RequestMethod.GET)
 	public DataTablesOutput<User> getUsers(@Valid DataTablesInput input) {
 		return userRepository.findAll(input);
 	}
 
 	// or with some preprocessing
+	@JsonView(DataTablesOutput.View.class)
 	@RequestMapping(value = "/data/users", method = RequestMethod.GET)
 	public DataTablesOutput<User> getUsers(@Valid DataTablesInput input) {
 		ColumnParameter parameter0 = input.getColumns().get(0);
@@ -108,7 +126,7 @@ The `DataTablesInput` class maps the fields sent by the client (listed [there](h
 
 On the client-side, you can now define your table loading data dynamically :
 
-```
+```javascript
 $(document).ready(function() {
 	var table = $('table#sample').DataTable({
 		'ajax' : '/data/users',
@@ -137,7 +155,36 @@ $(document).ready(function() {
 }
 ```
 
-You can apply filters with `table.columns(<your column id>).search(<your filter>).draw();`
+**Note:** You can also retrieve data through POST requests with:
+
+```javascript
+$(document).ready(function() {
+	var table = $('table#sample').DataTable({
+		'ajax': {
+			'contentType': 'application/json',
+			'url': '/data/users',
+			'type': 'POST',
+			'data': function(d) {
+				return JSON.stringify(d);
+			}
+		},
+		...
+```
+```java
+// and server-side becomes
+@JsonView(DataTablesOutput.View.class)
+@RequestMapping(value = "/data/users", method = RequestMethod.POST)
+public DataTablesOutput<User> getUsers(@Valid @RequestBody DataTablesInput input) {
+	return userRepository.findAll(input);
+}
+```
+
+In that case, including `jquery.spring-friendly.js` is not necessary.
+
+#### Filters
+
+You can apply filters with `table.columns(<your column id>).search(<your filter>).draw();` (or `table.columns(<your column name>:name)...`).
+
 Supported filters:
 * Strings (`WHERE <column> LIKE %<input>%`)
 * Booleans
