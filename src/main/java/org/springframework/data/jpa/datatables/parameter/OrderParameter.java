@@ -19,7 +19,7 @@ public class OrderParameter {
 	 * ascending ordering or descending ordering, respectively.
 	 */
 	@NotNull
-	@Pattern(regexp = "[desc|asc]")
+	@Pattern(regexp = "(desc|asc)")
 	private String dir;
 
 	public OrderParameter() {
