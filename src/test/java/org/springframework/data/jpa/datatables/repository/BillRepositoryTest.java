@@ -38,6 +38,13 @@ public class BillRepositoryTest {
 			Bill bill = new Bill();
 			bill.setHasBeenPayed(i % 2 == 0);
 			bill.setAmount((i + 1) * 100);
+			if (i == 0) {
+				bill.setDescription("foo%");
+			} else if (i == 1) {
+				bill.setDescription("foo_");
+			} else {
+				bill.setDescription("foo" + i);
+			}
 			billRepository.save(bill);
 		}
 	}
@@ -75,6 +82,21 @@ public class BillRepositoryTest {
 		assertEquals(12, (long) output.getRecordsFiltered());
 	}
 
+	@Test
+	public void testEscapeCharacter() {
+		DataTablesInput input = getBasicInput();
+
+		input.getColumns().get(3).getSearch().setValue("foo%");
+		DataTablesOutput<Bill> output = billRepository.findAll(input);
+		assertNotNull(output);
+		assertEquals(1, (long) output.getRecordsFiltered());
+
+		input.getColumns().get(3).getSearch().setValue("foo_");
+		output = billRepository.findAll(input);
+		assertNotNull(output);
+		assertEquals(1, (long) output.getRecordsFiltered());
+	}
+
 	/**
 	 * 
 	 * @return basic input parameters
@@ -97,6 +119,9 @@ public class BillRepositoryTest {
 						new SearchParameter("", false)));
 		input.getColumns().add(
 				new ColumnParameter("hasBeenPayed", "", true, true,
+						new SearchParameter("", false)));
+		input.getColumns().add(
+				new ColumnParameter("description", "", true, true,
 						new SearchParameter("", false)));
 
 		return input;

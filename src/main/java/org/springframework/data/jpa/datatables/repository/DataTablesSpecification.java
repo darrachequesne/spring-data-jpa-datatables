@@ -25,6 +25,8 @@ public class DataTablesSpecification<T> implements Specification<T> {
 
 	private final static String ATTRIBUTE_SEPARATOR = ".";
 
+	private final static char ESCAPE_CHAR = '\\';
+
 	private final DataTablesInput input;
 
 	public DataTablesSpecification(DataTablesInput input) {
@@ -75,12 +77,11 @@ public class DataTablesSpecification<T> implements Specification<T> {
 										expression.as(Boolean.class),
 										Boolean.valueOf(filterValue)));
 					} else {
-						predicate = criteriaBuilder.and(
-								predicate,
+						predicate = criteriaBuilder.and(predicate,
 								criteriaBuilder.like(
-										criteriaBuilder.lower(expression), "%"
-												+ filterValue.toLowerCase()
-												+ "%"));
+										criteriaBuilder.lower(expression),
+										getLikeFilterValue(filterValue),
+										ESCAPE_CHAR));
 					}
 				}
 			}
@@ -96,12 +97,13 @@ public class DataTablesSpecification<T> implements Specification<T> {
 					Expression<String> expression = getExpression(root,
 							column.getData());
 
-					matchOneColumnPredicate = criteriaBuilder.or(
-							matchOneColumnPredicate,
-							criteriaBuilder.like(
-									criteriaBuilder.lower(expression), "%"
-											+ globalFilterValue.toLowerCase()
-											+ "%"));
+					matchOneColumnPredicate = criteriaBuilder
+							.or(matchOneColumnPredicate,
+									criteriaBuilder.like(
+											criteriaBuilder.lower(expression),
+											getLikeFilterValue(
+													globalFilterValue),
+									ESCAPE_CHAR));
 				}
 			}
 			predicate = criteriaBuilder.and(predicate, matchOneColumnPredicate);
@@ -125,5 +127,10 @@ public class DataTablesSpecification<T> implements Specification<T> {
 			// columnData is like "attribute" so nothing particular to do
 			return root.get(columnData).as(String.class);
 		}
+	}
+
+	private String getLikeFilterValue(String filterValue) {
+		return "%" + filterValue.toLowerCase().replaceAll("%", "\\\\" + "%")
+				.replaceAll("_", "\\\\" + "_") + "%";
 	}
 }

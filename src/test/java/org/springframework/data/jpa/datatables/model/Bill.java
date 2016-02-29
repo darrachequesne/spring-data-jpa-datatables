@@ -11,6 +11,8 @@ public class Bill {
 	@GeneratedValue
 	private Integer id;
 
+	private String description;
+
 	private Integer amount;
 
 	private Boolean hasBeenPayed;
@@ -21,6 +23,14 @@ public class Bill {
 
 	public Integer getId() {
 		return id;
+	}
+
+	public String getDescription() {
+		return description;
+	}
+
+	public void setDescription(String description) {
+		this.description = description;
 	}
 
 	public Integer getAmount() {
