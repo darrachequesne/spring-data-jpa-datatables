@@ -1,7 +1,9 @@
 package org.springframework.data.jpa.datatables.mapping;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
@@ -112,6 +114,18 @@ public class DataTablesInput {
 
 	public void setColumns(List<ColumnParameter> columns) {
 		this.columns = columns;
+	}
+
+	/**
+	 * 
+	 * @return a {@link Map} of {@link ColumnParameter} indexed by name
+	 */
+	public Map<String, ColumnParameter> getColumnsAsMap() {
+		Map<String, ColumnParameter> map = new HashMap<String, ColumnParameter>();
+		for (ColumnParameter column : columns) {
+			map.put(column.getData(), column);
+		}
+		return map;
 	}
 
 }
