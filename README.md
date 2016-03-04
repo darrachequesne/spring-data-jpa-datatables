@@ -28,7 +28,7 @@ public class UserRestController {
 <dependency>
 	<groupId>com.github.darrachequesne</groupId>
 	<artifactId>spring-data-jpa-datatables</artifactId>
-	<version>1.5</version>
+	<version>2.0</version>
 </dependency>
 ```
 
@@ -90,6 +90,15 @@ It overrides jQuery data serialization to allow Spring MVC to correctly map inpu
 The repositories now expose the following methods:
 * `DataTablesOutput<T> findAll(DataTablesInput input);`
 * `DataTablesOutput<T> findAll(DataTablesInput input, Specification<T> additionalSpecification);`
+
+Note: since version 2.0, QueryDSL is also supported:
+* replace `DataTablesRepositoryFactoryBean` with `QDataTablesRepositoryFactoryBean`
+* replace `DataTablesRepository` with `QDataTablesRepository`
+
+and your repositories will now expose:
+
+* `DataTablesOutput<T> findAll(DataTablesInput input);`
+* `DataTablesOutput<T> findAll(DataTablesInput input, com.mysema.querydsl.Predicate additionalPredicate);`
 
 Your controllers should be able to handle the parameters sent by DataTables:
 
