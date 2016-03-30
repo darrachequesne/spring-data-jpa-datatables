@@ -25,6 +25,7 @@ import org.springframework.util.StringUtils;
 import com.mysema.query.BooleanBuilder;
 import com.mysema.query.support.Expressions;
 import com.mysema.query.types.Ops;
+import com.mysema.query.types.expr.StringExpression;
 import com.mysema.query.types.path.PathBuilder;
 
 public class DataTablesUtils {
@@ -124,8 +125,7 @@ public class DataTablesUtils {
 						}
 						predicate = predicate.and(entity.getBoolean(column.getData()).in(booleanValues));
 					} else {
-						predicate.and(
-								Expressions.stringOperation(Ops.STRING_CAST, entity.get(column.getData())).in(values));
+						predicate.and(getStringExpression(entity, column.getData()).in(values));
 					}
 				} else {
 					// the filter contains only one value, add a 'WHERE .. LIKE'
@@ -133,9 +133,8 @@ public class DataTablesUtils {
 					if (isBoolean(filterValue)) {
 						predicate = predicate.and(entity.getBoolean(column.getData()).eq(Boolean.valueOf(filterValue)));
 					} else {
-						predicate = predicate.and(
-								Expressions.stringOperation(Ops.STRING_CAST, entity.get(column.getData().toLowerCase()))
-										.like(getLikeFilterValue(filterValue), ESCAPE_CHAR));
+						predicate = predicate.and(getStringExpression(entity, column.getData()).lower()
+								.like(getLikeFilterValue(filterValue), ESCAPE_CHAR));
 					}
 				}
 			}
@@ -148,9 +147,8 @@ public class DataTablesUtils {
 			// add a 'WHERE .. LIKE' clause on each searchable column
 			for (ColumnParameter column : input.getColumns()) {
 				if (column.getSearchable()) {
-					matchOneColumnPredicate = matchOneColumnPredicate
-							.or(Expressions.stringOperation(Ops.STRING_CAST, entity.get(column.getData().toLowerCase()))
-									.like(getLikeFilterValue(globalFilterValue), ESCAPE_CHAR));
+					matchOneColumnPredicate = matchOneColumnPredicate.or(getStringExpression(entity, column.getData())
+							.lower().like(getLikeFilterValue(globalFilterValue), ESCAPE_CHAR));
 				}
 			}
 			predicate = predicate.and(matchOneColumnPredicate);
@@ -203,4 +201,9 @@ public class DataTablesUtils {
 	private static String getLikeFilterValue(String filterValue) {
 		return "%" + filterValue.toLowerCase().replaceAll("%", "\\\\" + "%").replaceAll("_", "\\\\" + "_") + "%";
 	}
+
+	private static StringExpression getStringExpression(PathBuilder<?> entity, String columnData) {
+		return Expressions.stringOperation(Ops.STRING_CAST, entity.get(columnData));
+	}
+
 }
