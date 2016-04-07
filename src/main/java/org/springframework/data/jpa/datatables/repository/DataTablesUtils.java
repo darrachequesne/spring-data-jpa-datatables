@@ -189,9 +189,16 @@ public class DataTablesUtils {
 
 	private static Expression<String> getExpression(Root<?> root, String columnData) {
 		if (columnData.contains(ATTRIBUTE_SEPARATOR)) {
-			// columnData is like "joinedEntity.attribute" so add a join clause
+			// columnData is like "joinedEntities.attribute" so add a join clause. example: "person.contact.fone"
 			String[] values = columnData.split("\\" + ATTRIBUTE_SEPARATOR);
-			return root.join(values[0], JoinType.LEFT).get(values[1]).as(String.class);
+			
+			Path<?> path = root.get(values[0]);
+
+			for(int i = 1; i < values.length - 1; i++){
+				path = path.get(values[i]);
+			}
+			
+			return path.get(values[values.length - 1]);
 		} else {
 			// columnData is like "attribute" so nothing particular to do
 			return root.get(columnData).as(String.class);
