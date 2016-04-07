@@ -10,6 +10,7 @@ import javax.persistence.criteria.Expression;
 import javax.persistence.criteria.JoinType;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
+import javax.persistence.criteria.Path;
 
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
