@@ -17,6 +17,7 @@ import org.springframework.data.jpa.datatables.model.Bill;
 import org.springframework.data.jpa.datatables.parameter.ColumnParameter;
 import org.springframework.data.jpa.datatables.parameter.OrderParameter;
 import org.springframework.data.jpa.datatables.parameter.SearchParameter;
+import org.springframework.data.jpa.datatables.specification.PreFilteringSpecification;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
@@ -95,6 +96,17 @@ public class BillRepositoryTest {
     output = billRepository.findAll(input);
     assertNotNull(output);
     assertEquals(1, (long) output.getRecordsFiltered());
+  }
+
+  @Test
+  public void testWithPreFiltering() {
+    DataTablesInput input = getBasicInput();
+
+    DataTablesOutput<Bill> output =
+        billRepository.findAll(input, null, new PreFilteringSpecification<Bill>());
+    assertNotNull(output);
+    assertEquals(6, (long) output.getRecordsFiltered());
+    assertEquals(6, (long) output.getRecordsTotal());
   }
 
   /**

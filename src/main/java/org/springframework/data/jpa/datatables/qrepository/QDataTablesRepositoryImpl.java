@@ -48,18 +48,25 @@ public class QDataTablesRepositoryImpl<T, ID extends Serializable>
 
   @Override
   public DataTablesOutput<T> findAll(DataTablesInput input) {
-    return findAll(input, null);
+    return findAll(input, null, null);
   }
 
   @Override
   public DataTablesOutput<T> findAll(DataTablesInput input, Predicate additionalPredicate) {
+    return findAll(input, additionalPredicate, null);
+  }
+
+  @Override
+  public DataTablesOutput<T> findAll(DataTablesInput input, Predicate additionalPredicate,
+      Predicate preFilteringPredicate) {
     DataTablesOutput<T> output = new DataTablesOutput<T>();
     output.setDraw(input.getDraw());
     try {
-      output.setRecordsTotal(count());
+      output
+          .setRecordsTotal(preFilteringPredicate == null ? count() : count(preFilteringPredicate));
 
       Page<T> data = findAll(new BooleanBuilder().and(getPredicate(this.builder, input))
-          .and(additionalPredicate).getValue(), getPageable(input));
+          .and(additionalPredicate).and(preFilteringPredicate).getValue(), getPageable(input));
 
       output.setData(data.getContent());
       output.setRecordsFiltered(data.getTotalElements());

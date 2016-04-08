@@ -90,6 +90,7 @@ It overrides jQuery data serialization to allow Spring MVC to correctly map inpu
 The repositories now expose the following methods:
 * `DataTablesOutput<T> findAll(DataTablesInput input);`
 * `DataTablesOutput<T> findAll(DataTablesInput input, Specification<T> additionalSpecification);`
+* `DataTablesOutput<T> findAll(DataTablesInput input, Specification<T> additionalSpecification, Specification<T> preFilteringSpecification);`
 
 Note: since version 2.0, QueryDSL is also supported:
 * replace `DataTablesRepositoryFactoryBean` with `QDataTablesRepositoryFactoryBean`
@@ -99,6 +100,7 @@ and your repositories will now expose:
 
 * `DataTablesOutput<T> findAll(DataTablesInput input);`
 * `DataTablesOutput<T> findAll(DataTablesInput input, com.mysema.querydsl.Predicate additionalPredicate);`
+* `DataTablesOutput<T> findAll(DataTablesInput input, com.mysema.querydsl.Predicate additionalPredicate, com.mysema.querydsl.Predicate preFilteringPredicate);`
 
 Your controllers should be able to handle the parameters sent by DataTables:
 
@@ -123,6 +125,13 @@ public class UserRestController {
 		Specification additionalSpecification = getAdditionalSpecification(parameter0.getSearch().getValue());
 		parameter0.getSearch().setValue("");
 		return userRepository.findAll(input, additionalSpecification);
+	}
+
+	// or with an additional filter allowing to 'hide' data from the client (the filter will be applied on both the count and the data queries, and may impact the recordsTotal in the output)
+	@JsonView(DataTablesOutput.View.class)
+	@RequestMapping(value = "/data/users", method = RequestMethod.GET)
+	public DataTablesOutput<User> getUsers(@Valid DataTablesInput input) {
+		return userRepository.findAll(input, null, removeHiddenEntitiesSpecification);
 	}
 }
 ```

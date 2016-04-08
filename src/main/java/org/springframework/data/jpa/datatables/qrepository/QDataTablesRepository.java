@@ -38,4 +38,17 @@ public interface QDataTablesRepository<T, ID extends Serializable>
    */
   DataTablesOutput<T> findAll(DataTablesInput input, Predicate additionalPredicate);
 
+  /**
+   * Returns the filtered list for the given {@link DataTablesInput}.
+   * 
+   * @param input the {@link DataTablesInput} mapped from the Ajax request
+   * @param additionalPredicate an additional {@link Predicate} to apply to the query (with an "AND"
+   *        clause)
+   * @param preFilteringPredicate a pre-filtering {@link Predicate} to apply to the query (with an
+   *        "AND" clause)
+   * @return a {@link DataTablesOutput}
+   */
+  DataTablesOutput<T> findAll(DataTablesInput input, Predicate additionalPredicate,
+      Predicate preFilteringPredicate);
+
 }

@@ -31,20 +31,27 @@ public class DataTablesRepositoryImpl<T, ID extends Serializable> extends Simple
 
   @Override
   public DataTablesOutput<T> findAll(DataTablesInput input) {
-    return findAll(input, null);
+    return findAll(input, null, null);
   }
 
   @Override
   public DataTablesOutput<T> findAll(DataTablesInput input,
       Specification<T> additionalSpecification) {
+    return findAll(input, additionalSpecification, null);
+  }
+
+  @Override
+  public DataTablesOutput<T> findAll(DataTablesInput input,
+      Specification<T> additionalSpecification, Specification<T> preFilteringSpecification) {
     DataTablesOutput<T> output = new DataTablesOutput<T>();
     output.setDraw(input.getDraw());
 
     try {
-      output.setRecordsTotal(count());
+      output.setRecordsTotal(
+          preFilteringSpecification == null ? count() : count(preFilteringSpecification));
 
       Page<T> data = findAll(Specifications.where(getSpecification(getDomainClass(), input))
-          .and(additionalSpecification), getPageable(input));
+          .and(additionalSpecification).and(preFilteringSpecification), getPageable(input));
 
       output.setData(data.getContent());
       output.setRecordsFiltered(data.getTotalElements());
@@ -56,4 +63,5 @@ public class DataTablesRepositoryImpl<T, ID extends Serializable> extends Simple
 
     return output;
   }
+
 }

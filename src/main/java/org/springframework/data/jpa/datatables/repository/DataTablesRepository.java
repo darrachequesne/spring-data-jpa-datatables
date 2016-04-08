@@ -37,4 +37,17 @@ public interface DataTablesRepository<T, ID extends Serializable>
    */
   DataTablesOutput<T> findAll(DataTablesInput input, Specification<T> additionalSpecification);
 
+  /**
+   * Returns the filtered list for the given {@link DataTablesInput}.
+   * 
+   * @param input the {@link DataTablesInput} mapped from the Ajax request
+   * @param additionalSpecification an additional {@link Specification} to apply to the query (with
+   *        an "AND" clause)
+   * @param preFilteringSpecification a pre-filtering {@link Specification} to apply to the query
+   *        (with an "AND" clause)
+   * @return a {@link DataTablesOutput}
+   */
+  DataTablesOutput<T> findAll(DataTablesInput input, Specification<T> additionalSpecification,
+      Specification<T> preFilteringSpecification);
+
 }
