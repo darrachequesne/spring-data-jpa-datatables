@@ -87,4 +87,10 @@ public class DataTablesOutput<T> {
     this.error = error;
   }
 
+  @Override
+  public String toString() {
+    return "DataTablesOutput [draw=" + draw + ", recordsTotal=" + recordsTotal
+        + ", recordsFiltered=" + recordsFiltered + ", error=" + error + "]";
+  }
+
 }

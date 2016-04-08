@@ -127,4 +127,10 @@ public class DataTablesInput {
     return map;
   }
 
+  @Override
+  public String toString() {
+    return "DataTablesInput [draw=" + draw + ", start=" + start + ", length=" + length + ", search="
+        + search + ", order=" + order + ", columns=" + columns + "]";
+  }
+
 }

@@ -46,4 +46,9 @@ public class OrderParameter {
     this.dir = dir;
   }
 
+  @Override
+  public String toString() {
+    return "OrderParameter [column=" + column + ", dir=" + dir + "]";
+  }
+
 }

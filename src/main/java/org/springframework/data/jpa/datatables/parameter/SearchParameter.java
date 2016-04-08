@@ -43,4 +43,9 @@ public class SearchParameter {
     this.regex = regex;
   }
 
+  @Override
+  public String toString() {
+    return "SearchParameter [value=" + value + ", regex=" + regex + "]";
+  }
+
 }

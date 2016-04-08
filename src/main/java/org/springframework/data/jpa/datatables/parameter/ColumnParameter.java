@@ -95,4 +95,10 @@ public class ColumnParameter {
     this.search = search;
   }
 
+  @Override
+  public String toString() {
+    return "ColumnParameter [data=" + data + ", name=" + name + ", searchable=" + searchable
+        + ", orderable=" + orderable + ", search=" + search + "]";
+  }
+
 }
