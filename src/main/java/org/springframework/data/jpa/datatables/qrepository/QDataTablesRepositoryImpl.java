@@ -62,8 +62,11 @@ public class QDataTablesRepositoryImpl<T, ID extends Serializable>
     DataTablesOutput<T> output = new DataTablesOutput<T>();
     output.setDraw(input.getDraw());
     try {
-      output
-          .setRecordsTotal(preFilteringPredicate == null ? count() : count(preFilteringPredicate));
+      long recordsTotal = preFilteringPredicate == null ? count() : count(preFilteringPredicate);
+      if (recordsTotal == 0) {
+        return output;
+      }
+      output.setRecordsTotal(recordsTotal);
 
       Page<T> data = findAll(new BooleanBuilder().and(getPredicate(this.builder, input))
           .and(additionalPredicate).and(preFilteringPredicate).getValue(), getPageable(input));

@@ -47,8 +47,12 @@ public class DataTablesRepositoryImpl<T, ID extends Serializable> extends Simple
     output.setDraw(input.getDraw());
 
     try {
-      output.setRecordsTotal(
-          preFilteringSpecification == null ? count() : count(preFilteringSpecification));
+      long recordsTotal =
+          preFilteringSpecification == null ? count() : count(preFilteringSpecification);
+      if (recordsTotal == 0) {
+        return output;
+      }
+      output.setRecordsTotal(recordsTotal);
 
       Page<T> data = findAll(Specifications.where(getSpecification(getDomainClass(), input))
           .and(additionalSpecification).and(preFilteringSpecification), getPageable(input));
