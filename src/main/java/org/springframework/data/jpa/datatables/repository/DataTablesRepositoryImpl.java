@@ -21,38 +21,39 @@ import org.springframework.data.jpa.repository.support.SimpleJpaRepository;
  * @author Damien Arrachequesne
  */
 public class DataTablesRepositoryImpl<T, ID extends Serializable> extends SimpleJpaRepository<T, ID>
-		implements DataTablesRepository<T, ID> {
+    implements DataTablesRepository<T, ID> {
 
-	public DataTablesRepositoryImpl(JpaEntityInformation<T, ?> entityInformation, EntityManager entityManager) {
+  public DataTablesRepositoryImpl(JpaEntityInformation<T, ?> entityInformation,
+      EntityManager entityManager) {
 
-		super(entityInformation, entityManager);
-	}
+    super(entityInformation, entityManager);
+  }
 
-	@Override
-	public DataTablesOutput<T> findAll(DataTablesInput input) {
-		return findAll(input, null);
-	}
+  @Override
+  public DataTablesOutput<T> findAll(DataTablesInput input) {
+    return findAll(input, null);
+  }
 
-	@Override
-	public DataTablesOutput<T> findAll(DataTablesInput input, Specification<T> additionalSpecification) {
-		DataTablesOutput<T> output = new DataTablesOutput<T>();
-		output.setDraw(input.getDraw());
+  @Override
+  public DataTablesOutput<T> findAll(DataTablesInput input,
+      Specification<T> additionalSpecification) {
+    DataTablesOutput<T> output = new DataTablesOutput<T>();
+    output.setDraw(input.getDraw());
 
-		try {
-			output.setRecordsTotal(count());
+    try {
+      output.setRecordsTotal(count());
 
-			Page<T> data = findAll(
-					Specifications.where(getSpecification(getDomainClass(), input)).and(additionalSpecification),
-					getPageable(input));
+      Page<T> data = findAll(Specifications.where(getSpecification(getDomainClass(), input))
+          .and(additionalSpecification), getPageable(input));
 
-			output.setData(data.getContent());
-			output.setRecordsFiltered(data.getTotalElements());
+      output.setData(data.getContent());
+      output.setRecordsFiltered(data.getTotalElements());
 
-		} catch (Exception e) {
-			output.setError(e.toString());
-			output.setRecordsFiltered(0L);
-		}
+    } catch (Exception e) {
+      output.setError(e.toString());
+      output.setRecordsFiltered(0L);
+    }
 
-		return output;
-	}
+    return output;
+  }
 }
