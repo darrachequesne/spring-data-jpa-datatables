@@ -26,30 +26,28 @@ import org.springframework.transaction.PlatformTransactionManager;
 @EnableJpaRepositories(repositoryFactoryBeanClass = DataTablesRepositoryFactoryBean.class)
 public class Config {
 
-	@Bean
-	public DataSource dataSource() throws SQLException {
-		return new EmbeddedDatabaseBuilder().setType(EmbeddedDatabaseType.H2)
-				.build();
-	}
+  @Bean
+  public DataSource dataSource() throws SQLException {
+    return new EmbeddedDatabaseBuilder().setType(EmbeddedDatabaseType.H2).build();
+  }
 
-	@Bean
-	public PlatformTransactionManager transactionManager() throws SQLException {
-		return new JpaTransactionManager();
-	}
+  @Bean
+  public PlatformTransactionManager transactionManager() throws SQLException {
+    return new JpaTransactionManager();
+  }
 
-	@Bean
-	public AbstractEntityManagerFactoryBean entityManagerFactory()
-			throws SQLException {
+  @Bean
+  public AbstractEntityManagerFactoryBean entityManagerFactory() throws SQLException {
 
-		HibernateJpaVendorAdapter jpaVendorAdapter = new HibernateJpaVendorAdapter();
-		jpaVendorAdapter.setDatabase(Database.H2);
-		jpaVendorAdapter.setGenerateDdl(true);
+    HibernateJpaVendorAdapter jpaVendorAdapter = new HibernateJpaVendorAdapter();
+    jpaVendorAdapter.setDatabase(Database.H2);
+    jpaVendorAdapter.setGenerateDdl(true);
 
-		LocalContainerEntityManagerFactoryBean bean = new LocalContainerEntityManagerFactoryBean();
-		bean.setJpaVendorAdapter(jpaVendorAdapter);
-		bean.setPackagesToScan(Config.class.getPackage().getName());
-		bean.setDataSource(dataSource());
+    LocalContainerEntityManagerFactoryBean bean = new LocalContainerEntityManagerFactoryBean();
+    bean.setJpaVendorAdapter(jpaVendorAdapter);
+    bean.setPackagesToScan(Config.class.getPackage().getName());
+    bean.setDataSource(dataSource());
 
-		return bean;
-	}
+    return bean;
+  }
 }

@@ -7,46 +7,46 @@ import javax.persistence.Id;
 @Entity
 public class Bill {
 
-	@Id
-	@GeneratedValue
-	private Integer id;
+  @Id
+  @GeneratedValue
+  private Integer id;
 
-	private String description;
+  private String description;
 
-	private Integer amount;
+  private Integer amount;
 
-	private Boolean hasBeenPayed;
+  private Boolean hasBeenPayed;
 
-	public Bill() {
-		super();
-	}
+  public Bill() {
+    super();
+  }
 
-	public Integer getId() {
-		return id;
-	}
+  public Integer getId() {
+    return id;
+  }
 
-	public String getDescription() {
-		return description;
-	}
+  public String getDescription() {
+    return description;
+  }
 
-	public void setDescription(String description) {
-		this.description = description;
-	}
+  public void setDescription(String description) {
+    this.description = description;
+  }
 
-	public Integer getAmount() {
-		return amount;
-	}
+  public Integer getAmount() {
+    return amount;
+  }
 
-	public void setAmount(Integer amount) {
-		this.amount = amount;
-	}
+  public void setAmount(Integer amount) {
+    this.amount = amount;
+  }
 
-	public Boolean getHasBeenPayed() {
-		return hasBeenPayed;
-	}
+  public Boolean getHasBeenPayed() {
+    return hasBeenPayed;
+  }
 
-	public void setHasBeenPayed(Boolean hasBeenPayed) {
-		this.hasBeenPayed = hasBeenPayed;
-	}
+  public void setHasBeenPayed(Boolean hasBeenPayed) {
+    this.hasBeenPayed = hasBeenPayed;
+  }
 
 }

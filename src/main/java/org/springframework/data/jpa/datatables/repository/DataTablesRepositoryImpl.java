@@ -21,38 +21,51 @@ import org.springframework.data.jpa.repository.support.SimpleJpaRepository;
  * @author Damien Arrachequesne
  */
 public class DataTablesRepositoryImpl<T, ID extends Serializable> extends SimpleJpaRepository<T, ID>
-		implements DataTablesRepository<T, ID> {
+    implements DataTablesRepository<T, ID> {
 
-	public DataTablesRepositoryImpl(JpaEntityInformation<T, ?> entityInformation, EntityManager entityManager) {
+  public DataTablesRepositoryImpl(JpaEntityInformation<T, ?> entityInformation,
+      EntityManager entityManager) {
 
-		super(entityInformation, entityManager);
-	}
+    super(entityInformation, entityManager);
+  }
 
-	@Override
-	public DataTablesOutput<T> findAll(DataTablesInput input) {
-		return findAll(input, null);
-	}
+  @Override
+  public DataTablesOutput<T> findAll(DataTablesInput input) {
+    return findAll(input, null, null);
+  }
 
-	@Override
-	public DataTablesOutput<T> findAll(DataTablesInput input, Specification<T> additionalSpecification) {
-		DataTablesOutput<T> output = new DataTablesOutput<T>();
-		output.setDraw(input.getDraw());
+  @Override
+  public DataTablesOutput<T> findAll(DataTablesInput input,
+      Specification<T> additionalSpecification) {
+    return findAll(input, additionalSpecification, null);
+  }
 
-		try {
-			output.setRecordsTotal(count());
+  @Override
+  public DataTablesOutput<T> findAll(DataTablesInput input,
+      Specification<T> additionalSpecification, Specification<T> preFilteringSpecification) {
+    DataTablesOutput<T> output = new DataTablesOutput<T>();
+    output.setDraw(input.getDraw());
 
-			Page<T> data = findAll(
-					Specifications.where(getSpecification(getDomainClass(), input)).and(additionalSpecification),
-					getPageable(input));
+    try {
+      long recordsTotal =
+          preFilteringSpecification == null ? count() : count(preFilteringSpecification);
+      if (recordsTotal == 0) {
+        return output;
+      }
+      output.setRecordsTotal(recordsTotal);
 
-			output.setData(data.getContent());
-			output.setRecordsFiltered(data.getTotalElements());
+      Page<T> data = findAll(Specifications.where(getSpecification(getDomainClass(), input))
+          .and(additionalSpecification).and(preFilteringSpecification), getPageable(input));
 
-		} catch (Exception e) {
-			output.setError(e.toString());
-			output.setRecordsFiltered(0L);
-		}
+      output.setData(data.getContent());
+      output.setRecordsFiltered(data.getTotalElements());
 
-		return output;
-	}
+    } catch (Exception e) {
+      output.setError(e.toString());
+      output.setRecordsFiltered(0L);
+    }
+
+    return output;
+  }
+
 }

@@ -15,22 +15,22 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 @ContextConfiguration(classes = Config.class)
 public class RepositoryTest {
 
-	@Autowired
-	private UserRepository userRepository;
+  @Autowired
+  private UserRepository userRepository;
 
-	@Autowired
-	private HomeRepository homeRepository;
+  @Autowired
+  private HomeRepository homeRepository;
 
-	@Test
-	public void checkGeneratedRepositories() throws Exception {
-		assertEquals(DataTablesRepositoryImpl.class, getTargetObject(userRepository));
-		assertEquals(SimpleJpaRepository.class, getTargetObject(homeRepository));
-	}
+  @Test
+  public void checkGeneratedRepositories() throws Exception {
+    assertEquals(DataTablesRepositoryImpl.class, getTargetObject(userRepository));
+    assertEquals(SimpleJpaRepository.class, getTargetObject(homeRepository));
+  }
 
-	// returns the class of the proxied object
-	@SuppressWarnings("unchecked")
-	protected <T> T getTargetObject(Object proxy) throws Exception {
-		return (T) ((Advised) proxy).getTargetSource().getTargetClass();
-	}
+  // returns the class of the proxied object
+  @SuppressWarnings("unchecked")
+  protected <T> T getTargetObject(Object proxy) throws Exception {
+    return (T) ((Advised) proxy).getTargetSource().getTargetClass();
+  }
 
 }

@@ -18,36 +18,35 @@ import org.springframework.data.repository.core.support.RepositoryFactorySupport
  * @author Damien Arrachequesne
  */
 public class DataTablesRepositoryFactoryBean<R extends JpaRepository<T, ID>, T, ID extends Serializable>
-		extends JpaRepositoryFactoryBean<R, T, ID> {
+    extends JpaRepositoryFactoryBean<R, T, ID> {
 
-	protected RepositoryFactorySupport createRepositoryFactory(
-			EntityManager entityManager) {
-		return new DataTablesRepositoryFactory<T, ID>(entityManager);
-	}
+  protected RepositoryFactorySupport createRepositoryFactory(EntityManager entityManager) {
+    return new DataTablesRepositoryFactory<T, ID>(entityManager);
+  }
 
-	private static class DataTablesRepositoryFactory<T, ID extends Serializable>
-			extends JpaRepositoryFactory {
+  private static class DataTablesRepositoryFactory<T, ID extends Serializable>
+      extends JpaRepositoryFactory {
 
-		private final EntityManager entityManager;
+    private final EntityManager entityManager;
 
-		public DataTablesRepositoryFactory(EntityManager entityManager) {
+    public DataTablesRepositoryFactory(EntityManager entityManager) {
 
-			super(entityManager);
-			this.entityManager = entityManager;
-		}
+      super(entityManager);
+      this.entityManager = entityManager;
+    }
 
-		@SuppressWarnings({ "unchecked" })
-		protected Object getTargetRepository(RepositoryMetadata metadata) {
-			JpaEntityInformation<T, Serializable> entityInformation = (JpaEntityInformation<T, Serializable>) getEntityInformation(metadata
-					.getDomainType());
-			Class<?> repositoryInterface = metadata.getRepositoryInterface();
-			return DataTablesRepository.class.isAssignableFrom(repositoryInterface)
-					? new DataTablesRepositoryImpl<T, ID>(entityInformation, entityManager)
-					: super.getTargetRepository(metadata);
-		}
+    @SuppressWarnings({"unchecked"})
+    protected Object getTargetRepository(RepositoryMetadata metadata) {
+      JpaEntityInformation<T, Serializable> entityInformation =
+          (JpaEntityInformation<T, Serializable>) getEntityInformation(metadata.getDomainType());
+      Class<?> repositoryInterface = metadata.getRepositoryInterface();
+      return DataTablesRepository.class.isAssignableFrom(repositoryInterface)
+          ? new DataTablesRepositoryImpl<T, ID>(entityInformation, entityManager)
+          : super.getTargetRepository(metadata);
+    }
 
-		protected Class<?> getRepositoryBaseClass(RepositoryMetadata metadata) {
-			return DataTablesRepositoryImpl.class;
-		}
-	}
+    protected Class<?> getRepositoryBaseClass(RepositoryMetadata metadata) {
+      return DataTablesRepositoryImpl.class;
+    }
+  }
 }
