@@ -7,10 +7,10 @@ import java.util.List;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Expression;
+import javax.persistence.criteria.Join;
 import javax.persistence.criteria.JoinType;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
-import javax.persistence.criteria.Path;
 
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -192,14 +192,13 @@ public class DataTablesUtils {
 		if (columnData.contains(ATTRIBUTE_SEPARATOR)) {
 			// columnData is like "joinedEntities.attribute" so add a join clause. example: "person.contact.fone"
 			String[] values = columnData.split("\\" + ATTRIBUTE_SEPARATOR);
-			
-			Path<?> path = root.get(values[0]);
+			Join<?, ?> joinExpression = root.join(values[0], JoinType.LEFT);
 
 			for(int i = 1; i < values.length - 1; i++){
-				path = path.get(values[i]);
+				joinExpression = joinExpression.join(values[i], JoinType.LEFT);
 			}
 			
-			return path.get(values[values.length - 1]);
+			return joinExpression.get(values[values.length - 1]).as(String.class);
 		} else {
 			// columnData is like "attribute" so nothing particular to do
 			return root.get(columnData).as(String.class);
