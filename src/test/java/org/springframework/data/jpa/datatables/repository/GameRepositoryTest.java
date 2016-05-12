@@ -7,13 +7,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.jpa.datatables.Config;
 import org.springframework.data.jpa.datatables.mapping.DataTablesInput;
 import org.springframework.data.jpa.datatables.mapping.DataTablesOutput;
-import org.springframework.data.jpa.datatables.model.Bill;
 import org.springframework.data.jpa.datatables.model.Game;
 import org.springframework.data.jpa.datatables.model.Prize;
 import org.springframework.data.jpa.datatables.parameter.ColumnParameter;
 import org.springframework.data.jpa.datatables.parameter.OrderParameter;
 import org.springframework.data.jpa.datatables.parameter.SearchParameter;
-import org.springframework.data.jpa.datatables.specification.PreFilteringSpecification;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
