@@ -1,5 +1,6 @@
 package org.springframework.data.jpa.datatables.mapping;
 
+import java.util.Collections;
 import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonView;
@@ -34,7 +35,7 @@ public class DataTablesOutput<T> {
    * ajaxDT option's dataSrc property.
    */
   @JsonView(View.class)
-  private List<T> data;
+  private List<T> data = Collections.emptyList();
 
   /**
    * Optional: If an error occurs during the running of the server-side processing script, you can
