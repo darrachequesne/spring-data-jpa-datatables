@@ -193,6 +193,9 @@ public class DataTablesUtils {
     if (columnData.contains(ATTRIBUTE_SEPARATOR)) {
       // columnData is like "joinedEntity.attribute" so add a join clause
       String[] values = columnData.split("\\" + ATTRIBUTE_SEPARATOR);
+      if (!root.getModel().getAttribute(values[0]).isAssociation()) {
+        return root.get(values[0]).get(values[1]).as(String.class);
+      }
       return root.join(values[0], JoinType.LEFT).get(values[1]).as(String.class);
     } else {
       // columnData is like "attribute" so nothing particular to do
