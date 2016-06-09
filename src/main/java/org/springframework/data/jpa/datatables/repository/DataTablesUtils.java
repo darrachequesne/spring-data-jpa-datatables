@@ -7,9 +7,11 @@ import java.util.List;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Expression;
+import javax.persistence.criteria.From;
 import javax.persistence.criteria.JoinType;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
+import javax.persistence.metamodel.Attribute.PersistentAttributeType;
 
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -193,10 +195,16 @@ public class DataTablesUtils {
     if (columnData.contains(ATTRIBUTE_SEPARATOR)) {
       // columnData is like "joinedEntity.attribute" so add a join clause
       String[] values = columnData.split("\\" + ATTRIBUTE_SEPARATOR);
-      if (!root.getModel().getAttribute(values[0]).isAssociation()) {
+      if (root.getModel().getAttribute(values[0])
+          .getPersistentAttributeType() == PersistentAttributeType.EMBEDDED) {
+        // with @Embedded attribute
         return root.get(values[0]).get(values[1]).as(String.class);
       }
-      return root.join(values[0], JoinType.LEFT).get(values[1]).as(String.class);
+      From<?, ?> from = root;
+      for (int i = 0; i < values.length - 1; i++) {
+        from = from.join(values[i], JoinType.LEFT);
+      }
+      return from.get(values[values.length - 1]).as(String.class);
     } else {
       // columnData is like "attribute" so nothing particular to do
       return root.get(columnData).as(String.class);

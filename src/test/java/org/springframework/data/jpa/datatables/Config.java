@@ -1,9 +1,12 @@
 package org.springframework.data.jpa.datatables;
 
 import java.sql.SQLException;
+import java.util.Properties;
 
 import javax.sql.DataSource;
 
+import org.hibernate.cfg.Environment;
+import org.hibernate.tool.hbm2ddl.MultipleLinesSqlCommandExtractor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.jpa.datatables.repository.DataTablesRepositoryFactoryBean;
@@ -47,6 +50,13 @@ public class Config {
     bean.setJpaVendorAdapter(jpaVendorAdapter);
     bean.setPackagesToScan(Config.class.getPackage().getName());
     bean.setDataSource(dataSource());
+
+    Properties jpaProperties = new Properties();
+    jpaProperties.setProperty(Environment.HBM2DDL_AUTO, "create-drop");
+    jpaProperties.setProperty(Environment.HBM2DDL_IMPORT_FILES, "init.sql");
+    jpaProperties.setProperty(Environment.HBM2DDL_IMPORT_FILES_SQL_EXTRACTOR,
+        MultipleLinesSqlCommandExtractor.class.getName());
+    bean.setJpaProperties(jpaProperties);
 
     return bean;
   }
