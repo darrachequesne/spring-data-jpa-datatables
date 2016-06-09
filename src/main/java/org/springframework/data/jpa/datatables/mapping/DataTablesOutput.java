@@ -14,20 +14,20 @@ public class DataTablesOutput<T> {
    * parameter, in order to prevent Cross Site Scripting (XSS) attacks.
    */
   @JsonView(View.class)
-  private Integer draw;
+  private int draw;
 
   /**
    * Total records, before filtering (i.e. the total number of records in the database)
    */
   @JsonView(View.class)
-  private Long recordsTotal = 0L;
+  private long recordsTotal = 0L;
 
   /**
    * Total records, after filtering (i.e. the total number of records after filtering has been
    * applied - not just the number of records being returned for this page of data).
    */
   @JsonView(View.class)
-  private Long recordsFiltered = 0L;
+  private long recordsFiltered = 0L;
 
   /**
    * The data to be displayed in the table. This is an array of data source objects, one for each
@@ -48,27 +48,27 @@ public class DataTablesOutput<T> {
   public interface View {
   }
 
-  public Integer getDraw() {
+  public int getDraw() {
     return draw;
   }
 
-  public void setDraw(Integer draw) {
+  public void setDraw(int draw) {
     this.draw = draw;
   }
 
-  public Long getRecordsTotal() {
+  public long getRecordsTotal() {
     return recordsTotal;
   }
 
-  public void setRecordsTotal(Long recordsTotal) {
+  public void setRecordsTotal(long recordsTotal) {
     this.recordsTotal = recordsTotal;
   }
 
-  public Long getRecordsFiltered() {
+  public long getRecordsFiltered() {
     return recordsFiltered;
   }
 
-  public void setRecordsFiltered(Long recordsFiltered) {
+  public void setRecordsFiltered(long recordsFiltered) {
     this.recordsFiltered = recordsFiltered;
   }
 

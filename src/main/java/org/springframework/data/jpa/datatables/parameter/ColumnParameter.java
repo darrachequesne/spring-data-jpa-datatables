@@ -95,6 +95,15 @@ public class ColumnParameter {
     this.search = search;
   }
 
+  /**
+   * Set the search value to apply to this column
+   *
+   * @param searchValue if any, the search value to apply
+   */
+  public void setSearchValue(String searchValue) {
+    this.search.setValue(searchValue);
+  }
+
   @Override
   public String toString() {
     return "ColumnParameter [data=" + data + ", name=" + name + ", searchable=" + searchable

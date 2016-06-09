@@ -62,6 +62,9 @@ public class DataTablesInput {
   private List<ColumnParameter> columns;
 
   public DataTablesInput() {
+    this.draw = 1;
+    this.start = 0;
+    this.length = 10;
     this.search = new SearchParameter();
     this.order = new ArrayList<OrderParameter>();
     this.columns = new ArrayList<ColumnParameter>();
@@ -125,6 +128,56 @@ public class DataTablesInput {
       map.put(column.getData(), column);
     }
     return map;
+  }
+
+  /**
+   * Find a column by its name
+   *
+   * @param columnName the name of the column
+   * @return the given Column, or <code>null</code> if not found
+   */
+  public ColumnParameter getColumn(String columnName) {
+    if (columnName == null) {
+      return null;
+    }
+    for (ColumnParameter column : columns) {
+      if (columnName.equals(column.getData())) {
+        return column;
+      }
+    }
+    return null;
+  }
+
+  /**
+   * Add a new column
+   *
+   * @param columnName the name of the column
+   * @param searchable whether the column is searchable or not
+   * @param orderable whether the column is orderable or not
+   * @param searchValue if any, the search value to apply
+   */
+  public void addColumn(String columnName, boolean searchable, boolean orderable,
+      String searchValue) {
+    this.columns.add(new ColumnParameter(columnName, "", searchable, orderable,
+        new SearchParameter(searchValue, false)));
+  }
+
+  /**
+   * Add an order on the given column
+   *
+   * @param columnName the name of the column
+   * @param ascending whether the sorting is ascending or descending
+   */
+  public void addOrder(String columnName, boolean ascending) {
+    if (columnName == null) {
+      return;
+    }
+    for (int i = 0; i < columns.size(); i++) {
+      if (!columnName.equals(columns.get(i).getData())) {
+        continue;
+      }
+      order.add(new OrderParameter(i, ascending ? "asc" : "desc"));
+    }
   }
 
   @Override
