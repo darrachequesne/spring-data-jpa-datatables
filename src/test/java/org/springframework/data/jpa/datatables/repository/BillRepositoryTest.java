@@ -4,9 +4,6 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 
-import java.util.ArrayList;
-
-import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,9 +11,7 @@ import org.springframework.data.jpa.datatables.Config;
 import org.springframework.data.jpa.datatables.mapping.DataTablesInput;
 import org.springframework.data.jpa.datatables.mapping.DataTablesOutput;
 import org.springframework.data.jpa.datatables.model.Bill;
-import org.springframework.data.jpa.datatables.parameter.ColumnParameter;
-import org.springframework.data.jpa.datatables.parameter.OrderParameter;
-import org.springframework.data.jpa.datatables.parameter.SearchParameter;
+import org.springframework.data.jpa.datatables.model.BillRepository;
 import org.springframework.data.jpa.datatables.specification.PreFilteringSpecification;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
@@ -28,28 +23,6 @@ public class BillRepositoryTest {
   @Autowired
   private BillRepository billRepository;
 
-  /**
-   * Insert sample data at the beginning of all tests
-   */
-  @Before
-  public void setUp() {
-    if (billRepository.count() > 0)
-      return;
-    for (int i = 0; i < 12; i++) {
-      Bill bill = new Bill();
-      bill.setHasBeenPayed(i % 2 == 0);
-      bill.setAmount((i + 1) * 100);
-      if (i == 0) {
-        bill.setDescription("foo%");
-      } else if (i == 1) {
-        bill.setDescription("foo_");
-      } else {
-        bill.setDescription("foo" + i);
-      }
-      billRepository.save(bill);
-    }
-  }
-
   @Test
   public void testWithoutFilter() {
     DataTablesInput input = getBasicInput();
@@ -57,45 +30,45 @@ public class BillRepositoryTest {
     DataTablesOutput<Bill> output = billRepository.findAll(input);
     assertNotNull(output);
     assertNull(output.getError());
-    assertEquals(12, (long) output.getRecordsFiltered());
-    assertEquals(12, (long) output.getRecordsTotal());
+    assertEquals(12, output.getRecordsFiltered());
+    assertEquals(12, output.getRecordsTotal());
   }
 
   @Test
   public void testBooleanFilter() {
     DataTablesInput input = getBasicInput();
 
-    input.getColumns().get(2).getSearch().setValue("TRUE");
+    input.getColumn("hasBeenPayed").setSearchValue("TRUE");
     DataTablesOutput<Bill> output = billRepository.findAll(input);
     assertNotNull(output);
     assertNull(output.getError());
-    assertEquals(6, (long) output.getRecordsFiltered());
+    assertEquals(6, output.getRecordsFiltered());
   }
 
   @Test
   public void testBooleanFilter2() {
     DataTablesInput input = getBasicInput();
 
-    input.getColumns().get(2).getSearch().setValue("TRUE+FALSE");
+    input.getColumn("hasBeenPayed").setSearchValue("TRUE+FALSE");
     DataTablesOutput<Bill> output = billRepository.findAll(input);
     assertNotNull(output);
     assertNull(output.getError());
-    assertEquals(12, (long) output.getRecordsFiltered());
+    assertEquals(12, output.getRecordsFiltered());
   }
 
   @Test
   public void testEscapeCharacter() {
     DataTablesInput input = getBasicInput();
 
-    input.getColumns().get(3).getSearch().setValue("foo%");
+    input.getColumn("description").setSearchValue("foo%");
     DataTablesOutput<Bill> output = billRepository.findAll(input);
     assertNotNull(output);
-    assertEquals(1, (long) output.getRecordsFiltered());
+    assertEquals(1, output.getRecordsFiltered());
 
-    input.getColumns().get(3).getSearch().setValue("foo_");
+    input.getColumn("description").setSearchValue("foo_");
     output = billRepository.findAll(input);
     assertNotNull(output);
-    assertEquals(1, (long) output.getRecordsFiltered());
+    assertEquals(1, output.getRecordsFiltered());
   }
 
   @Test
@@ -105,8 +78,8 @@ public class BillRepositoryTest {
     DataTablesOutput<Bill> output =
         billRepository.findAll(input, null, new PreFilteringSpecification<Bill>());
     assertNotNull(output);
-    assertEquals(6, (long) output.getRecordsFiltered());
-    assertEquals(6, (long) output.getRecordsTotal());
+    assertEquals(6, output.getRecordsFiltered());
+    assertEquals(6, output.getRecordsTotal());
   }
 
   /**
@@ -115,23 +88,11 @@ public class BillRepositoryTest {
    */
   private static DataTablesInput getBasicInput() {
     DataTablesInput input = new DataTablesInput();
-    input.setDraw(1);
-    input.setStart(0);
-    input.setLength(10);
-    input.setSearch(new SearchParameter("", false));
-    input.setOrder(new ArrayList<OrderParameter>());
-    input.getOrder().add(new OrderParameter(0, "asc"));
-
-    input.setColumns(new ArrayList<ColumnParameter>());
-    input.getColumns()
-        .add(new ColumnParameter("id", "", true, true, new SearchParameter("", false)));
-    input.getColumns()
-        .add(new ColumnParameter("amount", "", true, true, new SearchParameter("", false)));
-    input.getColumns()
-        .add(new ColumnParameter("hasBeenPayed", "", true, true, new SearchParameter("", false)));
-    input.getColumns()
-        .add(new ColumnParameter("description", "", true, true, new SearchParameter("", false)));
-
+    input.addColumn("id", true, true, "");
+    input.addColumn("amount", true, true, "");
+    input.addColumn("hasBeenPayed", true, true, "");
+    input.addColumn("description", true, true, "");
+    input.addOrder("id", true);
     return input;
   }
 }

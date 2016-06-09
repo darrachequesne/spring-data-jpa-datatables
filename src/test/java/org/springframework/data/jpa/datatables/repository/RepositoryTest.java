@@ -7,6 +7,8 @@ import org.junit.runner.RunWith;
 import org.springframework.aop.framework.Advised;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.jpa.datatables.Config;
+import org.springframework.data.jpa.datatables.model.HomeRepository;
+import org.springframework.data.jpa.datatables.model.UserRepository;
 import org.springframework.data.jpa.repository.support.SimpleJpaRepository;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;

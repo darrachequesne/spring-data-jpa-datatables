@@ -4,23 +4,16 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 
-import java.util.ArrayList;
 import java.util.List;
 
-import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.jpa.datatables.Config;
 import org.springframework.data.jpa.datatables.mapping.DataTablesInput;
 import org.springframework.data.jpa.datatables.mapping.DataTablesOutput;
-import org.springframework.data.jpa.datatables.model.Home;
 import org.springframework.data.jpa.datatables.model.User;
-import org.springframework.data.jpa.datatables.model.User.UserRole;
-import org.springframework.data.jpa.datatables.model.User.UserStatus;
-import org.springframework.data.jpa.datatables.parameter.ColumnParameter;
-import org.springframework.data.jpa.datatables.parameter.OrderParameter;
-import org.springframework.data.jpa.datatables.parameter.SearchParameter;
+import org.springframework.data.jpa.datatables.model.UserRepository;
 import org.springframework.data.jpa.datatables.specification.TestSpecification;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
@@ -32,35 +25,6 @@ public class UserRepositoryTest {
   @Autowired
   private UserRepository userRepository;
 
-  @Autowired
-  private HomeRepository homeRepository;
-
-  /**
-   * Insert sample data at the beginning of all tests
-   */
-  @Before
-  public void setUp() {
-    if (userRepository.count() > 0)
-      return;
-    List<Home> homes = new ArrayList<Home>();
-    for (int i = 0; i < 4; i++) {
-      Home home = new Home();
-      home.setTown("town" + i);
-      home = homeRepository.save(home);
-      homes.add(home);
-    }
-    for (int i = 0; i < 24; i++) {
-      User user = new User();
-      user.setUsername("john" + i);
-      user.setRole(UserRole.values()[i % 3]);
-      user.setStatus(UserStatus.values()[i % 2]);
-      if (i > 3)
-        user.setHome(homes.get(i % 4));
-      user.setVisible(i % 2 == 0);
-      userRepository.save(user);
-    }
-  }
-
   @Test
   public void testSort() {
     DataTablesInput input = getBasicInput();
@@ -70,8 +34,8 @@ public class UserRepositoryTest {
     assertNotNull(output);
     assertEquals(1, (int) output.getDraw());
     assertNull(output.getError());
-    assertEquals(24, (long) output.getRecordsFiltered());
-    assertEquals(24, (long) output.getRecordsTotal());
+    assertEquals(24, output.getRecordsFiltered());
+    assertEquals(24, output.getRecordsTotal());
 
     List<User> users = output.getData();
     assertNotNull(users);
@@ -84,13 +48,14 @@ public class UserRepositoryTest {
 
     // sorting by id desc
     input.setDraw(2);
-    input.getOrder().get(0).setDir("desc");
+    input.getOrder().clear();
+    input.addOrder("id", false);
     output = userRepository.findAll(input);
     assertNotNull(output);
     assertEquals(2, (int) output.getDraw());
     assertNull(output.getError());
-    assertEquals(24, (long) output.getRecordsFiltered());
-    assertEquals(24, (long) output.getRecordsTotal());
+    assertEquals(24, output.getRecordsFiltered());
+    assertEquals(24, output.getRecordsTotal());
 
     users = output.getData();
     assertNotNull(users);
@@ -106,7 +71,9 @@ public class UserRepositoryTest {
   public void testMultipleSort() {
     DataTablesInput input = getBasicInput();
 
-    input.getOrder().add(0, new OrderParameter(3, "desc"));
+    input.getOrder().clear();
+    input.addOrder("status", false);
+    input.addOrder("id", true);
 
     // sorting by id asc and status desc
     DataTablesOutput<User> output = userRepository.findAll(input);
@@ -140,10 +107,10 @@ public class UserRepositoryTest {
 
     DataTablesOutput<User> output = userRepository.findAll(input);
     assertNotNull(output);
-    assertEquals(1, (int) output.getDraw());
+    assertEquals(1, output.getDraw());
     assertNull(output.getError());
-    assertEquals(11, (long) output.getRecordsFiltered());
-    assertEquals(24, (long) output.getRecordsTotal());
+    assertEquals(11, output.getRecordsFiltered());
+    assertEquals(24, output.getRecordsTotal());
 
     List<User> users = output.getData();
     assertNotNull(users);
@@ -163,33 +130,33 @@ public class UserRepositoryTest {
 
     DataTablesOutput<User> output = userRepository.findAll(input);
     assertNotNull(output);
-    assertEquals(11, (long) output.getRecordsFiltered());
+    assertEquals(11, output.getRecordsFiltered());
   }
 
   @Test
   public void testFilterOnOneColumnIgnoreCase() {
     DataTablesInput input = getBasicInput();
 
-    input.getColumns().get(1).getSearch().setValue("OhN1");
+    input.getColumn("username").setSearchValue("OhN1");
 
     DataTablesOutput<User> output = userRepository.findAll(input);
     assertNotNull(output);
-    assertEquals(11, (long) output.getRecordsFiltered());
+    assertEquals(11, output.getRecordsFiltered());
   }
 
   @Test
   public void testFilterOnSeveralColumns() {
     DataTablesInput input = getBasicInput();
 
-    input.getColumns().get(2).getSearch().setValue("ADMIN");
-    input.getColumns().get(3).getSearch().setValue("ACTIVE");
+    input.getColumn("role").setSearchValue("ADMIN");
+    input.getColumn("status").setSearchValue("ACTIVE");
 
     DataTablesOutput<User> output = userRepository.findAll(input);
     assertNotNull(output);
-    assertEquals(1, (int) output.getDraw());
+    assertEquals(1, output.getDraw());
     assertNull(output.getError());
-    assertEquals(4, (long) output.getRecordsFiltered());
-    assertEquals(24, (long) output.getRecordsTotal());
+    assertEquals(4, output.getRecordsFiltered());
+    assertEquals(24, output.getRecordsTotal());
 
     List<User> users = output.getData();
     assertNotNull(users);
@@ -209,14 +176,14 @@ public class UserRepositoryTest {
   public void testMultiFilterOnSameColumn() {
     DataTablesInput input = getBasicInput();
 
-    input.getColumns().get(2).getSearch().setValue("ADMIN+USER");
+    input.getColumn("role").setSearchValue("ADMIN+USER");
 
     DataTablesOutput<User> output = userRepository.findAll(input);
     assertNotNull(output);
-    assertEquals(1, (int) output.getDraw());
+    assertEquals(1, output.getDraw());
     assertNull(output.getError());
-    assertEquals(16, (long) output.getRecordsFiltered());
-    assertEquals(24, (long) output.getRecordsTotal());
+    assertEquals(16, output.getRecordsFiltered());
+    assertEquals(24, output.getRecordsTotal());
 
     List<User> users = output.getData();
     assertNotNull(users);
@@ -234,14 +201,14 @@ public class UserRepositoryTest {
   public void testFilterOnManyToOneRelationship() {
     DataTablesInput input = getBasicInput();
 
-    input.getColumns().get(4).getSearch().setValue("town0");
+    input.getColumn("home.town").setSearchValue("town0");
 
     DataTablesOutput<User> output = userRepository.findAll(input);
     assertNotNull(output);
-    assertEquals(1, (int) output.getDraw());
+    assertEquals(1, output.getDraw());
     assertNull(output.getError());
-    assertEquals(5, (long) output.getRecordsFiltered());
-    assertEquals(24, (long) output.getRecordsTotal());
+    assertEquals(5, output.getRecordsFiltered());
+    assertEquals(24, output.getRecordsTotal());
 
     List<User> users = output.getData();
     assertNotNull(users);
@@ -260,8 +227,8 @@ public class UserRepositoryTest {
     DataTablesOutput<User> output = userRepository.findAll(input, new TestSpecification<User>());
     assertNotNull(output);
     assertNull(output.getError());
-    assertEquals(12, (long) output.getRecordsFiltered());
-    assertEquals(24, (long) output.getRecordsTotal());
+    assertEquals(12, output.getRecordsFiltered());
+    assertEquals(24, output.getRecordsTotal());
 
   }
 
@@ -284,8 +251,8 @@ public class UserRepositoryTest {
     DataTablesOutput<User> output = userRepository.findAll(input);
     assertNotNull(output);
     assertNull(output.getError());
-    assertEquals(24, (long) output.getRecordsFiltered());
-    assertEquals(24, (long) output.getRecordsTotal());
+    assertEquals(24, output.getRecordsFiltered());
+    assertEquals(24, output.getRecordsTotal());
   }
 
   /**
@@ -294,25 +261,12 @@ public class UserRepositoryTest {
    */
   private static DataTablesInput getBasicInput() {
     DataTablesInput input = new DataTablesInput();
-    input.setDraw(1);
-    input.setStart(0);
-    input.setLength(10);
-    input.setSearch(new SearchParameter("", false));
-    input.setOrder(new ArrayList<OrderParameter>());
-    input.getOrder().add(new OrderParameter(0, "asc"));
-
-    input.setColumns(new ArrayList<ColumnParameter>());
-    input.getColumns()
-        .add(new ColumnParameter("id", "", true, true, new SearchParameter("", false)));
-    input.getColumns()
-        .add(new ColumnParameter("username", "", true, true, new SearchParameter("", false)));
-    input.getColumns()
-        .add(new ColumnParameter("role", "", true, true, new SearchParameter("", false)));
-    input.getColumns()
-        .add(new ColumnParameter("status", "", true, true, new SearchParameter("", false)));
-    input.getColumns()
-        .add(new ColumnParameter("home.town", "", true, true, new SearchParameter("", false)));
-
+    input.addColumn("id", true, true, "");
+    input.addColumn("username", true, true, "");
+    input.addColumn("role", true, true, "");
+    input.addColumn("status", true, true, "");
+    input.addColumn("home.town", true, true, "");
+    input.addOrder("id", true);
     return input;
   }
 }
