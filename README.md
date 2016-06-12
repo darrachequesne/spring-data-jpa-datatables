@@ -28,7 +28,7 @@ public class UserRestController {
 <dependency>
 	<groupId>com.github.darrachequesne</groupId>
 	<artifactId>spring-data-jpa-datatables</artifactId>
-	<version>2.2</version>
+	<version>2.3</version>
 </dependency>
 ```
 

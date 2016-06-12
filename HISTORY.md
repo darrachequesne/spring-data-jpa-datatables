@@ -1,4 +1,11 @@
 
+2.3 / 2016-06-12
+==================
+
+  * Ensure related entities are eagerly loaded (#16)
+  * Add some helpers and refactor tests (#15)
+  * Add support for nested @ManyToOne relationships (#14)
+
 2.2 / 2016-05-13
 ==================
 
