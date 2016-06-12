@@ -4,6 +4,8 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 
+import org.hibernate.SessionFactory;
+import org.hibernate.stat.Statistics;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,6 +24,9 @@ public class LessonRepositoryTest {
   @Autowired
   private LessonRepository lessonRepository;
 
+  @Autowired
+  private SessionFactory sessionFactory;
+
   @Test
   public void testThroughTwoManyToOneRelationships() {
     DataTablesInput input = getBasicInput();
@@ -39,6 +44,22 @@ public class LessonRepositoryTest {
     assertNull(output.getError());
     assertEquals(2, output.getRecordsFiltered());
     assertEquals(7, output.getRecordsTotal());
+  }
+
+  @Test
+  public void testEagerLoading() {
+    DataTablesInput input = getBasicInput();
+
+    Statistics statistics = sessionFactory.getStatistics();
+    statistics.setStatisticsEnabled(true);
+    DataTablesOutput<Lesson> output = lessonRepository.findAll(input);
+    assertEquals("CourseTypeA", output.getData().get(0).getCourse().getType().getName());
+    statistics.setStatisticsEnabled(false);
+
+    // there should be only three executed queries : count unfiltered, count filtered and actual
+    // data (with FETCH JOIN)
+    assertEquals(3, statistics.getPrepareStatementCount());
+    assertEquals(7 + 3 + 2, statistics.getEntityLoadCount());
   }
 
   /**

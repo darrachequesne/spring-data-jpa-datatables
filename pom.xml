@@ -64,7 +64,7 @@
 
 		<spring.version>4.2.0.RELEASE</spring.version>
 		<spring.data.jpa.version>1.8.2.RELEASE</spring.data.jpa.version>
-		<hibernate.version>4.3.10.Final</hibernate.version>
+		<hibernate.version>4.3.11.Final</hibernate.version>
 		<hibernate.validator.version>5.2.0.Final</hibernate.validator.version>
 		<jackson.version>2.6.0</jackson.version>
 		<javax.el.api.version>2.2.5</javax.el.api.version>

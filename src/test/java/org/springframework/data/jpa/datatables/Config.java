@@ -5,7 +5,9 @@ import java.util.Properties;
 
 import javax.sql.DataSource;
 
+import org.hibernate.SessionFactory;
 import org.hibernate.cfg.Environment;
+import org.hibernate.jpa.HibernateEntityManagerFactory;
 import org.hibernate.tool.hbm2ddl.MultipleLinesSqlCommandExtractor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -60,4 +62,10 @@ public class Config {
 
     return bean;
   }
+
+  @Bean
+  public SessionFactory sessionFactory() throws SQLException {
+    return ((HibernateEntityManagerFactory) entityManagerFactory().getObject()).getSessionFactory();
+  }
+
 }
