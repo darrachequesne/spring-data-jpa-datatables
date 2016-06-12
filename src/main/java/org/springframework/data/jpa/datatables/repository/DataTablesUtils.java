@@ -7,6 +7,7 @@ import java.util.List;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Expression;
+import javax.persistence.criteria.Fetch;
 import javax.persistence.criteria.From;
 import javax.persistence.criteria.JoinType;
 import javax.persistence.criteria.Predicate;
@@ -101,6 +102,29 @@ public class DataTablesUtils {
             }
           }
           predicate = criteriaBuilder.and(predicate, matchOneColumnPredicate);
+        }
+        // findAll method does a count query first, and then query for the actual data. Yet in the
+        // count query, adding a JOIN FETCH results in the following error 'query specified join
+        // fetching, but the owner of the fetched association was not present in the select list'
+        // see https://jira.spring.io/browse/DATAJPA-105
+        boolean isCountQuery = query.getResultType() == Long.class;
+        if (isCountQuery) {
+          return predicate;
+        }
+        // add JOIN FETCH when necessary
+        for (ColumnParameter column : input.getColumns()) {
+          if (!column.getSearchable() || !column.getData().contains(ATTRIBUTE_SEPARATOR)) {
+            continue;
+          }
+          String[] values = column.getData().split("\\" + ATTRIBUTE_SEPARATOR);
+          if (root.getModel().getAttribute(values[0])
+              .getPersistentAttributeType() == PersistentAttributeType.EMBEDDED) {
+            continue;
+          }
+          Fetch<?, ?> fetch = null;
+          for (int i = 0; i < values.length - 1; i++) {
+            fetch = (fetch == null ? root : fetch).fetch(values[i], JoinType.LEFT);
+          }
         }
         return predicate;
       }
