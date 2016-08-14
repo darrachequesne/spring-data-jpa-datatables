@@ -9,10 +9,12 @@ import java.util.List;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.convert.converter.Converter;
 import org.springframework.data.jpa.datatables.Config;
 import org.springframework.data.jpa.datatables.mapping.DataTablesInput;
 import org.springframework.data.jpa.datatables.mapping.DataTablesOutput;
 import org.springframework.data.jpa.datatables.model.User;
+import org.springframework.data.jpa.datatables.model.UserDto;
 import org.springframework.data.jpa.datatables.model.UserRepository;
 import org.springframework.data.jpa.datatables.specification.TestSpecification;
 import org.springframework.test.context.ContextConfiguration;
@@ -253,6 +255,27 @@ public class UserRepositoryTest {
     assertNull(output.getError());
     assertEquals(24, output.getRecordsFiltered());
     assertEquals(24, output.getRecordsTotal());
+  }
+
+  @Test
+  public void testWithConverter() {
+    DataTablesInput input = getBasicInput();
+    Converter<User, UserDto> userConverter = new Converter<User, UserDto>() {
+      @Override
+      public UserDto convert(User user) {
+        return new UserDto(user.getId(), user.getUsername(), user.getRole().toString(),
+            user.getStatus().toString());
+      }
+    };
+
+    input.getColumn("id").setSearchValue("24");
+    DataTablesOutput<UserDto> output = userRepository.findAll(input, userConverter);
+    assertNotNull(output);
+    UserDto user = output.getData().get(0);
+    assertEquals(24, (int) user.getId());
+    assertEquals("john23", user.getUsername());
+    assertEquals("USER", user.getRole());
+    assertEquals("BLOCKED", user.getStatus());
   }
 
   /**

@@ -4,9 +4,11 @@ import static org.springframework.data.jpa.datatables.repository.DataTablesUtils
 import static org.springframework.data.jpa.datatables.repository.DataTablesUtils.getPredicate;
 
 import java.io.Serializable;
+import java.util.List;
 
 import javax.persistence.EntityManager;
 
+import org.springframework.core.convert.converter.Converter;
 import org.springframework.data.domain.Page;
 import org.springframework.data.jpa.datatables.mapping.DataTablesInput;
 import org.springframework.data.jpa.datatables.mapping.DataTablesOutput;
@@ -48,18 +50,29 @@ public class QDataTablesRepositoryImpl<T, ID extends Serializable>
 
   @Override
   public DataTablesOutput<T> findAll(DataTablesInput input) {
-    return findAll(input, null, null);
+    return findAll(input, null, null, null);
   }
 
   @Override
   public DataTablesOutput<T> findAll(DataTablesInput input, Predicate additionalPredicate) {
-    return findAll(input, additionalPredicate, null);
+    return findAll(input, additionalPredicate, null, null);
   }
 
   @Override
   public DataTablesOutput<T> findAll(DataTablesInput input, Predicate additionalPredicate,
       Predicate preFilteringPredicate) {
-    DataTablesOutput<T> output = new DataTablesOutput<T>();
+    return findAll(input, additionalPredicate, preFilteringPredicate, null);
+  }
+
+  @Override
+  public <R> DataTablesOutput<R> findAll(DataTablesInput input, Converter<T, R> converter) {
+    return findAll(input, null, null, converter);
+  }
+
+  @Override
+  public <R> DataTablesOutput<R> findAll(DataTablesInput input, Predicate additionalPredicate,
+      Predicate preFilteringPredicate, Converter<T, R> converter) {
+    DataTablesOutput<R> output = new DataTablesOutput<R>();
     output.setDraw(input.getDraw());
     try {
       long recordsTotal = preFilteringPredicate == null ? count() : count(preFilteringPredicate);
@@ -71,12 +84,14 @@ public class QDataTablesRepositoryImpl<T, ID extends Serializable>
       Page<T> data = findAll(new BooleanBuilder().and(getPredicate(this.builder, input))
           .and(additionalPredicate).and(preFilteringPredicate).getValue(), getPageable(input));
 
-      output.setData(data.getContent());
+      @SuppressWarnings("unchecked")
+      List<R> content =
+          converter == null ? (List<R>) data.getContent() : data.map(converter).getContent();
+      output.setData(content);
       output.setRecordsFiltered(data.getTotalElements());
 
     } catch (Exception e) {
       output.setError(e.toString());
-      output.setRecordsFiltered(0L);
     }
 
     return output;
