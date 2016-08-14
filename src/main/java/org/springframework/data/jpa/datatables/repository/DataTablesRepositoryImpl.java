@@ -1,7 +1,6 @@
 package org.springframework.data.jpa.datatables.repository;
 
 import static org.springframework.data.jpa.datatables.repository.DataTablesUtils.getPageable;
-import static org.springframework.data.jpa.datatables.repository.DataTablesUtils.getSpecification;
 
 import java.io.Serializable;
 
@@ -54,8 +53,9 @@ public class DataTablesRepositoryImpl<T, ID extends Serializable> extends Simple
       }
       output.setRecordsTotal(recordsTotal);
 
-      Page<T> data = findAll(Specifications.where(getSpecification(getDomainClass(), input))
-          .and(additionalSpecification).and(preFilteringSpecification), getPageable(input));
+      Specification<T> specification = SpecificationFactory.createSpecification(input);
+      Page<T> data = findAll(Specifications.where(specification).and(additionalSpecification)
+          .and(preFilteringSpecification), getPageable(input));
 
       output.setData(data.getContent());
       output.setRecordsFiltered(data.getTotalElements());

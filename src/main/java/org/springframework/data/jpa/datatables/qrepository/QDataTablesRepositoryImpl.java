@@ -1,7 +1,6 @@
 package org.springframework.data.jpa.datatables.qrepository;
 
 import static org.springframework.data.jpa.datatables.repository.DataTablesUtils.getPageable;
-import static org.springframework.data.jpa.datatables.repository.DataTablesUtils.getPredicate;
 
 import java.io.Serializable;
 
@@ -68,8 +67,9 @@ public class QDataTablesRepositoryImpl<T, ID extends Serializable>
       }
       output.setRecordsTotal(recordsTotal);
 
-      Page<T> data = findAll(new BooleanBuilder().and(getPredicate(this.builder, input))
-          .and(additionalPredicate).and(preFilteringPredicate).getValue(), getPageable(input));
+      Predicate predicate = PredicateFactory.createPredicate(this.builder, input);
+      Page<T> data = findAll(new BooleanBuilder().and(predicate).and(additionalPredicate)
+          .and(preFilteringPredicate).getValue(), getPageable(input));
 
       output.setData(data.getContent());
       output.setRecordsFiltered(data.getTotalElements());
