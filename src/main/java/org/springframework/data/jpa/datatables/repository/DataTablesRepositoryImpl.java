@@ -4,9 +4,11 @@ import static org.springframework.data.jpa.datatables.repository.DataTablesUtils
 import static org.springframework.data.jpa.datatables.repository.DataTablesUtils.getSpecification;
 
 import java.io.Serializable;
+import java.util.List;
 
 import javax.persistence.EntityManager;
 
+import org.springframework.core.convert.converter.Converter;
 import org.springframework.data.domain.Page;
 import org.springframework.data.jpa.datatables.mapping.DataTablesInput;
 import org.springframework.data.jpa.datatables.mapping.DataTablesOutput;
@@ -31,19 +33,31 @@ public class DataTablesRepositoryImpl<T, ID extends Serializable> extends Simple
 
   @Override
   public DataTablesOutput<T> findAll(DataTablesInput input) {
-    return findAll(input, null, null);
+    return findAll(input, null, null, null);
   }
 
   @Override
   public DataTablesOutput<T> findAll(DataTablesInput input,
       Specification<T> additionalSpecification) {
-    return findAll(input, additionalSpecification, null);
+    return findAll(input, additionalSpecification, null, null);
   }
 
   @Override
   public DataTablesOutput<T> findAll(DataTablesInput input,
       Specification<T> additionalSpecification, Specification<T> preFilteringSpecification) {
-    DataTablesOutput<T> output = new DataTablesOutput<T>();
+    return findAll(input, additionalSpecification, preFilteringSpecification, null);
+  }
+
+  @Override
+  public <R> DataTablesOutput<R> findAll(DataTablesInput input, Converter<T, R> converter) {
+    return findAll(input, null, null, converter);
+  }
+
+  @Override
+  public <R> DataTablesOutput<R> findAll(DataTablesInput input,
+      Specification<T> additionalSpecification, Specification<T> preFilteringSpecification,
+      Converter<T, R> converter) {
+    DataTablesOutput<R> output = new DataTablesOutput<R>();
     output.setDraw(input.getDraw());
 
     try {
@@ -57,12 +71,14 @@ public class DataTablesRepositoryImpl<T, ID extends Serializable> extends Simple
       Page<T> data = findAll(Specifications.where(getSpecification(getDomainClass(), input))
           .and(additionalSpecification).and(preFilteringSpecification), getPageable(input));
 
-      output.setData(data.getContent());
+      @SuppressWarnings("unchecked")
+      List<R> content =
+          converter == null ? (List<R>) data.getContent() : data.map(converter).getContent();
+      output.setData(content);
       output.setRecordsFiltered(data.getTotalElements());
 
     } catch (Exception e) {
       output.setError(e.toString());
-      output.setRecordsFiltered(0L);
     }
 
     return output;
