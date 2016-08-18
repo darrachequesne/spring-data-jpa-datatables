@@ -73,6 +73,10 @@ public class QDataTablesRepositoryImpl<T, ID extends Serializable>
       Predicate preFilteringPredicate, Converter<T, R> converter) {
     DataTablesOutput<R> output = new DataTablesOutput<R>();
     output.setDraw(input.getDraw());
+    if (input.getLength() == 0) {
+      return output;
+    }
+
     try {
       long recordsTotal = preFilteringPredicate == null ? count() : count(preFilteringPredicate);
       if (recordsTotal == 0) {

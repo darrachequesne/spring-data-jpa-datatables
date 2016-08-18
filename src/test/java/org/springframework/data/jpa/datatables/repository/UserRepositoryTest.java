@@ -241,8 +241,8 @@ public class UserRepositoryTest {
     input.setLength(0);
     DataTablesOutput<User> output = userRepository.findAll(input);
     assertNotNull(output);
-    assertNotNull(output.getError());
-    assertEquals(output.getError(), "java.lang.ArithmeticException: / by zero");
+    assertEquals(0, output.getData().size());
+    assertEquals(0, output.getRecordsFiltered());
   }
 
   @Test
@@ -276,6 +276,27 @@ public class UserRepositoryTest {
     assertEquals("john23", user.getUsername());
     assertEquals("USER", user.getRole());
     assertEquals("BLOCKED", user.getStatus());
+  }
+
+  @Test
+  public void testWithFancyPaging() {
+    DataTablesInput input = getBasicInput();
+
+    input.setLength(5);
+    input.setStart(7);
+    DataTablesOutput<User> output = userRepository.findAll(input);
+    assertNotNull(output);
+    assertNull(output.getError());
+    assertEquals(5, output.getData().size());
+    assertEquals(8, (int) output.getData().get(0).getId());
+    assertEquals(8 + 5 - 1, (int) output.getData().get(4).getId());
+
+    input.setLength(7);
+    input.setStart(22);
+    output = userRepository.findAll(input);
+    assertNotNull(output);
+    assertEquals(2, output.getData().size());
+    assertEquals(23, (int) output.getData().get(0).getId());
   }
 
   /**
