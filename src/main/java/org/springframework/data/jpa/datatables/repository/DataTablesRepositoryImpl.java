@@ -58,6 +58,9 @@ public class DataTablesRepositoryImpl<T, ID extends Serializable> extends Simple
       Converter<T, R> converter) {
     DataTablesOutput<R> output = new DataTablesOutput<R>();
     output.setDraw(input.getDraw());
+    if (input.getLength() == 0) {
+      return output;
+    }
 
     try {
       long recordsTotal =

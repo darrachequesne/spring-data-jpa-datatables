@@ -3,7 +3,6 @@ package org.springframework.data.jpa.datatables.repository;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.domain.Sort.Direction;
@@ -42,7 +41,7 @@ public class DataTablesUtils {
       input.setStart(0);
       input.setLength(Integer.MAX_VALUE);
     }
-    return new PageRequest(input.getStart() / input.getLength(), input.getLength(), sort);
+    return new DataTablesPageRequest(input.getStart(), input.getLength(), sort);
   }
 
   public static boolean isBoolean(String filterValue) {
@@ -53,6 +52,59 @@ public class DataTablesUtils {
     return "%"
         + filterValue.toLowerCase().replaceAll("%", "\\\\" + "%").replaceAll("_", "\\\\" + "_")
         + "%";
+  }
+
+  private static class DataTablesPageRequest implements Pageable {
+
+    private final int offset;
+    private final int pageSize;
+    private final Sort sort;
+
+    public DataTablesPageRequest(int offset, int pageSize, Sort sort) {
+      this.offset = offset;
+      this.pageSize = pageSize;
+      this.sort = sort;
+    }
+
+    @Override
+    public int getOffset() {
+      return offset;
+    }
+
+    @Override
+    public int getPageSize() {
+      return pageSize;
+    }
+
+    @Override
+    public Sort getSort() {
+      return sort;
+    }
+
+    @Override
+    public Pageable next() {
+      throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public Pageable previousOrFirst() {
+      throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public Pageable first() {
+      throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public boolean hasPrevious() {
+      throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public int getPageNumber() {
+      throw new UnsupportedOperationException();
+    }
   }
 
 }
