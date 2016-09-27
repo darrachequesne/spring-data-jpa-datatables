@@ -1,4 +1,4 @@
-[![Build Status](https://api.travis-ci.org/darrachequesne/spring-data-jpa-datatables.svg)](https://travis-ci.org/darrachequesne/spring-data-jpa-datatables)
+[![Build Status](https://api.travis-ci.org/darrachequesne/spring-data-jpa-datatables.svg?branch=master)](https://travis-ci.org/darrachequesne/spring-data-jpa-datatables)
 [![Maven Central](https://maven-badges.herokuapp.com/maven-central/com.github.darrachequesne/spring-data-jpa-datatables/badge.svg)](https://maven-badges.herokuapp.com/maven-central/com.github.darrachequesne/spring-data-jpa-datatables)
 
 # spring-data-jpa-datatables
