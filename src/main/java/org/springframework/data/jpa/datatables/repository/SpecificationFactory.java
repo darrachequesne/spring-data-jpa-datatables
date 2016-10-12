@@ -41,6 +41,8 @@ class SpecificationFactory {
     @Override
     public Predicate toPredicate(Root<T> root, CriteriaQuery<?> query, CriteriaBuilder cb) {
       Predicate predicate = cb.conjunction();
+      Expression<Boolean> booleanExpression;
+      Expression<String> stringExpression;
 
       // check for each searchable column whether a filter value exists
       for (ColumnParameter column : input.getColumns()) {
@@ -49,7 +51,6 @@ class SpecificationFactory {
         if (!isColumnSearchable) {
           continue;
         }
-        Expression<String> expression = getExpression(root, column.getData());
 
         if (filterValue.contains(OR_SEPARATOR)) {
           // the filter contains multiple values, add a 'WHERE .. IN' clause
@@ -59,18 +60,22 @@ class SpecificationFactory {
             for (int i = 0; i < values.length; i++) {
               booleanValues[i] = Boolean.valueOf(values[i]);
             }
-            predicate = cb.and(predicate, expression.as(Boolean.class).in(booleanValues));
+            booleanExpression = getExpression(root, column.getData(), Boolean.class);
+            predicate = cb.and(predicate, booleanExpression.in(booleanValues));
           } else {
-            predicate = cb.and(predicate, expression.in(Arrays.asList(values)));
+            stringExpression = getExpression(root, column.getData(), String.class);
+            predicate = cb.and(predicate, stringExpression.in(Arrays.asList(values)));
           }
         } else {
           // the filter contains only one value, add a 'WHERE .. LIKE' clause
           if (isBoolean(filterValue)) {
-            predicate = cb.and(predicate,
-                cb.equal(expression.as(Boolean.class), Boolean.valueOf(filterValue)));
+            booleanExpression = getExpression(root, column.getData(), Boolean.class);
+            predicate =
+                cb.and(predicate, cb.equal(booleanExpression, Boolean.valueOf(filterValue)));
           } else {
+            stringExpression = getExpression(root, column.getData(), String.class);
             predicate = cb.and(predicate,
-                cb.like(cb.lower(expression), getLikeFilterValue(filterValue), ESCAPE_CHAR));
+                cb.like(cb.lower(stringExpression), getLikeFilterValue(filterValue), ESCAPE_CHAR));
           }
         }
       }
@@ -82,7 +87,7 @@ class SpecificationFactory {
         // add a 'WHERE .. LIKE' clause on each searchable column
         for (ColumnParameter column : input.getColumns()) {
           if (column.getSearchable()) {
-            Expression<String> expression = getExpression(root, column.getData());
+            Expression<String> expression = getExpression(root, column.getData(), String.class);
 
             matchOneColumnPredicate = cb.or(matchOneColumnPredicate,
                 cb.like(cb.lower(expression), getLikeFilterValue(globalFilterValue), ESCAPE_CHAR));
@@ -119,23 +124,23 @@ class SpecificationFactory {
     }
   }
 
-  private static Expression<String> getExpression(Root<?> root, String columnData) {
+  private static <S> Expression<S> getExpression(Root<?> root, String columnData, Class<S> clazz) {
     if (!columnData.contains(ATTRIBUTE_SEPARATOR)) {
       // columnData is like "attribute" so nothing particular to do
-      return root.get(columnData).as(String.class);
+      return root.get(columnData).as(clazz);
     }
     // columnData is like "joinedEntity.attribute" so add a join clause
     String[] values = columnData.split(ESCAPED_ATTRIBUTE_SEPARATOR);
     if (root.getModel().getAttribute(values[0])
         .getPersistentAttributeType() == PersistentAttributeType.EMBEDDED) {
       // with @Embedded attribute
-      return root.get(values[0]).get(values[1]).as(String.class);
+      return root.get(values[0]).get(values[1]).as(clazz);
     }
     From<?, ?> from = root;
     for (int i = 0; i < values.length - 1; i++) {
       from = from.join(values[i], JoinType.LEFT);
     }
-    return from.get(values[values.length - 1]).as(String.class);
+    return from.get(values[values.length - 1]).as(clazz);
   }
 
 }
