@@ -29,7 +29,8 @@ import org.springframework.transaction.PlatformTransactionManager;
  * @author Damien Arrachequesne
  */
 @Configuration
-@EnableJpaRepositories(repositoryFactoryBeanClass = DataTablesRepositoryFactoryBean.class)
+@EnableJpaRepositories(repositoryFactoryBeanClass = DataTablesRepositoryFactoryBean.class,
+    basePackages = "org.springframework.data.jpa.datatables.model")
 public class Config {
 
   @Bean

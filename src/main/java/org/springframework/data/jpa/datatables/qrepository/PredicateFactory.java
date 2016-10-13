@@ -1,9 +1,7 @@
 package org.springframework.data.jpa.datatables.qrepository;
 
 import static org.springframework.data.jpa.datatables.repository.DataTablesUtils.ESCAPED_OR_SEPARATOR;
-import static org.springframework.data.jpa.datatables.repository.DataTablesUtils.ESCAPE_CHAR;
 import static org.springframework.data.jpa.datatables.repository.DataTablesUtils.OR_SEPARATOR;
-import static org.springframework.data.jpa.datatables.repository.DataTablesUtils.getLikeFilterValue;
 import static org.springframework.data.jpa.datatables.repository.DataTablesUtils.isBoolean;
 
 import java.util.ArrayList;
@@ -21,6 +19,8 @@ import com.mysema.query.types.expr.StringExpression;
 import com.mysema.query.types.path.PathBuilder;
 
 class PredicateFactory {
+
+  private final static char ESCAPE_CHAR = '~';
 
   public static Predicate createPredicate(PathBuilder<?> entity, DataTablesInput input) {
     BooleanBuilder predicate = new BooleanBuilder();
@@ -75,6 +75,11 @@ class PredicateFactory {
 
   private static StringExpression getStringExpression(PathBuilder<?> entity, String columnData) {
     return Expressions.stringOperation(Ops.STRING_CAST, entity.get(columnData));
+  }
+
+  private static String getLikeFilterValue(String filterValue) {
+    return "%" + filterValue.toLowerCase().replaceAll("~", "~~").replaceAll("%", "~%")
+        .replaceAll("_", "~_") + "%";
   }
 
 }
