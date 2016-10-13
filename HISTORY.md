@@ -1,4 +1,11 @@
 
+2.6 / 2016-10-13
+==================
+
+  * [test] Add tests for MySQL and PostgreSQL (#32)
+  * [test] Add tests for querydsl implementation (#33)
+  * [chore] Update travis status badge to point towards master (#28)
+
 2.5 / 2016-08-18
 ==================
 
