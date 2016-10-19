@@ -6,7 +6,6 @@ import javax.persistence.EntityManager;
 
 import org.springframework.beans.factory.FactoryBean;
 import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.jpa.repository.support.JpaEntityInformation;
 import org.springframework.data.jpa.repository.support.JpaRepositoryFactory;
 import org.springframework.data.jpa.repository.support.JpaRepositoryFactoryBean;
 import org.springframework.data.repository.core.RepositoryMetadata;
@@ -27,26 +26,18 @@ public class DataTablesRepositoryFactoryBean<R extends JpaRepository<T, ID>, T, 
   private static class DataTablesRepositoryFactory<T, ID extends Serializable>
       extends JpaRepositoryFactory {
 
-    private final EntityManager entityManager;
-
     public DataTablesRepositoryFactory(EntityManager entityManager) {
-
       super(entityManager);
-      this.entityManager = entityManager;
     }
 
-    @SuppressWarnings({"unchecked"})
-    protected Object getTargetRepository(RepositoryMetadata metadata) {
-      JpaEntityInformation<T, Serializable> entityInformation =
-          (JpaEntityInformation<T, Serializable>) getEntityInformation(metadata.getDomainType());
-      Class<?> repositoryInterface = metadata.getRepositoryInterface();
-      return DataTablesRepository.class.isAssignableFrom(repositoryInterface)
-          ? new DataTablesRepositoryImpl<T, ID>(entityInformation, entityManager)
-          : super.getTargetRepository(metadata);
-    }
-
+    @Override
     protected Class<?> getRepositoryBaseClass(RepositoryMetadata metadata) {
-      return DataTablesRepositoryImpl.class;
+      Class<?> repositoryInterface = metadata.getRepositoryInterface();
+      if (DataTablesRepository.class.isAssignableFrom(repositoryInterface)) {
+        return DataTablesRepositoryImpl.class;
+      } else {
+        return super.getRepositoryBaseClass(metadata);
+      }
     }
   }
 }
