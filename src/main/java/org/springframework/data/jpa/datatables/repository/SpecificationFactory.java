@@ -20,8 +20,8 @@ import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 import javax.persistence.metamodel.Attribute.PersistentAttributeType;
 
+import org.springframework.data.jpa.datatables.mapping.Column;
 import org.springframework.data.jpa.datatables.mapping.DataTablesInput;
-import org.springframework.data.jpa.datatables.parameter.ColumnParameter;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.util.StringUtils;
 
@@ -45,7 +45,7 @@ class SpecificationFactory {
       Expression<String> stringExpression;
 
       // check for each searchable column whether a filter value exists
-      for (ColumnParameter column : input.getColumns()) {
+      for (Column column : input.getColumns()) {
         String filterValue = column.getSearch().getValue();
         boolean isColumnSearchable = column.getSearchable() && StringUtils.hasText(filterValue);
         if (!isColumnSearchable) {
@@ -85,7 +85,7 @@ class SpecificationFactory {
       if (StringUtils.hasText(globalFilterValue)) {
         Predicate matchOneColumnPredicate = cb.disjunction();
         // add a 'WHERE .. LIKE' clause on each searchable column
-        for (ColumnParameter column : input.getColumns()) {
+        for (Column column : input.getColumns()) {
           if (column.getSearchable()) {
             Expression<String> expression = getExpression(root, column.getData(), String.class);
 
@@ -104,7 +104,7 @@ class SpecificationFactory {
         return predicate;
       }
       // add JOIN FETCH when necessary
-      for (ColumnParameter column : input.getColumns()) {
+      for (Column column : input.getColumns()) {
         boolean isJoinable =
             column.getSearchable() && column.getData().contains(ATTRIBUTE_SEPARATOR);
         if (!isJoinable) {
