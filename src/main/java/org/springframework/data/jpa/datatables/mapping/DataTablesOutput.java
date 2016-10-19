@@ -5,6 +5,9 @@ import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonView;
 
+import lombok.Data;
+
+@Data
 public class DataTablesOutput<T> {
 
   /**
@@ -46,52 +49,6 @@ public class DataTablesOutput<T> {
   private String error;
 
   public interface View {
-  }
-
-  public int getDraw() {
-    return draw;
-  }
-
-  public void setDraw(int draw) {
-    this.draw = draw;
-  }
-
-  public long getRecordsTotal() {
-    return recordsTotal;
-  }
-
-  public void setRecordsTotal(long recordsTotal) {
-    this.recordsTotal = recordsTotal;
-  }
-
-  public long getRecordsFiltered() {
-    return recordsFiltered;
-  }
-
-  public void setRecordsFiltered(long recordsFiltered) {
-    this.recordsFiltered = recordsFiltered;
-  }
-
-  public List<T> getData() {
-    return data;
-  }
-
-  public void setData(List<T> data) {
-    this.data = data;
-  }
-
-  public String getError() {
-    return error;
-  }
-
-  public void setError(String error) {
-    this.error = error;
-  }
-
-  @Override
-  public String toString() {
-    return "DataTablesOutput [draw=" + draw + ", recordsTotal=" + recordsTotal
-        + ", recordsFiltered=" + recordsFiltered + ", error=" + error + "]";
   }
 
 }

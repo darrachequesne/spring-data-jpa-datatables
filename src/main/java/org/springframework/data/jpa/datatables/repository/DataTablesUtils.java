@@ -7,9 +7,8 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.domain.Sort.Direction;
 import org.springframework.data.domain.Sort.Order;
+import org.springframework.data.jpa.datatables.mapping.Column;
 import org.springframework.data.jpa.datatables.mapping.DataTablesInput;
-import org.springframework.data.jpa.datatables.parameter.ColumnParameter;
-import org.springframework.data.jpa.datatables.parameter.OrderParameter;
 
 public class DataTablesUtils {
 
@@ -27,8 +26,8 @@ public class DataTablesUtils {
    */
   public static Pageable getPageable(DataTablesInput input) {
     List<Order> orders = new ArrayList<Order>();
-    for (OrderParameter order : input.getOrder()) {
-      ColumnParameter column = input.getColumns().get(order.getColumn());
+    for (org.springframework.data.jpa.datatables.mapping.Order order : input.getOrder()) {
+      Column column = input.getColumns().get(order.getColumn());
       if (column.getOrderable()) {
         String sortColumn = column.getData();
         Direction sortDirection = Direction.fromString(order.getDir());

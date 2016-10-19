@@ -7,8 +7,8 @@ import static org.springframework.data.jpa.datatables.repository.DataTablesUtils
 import java.util.ArrayList;
 import java.util.List;
 
+import org.springframework.data.jpa.datatables.mapping.Column;
 import org.springframework.data.jpa.datatables.mapping.DataTablesInput;
-import org.springframework.data.jpa.datatables.parameter.ColumnParameter;
 import org.springframework.util.StringUtils;
 
 import com.mysema.query.BooleanBuilder;
@@ -26,7 +26,7 @@ class PredicateFactory {
     BooleanBuilder predicate = new BooleanBuilder();
 
     // check for each searchable column whether a filter value exists
-    for (ColumnParameter column : input.getColumns()) {
+    for (Column column : input.getColumns()) {
       String filterValue = column.getSearch().getValue();
       boolean isColumnSearchable = column.getSearchable() && StringUtils.hasText(filterValue);
       if (!isColumnSearchable) {
@@ -61,7 +61,7 @@ class PredicateFactory {
     if (StringUtils.hasText(globalFilterValue)) {
       BooleanBuilder matchOneColumnPredicate = new BooleanBuilder();
       // add a 'WHERE .. LIKE' clause on each searchable column
-      for (ColumnParameter column : input.getColumns()) {
+      for (Column column : input.getColumns()) {
         if (column.getSearchable()) {
           matchOneColumnPredicate =
               matchOneColumnPredicate.or(getStringExpression(entity, column.getData()).lower()

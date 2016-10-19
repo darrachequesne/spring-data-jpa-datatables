@@ -9,10 +9,10 @@ import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
 
 import org.hibernate.validator.constraints.NotEmpty;
-import org.springframework.data.jpa.datatables.parameter.ColumnParameter;
-import org.springframework.data.jpa.datatables.parameter.OrderParameter;
-import org.springframework.data.jpa.datatables.parameter.SearchParameter;
 
+import lombok.Data;
+
+@Data
 public class DataTablesInput {
 
   /**
@@ -23,7 +23,7 @@ public class DataTablesInput {
    */
   @NotNull
   @Min(0)
-  private Integer draw;
+  private Integer draw = 1;
 
   /**
    * Paging first record indicator. This is the start point in the current data set (0 index based -
@@ -31,7 +31,7 @@ public class DataTablesInput {
    */
   @NotNull
   @Min(0)
-  private Integer start;
+  private Integer start = 0;
 
   /**
    * Number of records that the table can display in the current draw. It is expected that the
@@ -41,90 +41,33 @@ public class DataTablesInput {
    */
   @NotNull
   @Min(-1)
-  private Integer length;
+  private Integer length = 10;
 
   /**
    * Global search parameter.
    */
   @NotNull
-  private SearchParameter search;
+  private Search search = new Search();
 
   /**
    * Order parameter
    */
   @NotEmpty
-  private List<OrderParameter> order;
+  private List<Order> order = new ArrayList<Order>();
 
   /**
    * Per-column search parameter
    */
   @NotEmpty
-  private List<ColumnParameter> columns;
-
-  public DataTablesInput() {
-    this.draw = 1;
-    this.start = 0;
-    this.length = 10;
-    this.search = new SearchParameter();
-    this.order = new ArrayList<OrderParameter>();
-    this.columns = new ArrayList<ColumnParameter>();
-  }
-
-  public Integer getDraw() {
-    return draw;
-  }
-
-  public void setDraw(Integer draw) {
-    this.draw = draw;
-  }
-
-  public Integer getStart() {
-    return start;
-  }
-
-  public void setStart(Integer start) {
-    this.start = start;
-  }
-
-  public Integer getLength() {
-    return length;
-  }
-
-  public void setLength(Integer length) {
-    this.length = length;
-  }
-
-  public SearchParameter getSearch() {
-    return search;
-  }
-
-  public void setSearch(SearchParameter search) {
-    this.search = search;
-  }
-
-  public List<OrderParameter> getOrder() {
-    return order;
-  }
-
-  public void setOrder(List<OrderParameter> order) {
-    this.order = order;
-  }
-
-  public List<ColumnParameter> getColumns() {
-    return columns;
-  }
-
-  public void setColumns(List<ColumnParameter> columns) {
-    this.columns = columns;
-  }
+  private List<Column> columns = new ArrayList<Column>();
 
   /**
    * 
-   * @return a {@link Map} of {@link ColumnParameter} indexed by name
+   * @return a {@link Map} of {@link Column} indexed by name
    */
-  public Map<String, ColumnParameter> getColumnsAsMap() {
-    Map<String, ColumnParameter> map = new HashMap<String, ColumnParameter>();
-    for (ColumnParameter column : columns) {
+  public Map<String, Column> getColumnsAsMap() {
+    Map<String, Column> map = new HashMap<String, Column>();
+    for (Column column : columns) {
       map.put(column.getData(), column);
     }
     return map;
@@ -136,11 +79,11 @@ public class DataTablesInput {
    * @param columnName the name of the column
    * @return the given Column, or <code>null</code> if not found
    */
-  public ColumnParameter getColumn(String columnName) {
+  public Column getColumn(String columnName) {
     if (columnName == null) {
       return null;
     }
-    for (ColumnParameter column : columns) {
+    for (Column column : columns) {
       if (columnName.equals(column.getData())) {
         return column;
       }
@@ -158,8 +101,8 @@ public class DataTablesInput {
    */
   public void addColumn(String columnName, boolean searchable, boolean orderable,
       String searchValue) {
-    this.columns.add(new ColumnParameter(columnName, "", searchable, orderable,
-        new SearchParameter(searchValue, false)));
+    this.columns.add(new Column(columnName, "", searchable, orderable,
+        new Search(searchValue, false)));
   }
 
   /**
@@ -176,14 +119,8 @@ public class DataTablesInput {
       if (!columnName.equals(columns.get(i).getData())) {
         continue;
       }
-      order.add(new OrderParameter(i, ascending ? "asc" : "desc"));
+      order.add(new Order(i, ascending ? "asc" : "desc"));
     }
-  }
-
-  @Override
-  public String toString() {
-    return "DataTablesInput [draw=" + draw + ", start=" + start + ", length=" + length + ", search="
-        + search + ", order=" + order + ", columns=" + columns + "]";
   }
 
 }
