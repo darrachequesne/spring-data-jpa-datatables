@@ -1,4 +1,11 @@
 
+3.0 / 2016-11-19
+==================
+
+  * [refactor] update mappings (and reduce boilerplate with lombok) (#35)
+  * [chore] update dependencies (using spring bom) (#36)
+  * [fix] Restrict eager loading to @OneToOne and @OneToMany relationships (#39)
+
 2.6 / 2016-10-13
 ==================
 
