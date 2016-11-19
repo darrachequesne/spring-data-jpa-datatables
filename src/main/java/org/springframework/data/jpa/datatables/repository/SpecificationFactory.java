@@ -111,8 +111,10 @@ class SpecificationFactory {
           continue;
         }
         String[] values = column.getData().split(ESCAPED_ATTRIBUTE_SEPARATOR);
-        if (root.getModel().getAttribute(values[0])
-            .getPersistentAttributeType() == PersistentAttributeType.EMBEDDED) {
+        PersistentAttributeType type =
+            root.getModel().getAttribute(values[0]).getPersistentAttributeType();
+        if (type != PersistentAttributeType.ONE_TO_ONE
+            && type != PersistentAttributeType.MANY_TO_ONE) {
           continue;
         }
         Fetch<?, ?> fetch = null;
