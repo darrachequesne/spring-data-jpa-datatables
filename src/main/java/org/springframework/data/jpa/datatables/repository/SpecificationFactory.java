@@ -28,7 +28,8 @@ import org.springframework.data.jpa.domain.Specification;
 import org.springframework.util.StringUtils;
 
 class SpecificationFactory {
-  public final static String ISNULL = "^ISNULL^";
+  public final static String ISNULL       = "NULL";
+  public final static String ESCAPED_NULL = "\\NULL";
 
   public static <T> Specification<T> createSpecification(final DataTablesInput input) {
     return new DataTablesSpecification<T>(input);
@@ -54,19 +55,16 @@ class SpecificationFactory {
         if (!isColumnSearchable) {
           continue;
         }
-        boolean nullable = false;
 
         if (filterValue.contains(OR_SEPARATOR)) {
           // the filter contains multiple values, add a 'WHERE .. IN' clause
-          if (filterValue.contains(ISNULL)) {
-            nullable = true;
-          }
+          boolean nullable = false;
           List<String> values = new ArrayList<String>();
           for(String value: filterValue.split(ESCAPED_OR_SEPARATOR)) {
             if (ISNULL.equals(value)) {
               nullable = true;
             } else {
-              values.add(value);
+              values.add(ESCAPED_NULL.equals(value)? ISNULL : value);
             }
           }
           if (values.size() > 0 && isBoolean(values.get(0))) {
@@ -103,7 +101,8 @@ class SpecificationFactory {
             } else {
               stringExpression = getExpression(root, column.getData(), String.class);
               predicate = cb.and(predicate,
-                      cb.like(cb.lower(stringExpression), getLikeFilterValue(filterValue), ESCAPE_CHAR));
+                      cb.like(cb.lower(stringExpression),
+                              getLikeFilterValue((ESCAPED_NULL.equals(filterValue))? ISNULL : filterValue), ESCAPE_CHAR));
             }
           }
         }

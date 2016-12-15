@@ -42,6 +42,7 @@ public class BillRepositoryTest {
     DataTablesOutput<Bill> output = billRepository.findAll(input);
     assertNotNull(output);
     assertNull(output.getError());
+    assertEquals(6, output.getRecordsFiltered());
   }
 
   @Test

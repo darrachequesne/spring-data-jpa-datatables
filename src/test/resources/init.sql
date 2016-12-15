@@ -52,7 +52,8 @@ INSERT INTO home (id, town) VALUES
   (2, 'town1'),
   (3, 'town2'),
   (4, 'town3'),
-  (5, null);
+  (5, null),
+  (6, 'NULL');
 
 INSERT INTO users (id, username, role, status, id_home, visible) VALUES
   (1,  'john0',  'ADMIN',  'ACTIVE',  null, true),
@@ -77,5 +78,5 @@ INSERT INTO users (id, username, role, status, id_home, visible) VALUES
   (20, 'john19', 'AUTHOR', 'BLOCKED', 4,    false),
   (21, 'john20', 'USER',   'ACTIVE',  1,    true),
   (22, 'john21', 'ADMIN',  'BLOCKED', 2,    false),
-  (23, 'john22', 'AUTHOR', 'ACTIVE',  3,    true),
+  (23, 'john22', 'AUTHOR', 'ACTIVE',  6,    true),
   (24, 'john23', 'USER',   'BLOCKED', 5,    false);
