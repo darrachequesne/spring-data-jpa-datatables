@@ -52,7 +52,7 @@ INSERT INTO home (id, town) VALUES
   (2, 'town1'),
   (3, 'town2'),
   (4, 'town3'),
-  (5, null),
+  (5, NULL),
   (6, 'NULL');
 
 INSERT INTO users (id, username, role, status, id_home, visible) VALUES

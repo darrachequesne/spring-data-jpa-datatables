@@ -2,14 +2,15 @@ package org.springframework.data.jpa.datatables.repository;
 
 import static org.springframework.data.jpa.datatables.repository.DataTablesUtils.ATTRIBUTE_SEPARATOR;
 import static org.springframework.data.jpa.datatables.repository.DataTablesUtils.ESCAPED_ATTRIBUTE_SEPARATOR;
+import static org.springframework.data.jpa.datatables.repository.DataTablesUtils.ESCAPED_NULL;
 import static org.springframework.data.jpa.datatables.repository.DataTablesUtils.ESCAPED_OR_SEPARATOR;
 import static org.springframework.data.jpa.datatables.repository.DataTablesUtils.ESCAPE_CHAR;
+import static org.springframework.data.jpa.datatables.repository.DataTablesUtils.NULL;
 import static org.springframework.data.jpa.datatables.repository.DataTablesUtils.OR_SEPARATOR;
 import static org.springframework.data.jpa.datatables.repository.DataTablesUtils.getLikeFilterValue;
 import static org.springframework.data.jpa.datatables.repository.DataTablesUtils.isBoolean;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 import javax.persistence.criteria.CriteriaBuilder;
@@ -28,8 +29,6 @@ import org.springframework.data.jpa.domain.Specification;
 import org.springframework.util.StringUtils;
 
 class SpecificationFactory {
-  public final static String ISNULL       = "NULL";
-  public final static String ESCAPED_NULL = "\\NULL";
 
   public static <T> Specification<T> createSpecification(final DataTablesInput input) {
     return new DataTablesSpecification<T>(input);
@@ -60,11 +59,11 @@ class SpecificationFactory {
           // the filter contains multiple values, add a 'WHERE .. IN' clause
           boolean nullable = false;
           List<String> values = new ArrayList<String>();
-          for(String value: filterValue.split(ESCAPED_OR_SEPARATOR)) {
-            if (ISNULL.equals(value)) {
+          for (String value : filterValue.split(ESCAPED_OR_SEPARATOR)) {
+            if (NULL.equals(value)) {
               nullable = true;
             } else {
-              values.add(ESCAPED_NULL.equals(value)? ISNULL : value);
+              values.add(ESCAPED_NULL.equals(value) ? NULL : value); // to match a 'NULL' string
             }
           }
           if (values.size() > 0 && isBoolean(values.get(0))) {
@@ -81,31 +80,32 @@ class SpecificationFactory {
             }
           } else {
             stringExpression = getExpression(root, column.getData(), String.class);
-            Predicate in = stringExpression.in(Arrays.asList(values));
+            Predicate in = stringExpression.in(values);
             if (nullable) {
               predicate = cb.and(predicate, cb.or(in, stringExpression.isNull()));
             } else {
               predicate = cb.and(predicate, in);
             }
           }
-        } else {
-          // the filter contains only one value, add a 'WHERE .. LIKE' clause
-          if (isBoolean(filterValue)) {
-            booleanExpression = getExpression(root, column.getData(), Boolean.class);
-            predicate =
-                cb.and(predicate, cb.equal(booleanExpression, Boolean.valueOf(filterValue)));
-          } else {
-            stringExpression = getExpression(root, column.getData(), String.class);
-            if (ISNULL.equals(filterValue)) {
-              predicate = cb.and(predicate, stringExpression.isNull());
-            } else {
-              stringExpression = getExpression(root, column.getData(), String.class);
-              predicate = cb.and(predicate,
-                      cb.like(cb.lower(stringExpression),
-                              getLikeFilterValue((ESCAPED_NULL.equals(filterValue))? ISNULL : filterValue), ESCAPE_CHAR));
-            }
-          }
+          continue;
         }
+        // the filter contains only one value, add a 'WHERE .. LIKE' clause
+        if (isBoolean(filterValue)) {
+          booleanExpression = getExpression(root, column.getData(), Boolean.class);
+          predicate = cb.and(predicate, cb.equal(booleanExpression, Boolean.valueOf(filterValue)));
+          continue;
+        }
+
+        stringExpression = getExpression(root, column.getData(), String.class);
+        if (NULL.equals(filterValue)) {
+          predicate = cb.and(predicate, stringExpression.isNull());
+          continue;
+        }
+
+        String likeFilterValue =
+            getLikeFilterValue(ESCAPED_NULL.equals(filterValue) ? NULL : filterValue);
+        predicate =
+            cb.and(predicate, cb.like(cb.lower(stringExpression), likeFilterValue, ESCAPE_CHAR));
       }
 
       // check whether a global filter value exists

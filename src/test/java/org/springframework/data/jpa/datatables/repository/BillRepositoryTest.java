@@ -49,7 +49,7 @@ public class BillRepositoryTest {
   public void testBooleanFilterAndNull() {
     DataTablesInput input = getBasicInput();
 
-    input.getColumn("hasBeenPayed").setSearchValue("TRUE+" + SpecificationFactory.ISNULL);
+    input.getColumn("hasBeenPayed").setSearchValue("TRUE+NULL");
     DataTablesOutput<Bill> output = billRepository.findAll(input);
     assertNotNull(output);
     assertNull(output.getError());
@@ -60,7 +60,7 @@ public class BillRepositoryTest {
   public void testFilterIsNull() {
     DataTablesInput input = getBasicInput();
 
-    input.getColumn("hasBeenPayed").setSearchValue(SpecificationFactory.ISNULL);
+    input.getColumn("hasBeenPayed").setSearchValue("NULL");
     DataTablesOutput<Bill> output = billRepository.findAll(input);
     assertNotNull(output);
     assertNull(output.getError());

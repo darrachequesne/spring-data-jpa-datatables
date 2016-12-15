@@ -177,7 +177,7 @@ public class UserRepositoryTest {
   @Test
   public void testNullColumnFilter() {
     DataTablesInput input = getBasicInput();
-    input.getColumn("home.town").setSearchValue("town0+" + SpecificationFactory.ISNULL);
+    input.getColumn("home.town").setSearchValue("town0+NULL");
 
     DataTablesOutput<User> output = userRepository.findAll(input);
     assertNotNull(output);
@@ -190,7 +190,7 @@ public class UserRepositoryTest {
   @Test
   public void testEscapedOrNull() {
     DataTablesInput input = getBasicInput();
-    input.getColumn("home.town").setSearchValue("town0+" + SpecificationFactory.ESCAPED_NULL);
+    input.getColumn("home.town").setSearchValue("town0+\\NULL");
 
     DataTablesOutput<User> output = userRepository.findAll(input);
     assertNotNull(output);
@@ -203,7 +203,7 @@ public class UserRepositoryTest {
   @Test
   public void testEscapedNull() {
     DataTablesInput input = getBasicInput();
-    input.getColumn("home.town").setSearchValue(SpecificationFactory.ESCAPED_NULL);
+    input.getColumn("home.town").setSearchValue("\\NULL");
 
     DataTablesOutput<User> output = userRepository.findAll(input);
     assertNotNull(output);

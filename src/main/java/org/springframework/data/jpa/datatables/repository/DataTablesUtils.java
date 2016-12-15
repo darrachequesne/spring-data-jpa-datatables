@@ -17,6 +17,8 @@ public class DataTablesUtils {
   public final static String ATTRIBUTE_SEPARATOR = ".";
   public final static String ESCAPED_ATTRIBUTE_SEPARATOR = "\\.";
   public final static char ESCAPE_CHAR = '\\';
+  public final static String NULL = "NULL";
+  public final static String ESCAPED_NULL = "\\NULL";
 
   /**
    * Creates a 'LIMIT .. OFFSET .. ORDER BY ..' clause for the given {@link DataTablesInput}.

@@ -1,6 +1,8 @@
 package org.springframework.data.jpa.datatables.qrepository;
 
+import static org.springframework.data.jpa.datatables.repository.DataTablesUtils.ESCAPED_NULL;
 import static org.springframework.data.jpa.datatables.repository.DataTablesUtils.ESCAPED_OR_SEPARATOR;
+import static org.springframework.data.jpa.datatables.repository.DataTablesUtils.NULL;
 import static org.springframework.data.jpa.datatables.repository.DataTablesUtils.OR_SEPARATOR;
 import static org.springframework.data.jpa.datatables.repository.DataTablesUtils.isBoolean;
 
@@ -34,26 +36,52 @@ class PredicateFactory {
       }
       if (filterValue.contains(OR_SEPARATOR)) {
         // the filter contains multiple values, add a 'WHERE .. IN' clause
-        String[] values = filterValue.split(ESCAPED_OR_SEPARATOR);
-        if (values.length > 0 && isBoolean(values[0])) {
-          List<Boolean> booleanValues = new ArrayList<Boolean>();
-          for (int i = 0; i < values.length; i++) {
-            booleanValues.add(Boolean.valueOf(values[i]));
+        boolean nullable = false;
+        List<String> values = new ArrayList<String>();
+        for (String value : filterValue.split(ESCAPED_OR_SEPARATOR)) {
+          if (NULL.equals(value)) {
+            nullable = true;
+          } else {
+            values.add(ESCAPED_NULL.equals(value) ? NULL : value); // to match a 'NULL' string
           }
-          predicate = predicate.and(entity.getBoolean(column.getData()).in(booleanValues));
-        } else {
-          predicate.and(getStringExpression(entity, column.getData()).in(values));
         }
-      } else {
-        // the filter contains only one value, add a 'WHERE .. LIKE' clause
-        if (isBoolean(filterValue)) {
-          predicate =
-              predicate.and(entity.getBoolean(column.getData()).eq(Boolean.valueOf(filterValue)));
+        if (values.size() > 0 && isBoolean(values.get(0))) {
+          List<Boolean> booleanValues = new ArrayList<Boolean>();
+          for (int i = 0; i < values.size(); i++) {
+            booleanValues.add(Boolean.valueOf(values.get(i)));
+          }
+          Predicate in = entity.getBoolean(column.getData()).in(booleanValues);
+          if (nullable) {
+            predicate = predicate.and(entity.getBoolean(column.getData()).isNull().or(in));
+          } else {
+            predicate = predicate.and(in);
+          }
         } else {
-          predicate = predicate.and(getStringExpression(entity, column.getData()).lower()
-              .like(getLikeFilterValue(filterValue), ESCAPE_CHAR));
+          Predicate in = getStringExpression(entity, column.getData()).in(values);
+          if (nullable) {
+            predicate = predicate.and(entity.get(column.getData()).isNull().or(in));
+          } else {
+            predicate = predicate.and(in);
+          }
         }
+        continue;
       }
+      // the filter contains only one value, add a 'WHERE .. LIKE' clause
+      if (isBoolean(filterValue)) {
+        predicate =
+            predicate.and(entity.getBoolean(column.getData()).eq(Boolean.valueOf(filterValue)));
+        continue;
+      }
+
+      StringExpression stringExpression = getStringExpression(entity, column.getData());
+      if (NULL.equals(filterValue)) {
+        predicate = predicate.and(stringExpression.isNull());
+        continue;
+      }
+
+      String likeFilterValue =
+          getLikeFilterValue(ESCAPED_NULL.equals(filterValue) ? NULL : filterValue);
+      predicate = predicate.and(stringExpression.lower().like(likeFilterValue, ESCAPE_CHAR));
     }
 
     // check whether a global filter value exists
