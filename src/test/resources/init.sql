@@ -30,7 +30,8 @@ INSERT INTO bill (id, description, amount, hasBeenPayed) VALUES
   (9,  'foo9',  900,  false),
   (10, 'foo10', 1000, true),
   (11, 'foo11', 1100, false),
-  (12, 'foo12', 1200, true);
+  (12, 'foo12', 1200, true),
+  (13, 'foo13', 1300, NULL);
 
 INSERT INTO game (id, prize_name) VALUES
   (1,  'prize0'),
@@ -50,7 +51,9 @@ INSERT INTO home (id, town) VALUES
   (1, 'town0'),
   (2, 'town1'),
   (3, 'town2'),
-  (4, 'town3');
+  (4, 'town3'),
+  (5, NULL),
+  (6, 'NULL');
 
 INSERT INTO users (id, username, role, status, id_home, visible) VALUES
   (1,  'john0',  'ADMIN',  'ACTIVE',  null, true),
@@ -75,5 +78,5 @@ INSERT INTO users (id, username, role, status, id_home, visible) VALUES
   (20, 'john19', 'AUTHOR', 'BLOCKED', 4,    false),
   (21, 'john20', 'USER',   'ACTIVE',  1,    true),
   (22, 'john21', 'ADMIN',  'BLOCKED', 2,    false),
-  (23, 'john22', 'AUTHOR', 'ACTIVE',  3,    true),
-  (24, 'john23', 'USER',   'BLOCKED', 4,    false);
+  (23, 'john22', 'AUTHOR', 'ACTIVE',  6,    true),
+  (24, 'john23', 'USER',   'BLOCKED', 5,    false);

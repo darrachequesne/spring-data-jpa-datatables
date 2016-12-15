@@ -30,8 +30,8 @@ public class BillRepositoryTest {
     DataTablesOutput<Bill> output = billRepository.findAll(input);
     assertNotNull(output);
     assertNull(output.getError());
-    assertEquals(12, output.getRecordsFiltered());
-    assertEquals(12, output.getRecordsTotal());
+    assertEquals(13, output.getRecordsFiltered());
+    assertEquals(13, output.getRecordsTotal());
   }
 
   @Test
@@ -43,6 +43,28 @@ public class BillRepositoryTest {
     assertNotNull(output);
     assertNull(output.getError());
     assertEquals(6, output.getRecordsFiltered());
+  }
+
+  @Test
+  public void testBooleanFilterAndNull() {
+    DataTablesInput input = getBasicInput();
+
+    input.getColumn("hasBeenPayed").setSearchValue("TRUE+NULL");
+    DataTablesOutput<Bill> output = billRepository.findAll(input);
+    assertNotNull(output);
+    assertNull(output.getError());
+    assertEquals(7, output.getRecordsFiltered());
+  }
+
+  @Test
+  public void testFilterIsNull() {
+    DataTablesInput input = getBasicInput();
+
+    input.getColumn("hasBeenPayed").setSearchValue("NULL");
+    DataTablesOutput<Bill> output = billRepository.findAll(input);
+    assertNotNull(output);
+    assertNull(output.getError());
+    assertEquals(1, output.getRecordsFiltered());
   }
 
   @Test

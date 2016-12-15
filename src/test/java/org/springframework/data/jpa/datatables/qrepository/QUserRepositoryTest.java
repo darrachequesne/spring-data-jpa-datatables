@@ -177,6 +177,46 @@ public class QUserRepositoryTest {
   }
 
   @Test
+  @Ignore
+  public void testNullColumnFilter() {
+    DataTablesInput input = getBasicInput();
+    input.getColumn("home.town").setSearchValue("town0+NULL");
+
+    DataTablesOutput<User> output = userRepository.findAll(input);
+    assertNotNull(output);
+    assertEquals(1, output.getDraw());
+    assertNull(output.getError());
+    assertEquals(10, output.getRecordsFiltered());
+    assertEquals(24, output.getRecordsTotal());
+  }
+
+  @Test
+  public void testEscapedOrNull() {
+    DataTablesInput input = getBasicInput();
+    input.getColumn("home.town").setSearchValue("town0+\\NULL");
+
+    DataTablesOutput<User> output = userRepository.findAll(input);
+    assertNotNull(output);
+    assertEquals(1, output.getDraw());
+    assertNull(output.getError());
+    assertEquals(6, output.getRecordsFiltered());
+    assertEquals(24, output.getRecordsTotal());
+  }
+
+  @Test
+  public void testEscapedNull() {
+    DataTablesInput input = getBasicInput();
+    input.getColumn("home.town").setSearchValue("\\NULL");
+
+    DataTablesOutput<User> output = userRepository.findAll(input);
+    assertNotNull(output);
+    assertEquals(1, output.getDraw());
+    assertNull(output.getError());
+    assertEquals(1, output.getRecordsFiltered());
+    assertEquals(24, output.getRecordsTotal());
+  }
+
+  @Test
   public void testMultiFilterOnSameColumn() {
     DataTablesInput input = getBasicInput();
 
