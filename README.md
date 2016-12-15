@@ -88,19 +88,23 @@ It overrides jQuery data serialization to allow Spring MVC to correctly map inpu
 #### On the server-side
 
 The repositories now expose the following methods:
-* `DataTablesOutput<T> findAll(DataTablesInput input);`
-* `DataTablesOutput<T> findAll(DataTablesInput input, Specification<T> additionalSpecification);`
-* `DataTablesOutput<T> findAll(DataTablesInput input, Specification<T> additionalSpecification, Specification<T> preFilteringSpecification);`
+* `DataTablesOutput<T> findAll(DataTablesInput i);`
+* `DataTablesOutput<R> findAll(DataTablesInput i, Converter<T, R> c);`
+* `DataTablesOutput<T> findAll(DataTablesInput i, Specification<T> a);`
+* `DataTablesOutput<T> findAll(DataTablesInput i, Specification<T> a, Specification<T> p);`
+* `DataTablesOutput<R> findAll(DataTablesInput i, Specification<T> a, Specification<T> p, Converter<T, R> c);`
 
-Note: since version 2.0, QueryDSL is also supported:
+**Note**: since version 2.0, QueryDSL is also supported:
 * replace `DataTablesRepositoryFactoryBean` with `QDataTablesRepositoryFactoryBean`
 * replace `DataTablesRepository` with `QDataTablesRepository`
 
 and your repositories will now expose:
 
-* `DataTablesOutput<T> findAll(DataTablesInput input);`
-* `DataTablesOutput<T> findAll(DataTablesInput input, com.mysema.querydsl.Predicate additionalPredicate);`
-* `DataTablesOutput<T> findAll(DataTablesInput input, com.mysema.querydsl.Predicate additionalPredicate, com.mysema.querydsl.Predicate preFilteringPredicate);`
+* `DataTablesOutput<T> findAll(DataTablesInput i);`
+* `DataTablesOutput<R> findAll(DataTablesInput i, Converter<T, R> c);`
+* `DataTablesOutput<T> findAll(DataTablesInput i, com.mysema.querydsl.Predicate a);`
+* `DataTablesOutput<T> findAll(DataTablesInput i, com.mysema.querydsl.Predicate a, com.mysema.querydsl.Predicate p);`
+* `DataTablesOutput<R> findAll(DataTablesInput i, com.mysema.querydsl.Predicate a, com.mysema.querydsl.Predicate p, Converter<T, R> c);`
 
 Your controllers should be able to handle the parameters sent by DataTables:
 
@@ -207,5 +211,8 @@ Supported filters:
 * Strings (`WHERE <column> LIKE %<input>%`)
 * Booleans
 * Array of values (`WHERE <column> IN (<input>)` where input is something like 'PARAM1+PARAM2+PARAM4')
+* `NULL` values are also supported: 'PARAM1+PARAM3+NULL' becomes `WHERE (<column> IN ('PARAM1', 'PARAM3') OR <column> IS NULL)` (to actually search for 'NULL' string, please use `\NULL`)
 
 Also supports paging and sorting.
+
+**Note**: the `regex` flag is currently ignored because JPQL only supports `LIKE` expressions (with `%` and `_` tokens).
