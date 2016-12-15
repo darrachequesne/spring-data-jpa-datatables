@@ -29,8 +29,8 @@ public class QBillRepositoryTest {
     DataTablesOutput<Bill> output = billRepository.findAll(input);
     assertNotNull(output);
     assertNull(output.getError());
-    assertEquals(12, output.getRecordsFiltered());
-    assertEquals(12, output.getRecordsTotal());
+    assertEquals(13, output.getRecordsFiltered());
+    assertEquals(13, output.getRecordsTotal());
   }
 
   @Test

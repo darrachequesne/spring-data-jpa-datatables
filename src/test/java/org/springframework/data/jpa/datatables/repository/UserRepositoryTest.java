@@ -175,6 +175,19 @@ public class UserRepositoryTest {
   }
 
   @Test
+  public void testNullColumnFilter() {
+    DataTablesInput input = getBasicInput();
+    input.getColumn("home.town").setSearchValue("town0+" + SpecificationFactory.ISNULL);
+
+    DataTablesOutput<User> output = userRepository.findAll(input);
+    assertNotNull(output);
+    assertEquals(1, output.getDraw());
+    assertNull(output.getError());
+    assertEquals(10, output.getRecordsFiltered());
+    assertEquals(24, output.getRecordsTotal());
+  }
+
+  @Test
   public void testMultiFilterOnSameColumn() {
     DataTablesInput input = getBasicInput();
 

@@ -8,7 +8,9 @@ import static org.springframework.data.jpa.datatables.repository.DataTablesUtils
 import static org.springframework.data.jpa.datatables.repository.DataTablesUtils.getLikeFilterValue;
 import static org.springframework.data.jpa.datatables.repository.DataTablesUtils.isBoolean;
 
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
@@ -26,6 +28,7 @@ import org.springframework.data.jpa.domain.Specification;
 import org.springframework.util.StringUtils;
 
 class SpecificationFactory {
+  public final static String ISNULL = "^ISNULL^";
 
   public static <T> Specification<T> createSpecification(final DataTablesInput input) {
     return new DataTablesSpecification<T>(input);
@@ -51,20 +54,41 @@ class SpecificationFactory {
         if (!isColumnSearchable) {
           continue;
         }
+        boolean nullable = false;
 
         if (filterValue.contains(OR_SEPARATOR)) {
           // the filter contains multiple values, add a 'WHERE .. IN' clause
-          String[] values = filterValue.split(ESCAPED_OR_SEPARATOR);
-          if (values.length > 0 && isBoolean(values[0])) {
-            Object[] booleanValues = new Boolean[values.length];
-            for (int i = 0; i < values.length; i++) {
-              booleanValues[i] = Boolean.valueOf(values[i]);
+          if (filterValue.contains(ISNULL)) {
+            nullable = true;
+          }
+          List<String> values = new ArrayList<String>();
+          for(String value: filterValue.split(ESCAPED_OR_SEPARATOR)) {
+            if (ISNULL.equals(value)) {
+              nullable = true;
+            } else {
+              values.add(value);
+            }
+          }
+          if (values.size() > 0 && isBoolean(values.get(0))) {
+            Object[] booleanValues = new Boolean[values.size()];
+            for (int i = 0; i < values.size(); i++) {
+              booleanValues[i] = Boolean.valueOf(values.get(i));
             }
             booleanExpression = getExpression(root, column.getData(), Boolean.class);
-            predicate = cb.and(predicate, booleanExpression.in(booleanValues));
+            Predicate in = booleanExpression.in(booleanValues);
+            if (nullable) {
+              predicate = cb.and(predicate, cb.or(in, booleanExpression.isNull()));
+            } else {
+              predicate = cb.and(predicate, in);
+            }
           } else {
             stringExpression = getExpression(root, column.getData(), String.class);
-            predicate = cb.and(predicate, stringExpression.in(Arrays.asList(values)));
+            Predicate in = stringExpression.in(Arrays.asList(values));
+            if (nullable) {
+              predicate = cb.and(predicate, cb.or(in, stringExpression.isNull()));
+            } else {
+              predicate = cb.and(predicate, in);
+            }
           }
         } else {
           // the filter contains only one value, add a 'WHERE .. LIKE' clause
@@ -74,8 +98,13 @@ class SpecificationFactory {
                 cb.and(predicate, cb.equal(booleanExpression, Boolean.valueOf(filterValue)));
           } else {
             stringExpression = getExpression(root, column.getData(), String.class);
-            predicate = cb.and(predicate,
-                cb.like(cb.lower(stringExpression), getLikeFilterValue(filterValue), ESCAPE_CHAR));
+            if (ISNULL.equals(filterValue)) {
+              predicate = cb.and(predicate, stringExpression.isNull());
+            } else {
+              stringExpression = getExpression(root, column.getData(), String.class);
+              predicate = cb.and(predicate,
+                      cb.like(cb.lower(stringExpression), getLikeFilterValue(filterValue), ESCAPE_CHAR));
+            }
           }
         }
       }
