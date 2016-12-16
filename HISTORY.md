@@ -1,4 +1,10 @@
 
+3.1 / 2016-12-16
+==================
+
+  * [feat] Add the ability to filter on NULL values (#44)
+  * [docs] Update README (#45)
+
 3.0 / 2016-11-19
 ==================
 
