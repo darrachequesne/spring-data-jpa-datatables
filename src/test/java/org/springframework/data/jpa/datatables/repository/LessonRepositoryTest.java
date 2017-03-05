@@ -58,7 +58,7 @@ public class LessonRepositoryTest {
 
     // there should be only three executed queries : count unfiltered, count filtered and actual
     // data (with FETCH JOIN)
-    assertEquals(3, statistics.getPrepareStatementCount());
+    assertEquals(2, statistics.getPrepareStatementCount());
     assertEquals(7 + 3 + 2, statistics.getEntityLoadCount());
   }
 

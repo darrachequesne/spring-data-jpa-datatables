@@ -6,7 +6,7 @@
 	<parent>
 		<groupId>io.spring.platform</groupId>
 		<artifactId>platform-bom</artifactId>
-		<version>2.0.5.RELEASE</version>
+		<version>Brussels-RELEASE</version>
 	</parent>
 
 	<groupId>com.github.darrachequesne</groupId>
@@ -136,12 +136,12 @@
 		</dependency>
 
 		<dependency>
-			<groupId>com.mysema.querydsl</groupId>
+			<groupId>com.querydsl</groupId>
 			<artifactId>querydsl-apt</artifactId>
 		</dependency>
 
 		<dependency>
-			<groupId>com.mysema.querydsl</groupId>
+			<groupId>com.querydsl</groupId>
 			<artifactId>querydsl-jpa</artifactId>
 		</dependency>
 
@@ -197,7 +197,7 @@
 						</goals>
 						<configuration>
 							<outputDirectory>target/generated-sources/java</outputDirectory>
-							<processor>com.mysema.query.apt.jpa.JPAAnnotationProcessor</processor>
+							<processor>com.querydsl.apt.jpa.JPAAnnotationProcessor</processor>
 						</configuration>
 					</execution>
 				</executions>

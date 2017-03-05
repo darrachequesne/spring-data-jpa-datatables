@@ -19,7 +19,11 @@ import org.springframework.data.repository.core.support.RepositoryFactorySupport
 public class QDataTablesRepositoryFactoryBean<R extends JpaRepository<T, ID>, T, ID extends Serializable>
     extends JpaRepositoryFactoryBean<R, T, ID> {
 
-  protected RepositoryFactorySupport createRepositoryFactory(EntityManager entityManager) {
+  public QDataTablesRepositoryFactoryBean(Class<? extends R> repositoryInterface) {
+    super(repositoryInterface);
+  }
+
+protected RepositoryFactorySupport createRepositoryFactory(EntityManager entityManager) {
     return new DataTablesRepositoryFactory<T, ID>(entityManager);
   }
 
