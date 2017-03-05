@@ -13,12 +13,12 @@ import org.springframework.data.jpa.datatables.mapping.Column;
 import org.springframework.data.jpa.datatables.mapping.DataTablesInput;
 import org.springframework.util.StringUtils;
 
-import com.mysema.query.BooleanBuilder;
-import com.mysema.query.support.Expressions;
-import com.mysema.query.types.Ops;
-import com.mysema.query.types.Predicate;
-import com.mysema.query.types.expr.StringExpression;
-import com.mysema.query.types.path.PathBuilder;
+import com.querydsl.core.BooleanBuilder;
+import com.querydsl.core.types.Ops;
+import com.querydsl.core.types.Predicate;
+import com.querydsl.core.types.dsl.Expressions;
+import com.querydsl.core.types.dsl.PathBuilder;
+import com.querydsl.core.types.dsl.StringExpression;
 
 class PredicateFactory {
 
