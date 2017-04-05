@@ -80,6 +80,12 @@ class SpecificationFactory {
             }
           } else {
             stringExpression = getExpression(root, column.getData(), String.class);
+            if (values.isEmpty()) {
+              if (nullable) {
+                predicate = cb.and(predicate, stringExpression.isNull());
+              }
+              continue;
+            }
             Predicate in = stringExpression.in(values);
             if (nullable) {
               predicate = cb.and(predicate, cb.or(in, stringExpression.isNull()));
