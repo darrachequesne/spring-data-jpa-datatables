@@ -239,6 +239,18 @@ public class UserRepositoryTest {
   }
 
   @Test
+  public void testEmptyMultiFilterOnSameColumn() {
+    DataTablesInput input = getBasicInput();
+
+    input.getColumn("role").setSearchValue("+");
+
+    DataTablesOutput<User> output = userRepository.findAll(input);
+    assertNotNull(output);
+    assertNull(output.getError());
+    assertEquals(24, output.getRecordsFiltered());
+  }
+
+  @Test
   public void testFilterOnManyToOneRelationship() {
     DataTablesInput input = getBasicInput();
 

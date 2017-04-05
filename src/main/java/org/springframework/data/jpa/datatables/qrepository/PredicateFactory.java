@@ -57,6 +57,12 @@ class PredicateFactory {
             predicate = predicate.and(in);
           }
         } else {
+          if (values.isEmpty()) {
+            if (nullable) {
+              predicate = predicate.and(entity.get(column.getData()).isNull());
+            }
+            continue;
+          }
           Predicate in = getStringExpression(entity, column.getData()).in(values);
           if (nullable) {
             predicate = predicate.and(entity.get(column.getData()).isNull().or(in));
