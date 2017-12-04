@@ -1,7 +1,5 @@
 package org.springframework.data.jpa.datatables.qrepository;
 
-import static org.springframework.data.jpa.datatables.repository.DataTablesUtils.getPageable;
-
 import java.io.Serializable;
 import java.util.List;
 
@@ -9,6 +7,7 @@ import javax.persistence.EntityManager;
 
 import org.springframework.core.convert.converter.Converter;
 import org.springframework.data.domain.Page;
+import org.springframework.data.jpa.datatables.PredicateBuilder;
 import org.springframework.data.jpa.datatables.mapping.DataTablesInput;
 import org.springframework.data.jpa.datatables.mapping.DataTablesOutput;
 import org.springframework.data.jpa.repository.support.JpaEntityInformation;
@@ -21,11 +20,6 @@ import com.querydsl.core.types.EntityPath;
 import com.querydsl.core.types.Predicate;
 import com.querydsl.core.types.dsl.PathBuilder;
 
-/**
- * Repository implementation
- * 
- * @author Damien Arrachequesne
- */
 public class QDataTablesRepositoryImpl<T, ID extends Serializable>
     extends QueryDslJpaRepository<T, ID> implements QDataTablesRepository<T, ID> {
 
@@ -35,7 +29,7 @@ public class QDataTablesRepositoryImpl<T, ID extends Serializable>
   private final EntityPath<T> path;
   private final PathBuilder<T> builder;
 
-  public QDataTablesRepositoryImpl(JpaEntityInformation<T, ID> entityInformation,
+  QDataTablesRepositoryImpl(JpaEntityInformation<T, ID> entityInformation,
       EntityManager entityManager) {
     this(entityInformation, entityManager, DEFAULT_ENTITY_PATH_RESOLVER);
   }
@@ -84,9 +78,13 @@ public class QDataTablesRepositoryImpl<T, ID extends Serializable>
       }
       output.setRecordsTotal(recordsTotal);
 
-      Predicate predicate = PredicateFactory.createPredicate(this.builder, input);
-      Page<T> data = findAll(new BooleanBuilder().and(predicate).and(additionalPredicate)
-          .and(preFilteringPredicate).getValue(), getPageable(input));
+      PredicateBuilder predicateBuilder = new PredicateBuilder(this.builder, input);
+      Page<T> data = findAll(
+              new BooleanBuilder()
+                  .and(predicateBuilder.build())
+                  .and(additionalPredicate)
+                  .and(preFilteringPredicate).getValue(),
+              predicateBuilder.createPageable());
 
       @SuppressWarnings("unchecked")
       List<R> content =

@@ -3,15 +3,9 @@
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 
-	<parent>
-		<groupId>io.spring.platform</groupId>
-		<artifactId>platform-bom</artifactId>
-		<version>Brussels-RELEASE</version>
-	</parent>
-
 	<groupId>com.github.darrachequesne</groupId>
 	<artifactId>spring-data-jpa-datatables</artifactId>
-	<version>4.1</version>
+	<version>4.2-SNAPSHOT</version>
 
 	<name>Spring Data JPA for DataTables</name>
 	<description>Spring Data JPA extension to work with the great jQuery plug-in DataTables (http://datatables.net/)</description>
@@ -64,6 +58,18 @@
 		<maven.compiler.target>${java.version}</maven.compiler.target>
 		<source.encoding>UTF-8</source.encoding>
 	</properties>
+
+	<dependencyManagement>
+		<dependencies>
+			<dependency>
+				<groupId>io.spring.platform</groupId>
+				<artifactId>platform-bom</artifactId>
+				<version>Brussels-RELEASE</version>
+				<type>pom</type>
+				<scope>import</scope>
+			</dependency>
+		</dependencies>
+	</dependencyManagement>
 
 	<dependencies>
 		<dependency>
@@ -221,9 +227,6 @@
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-source-plugin</artifactId>
-				<configuration>
-					<encoding>${source.encoding}</encoding>
-				</configuration>
 			</plugin>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
