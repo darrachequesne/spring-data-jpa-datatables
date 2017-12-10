@@ -25,12 +25,10 @@ import org.springframework.transaction.PlatformTransactionManager;
 
 /**
  * Spring JavaConfig configuration for general infrastructure.
- * 
- * @author Damien Arrachequesne
  */
 @Configuration
 @EnableJpaRepositories(repositoryFactoryBeanClass = DataTablesRepositoryFactoryBean.class,
-    basePackages = "org.springframework.data.jpa.datatables.model")
+    basePackages = { "org.springframework.data.jpa.datatables.model", "org.springframework.data.jpa.datatables.repository" })
 public class Config {
 
   @Bean

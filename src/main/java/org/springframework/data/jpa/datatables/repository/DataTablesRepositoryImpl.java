@@ -1,7 +1,5 @@
 package org.springframework.data.jpa.datatables.repository;
 
-import static org.springframework.data.jpa.datatables.repository.DataTablesUtils.getPageable;
-
 import java.io.Serializable;
 import java.util.List;
 
@@ -9,6 +7,7 @@ import javax.persistence.EntityManager;
 
 import org.springframework.core.convert.converter.Converter;
 import org.springframework.data.domain.Page;
+import org.springframework.data.jpa.datatables.SpecificationBuilder;
 import org.springframework.data.jpa.datatables.mapping.DataTablesInput;
 import org.springframework.data.jpa.datatables.mapping.DataTablesOutput;
 import org.springframework.data.jpa.domain.Specification;
@@ -16,15 +15,10 @@ import org.springframework.data.jpa.domain.Specifications;
 import org.springframework.data.jpa.repository.support.JpaEntityInformation;
 import org.springframework.data.jpa.repository.support.SimpleJpaRepository;
 
-/**
- * Repository implementation
- * 
- * @author Damien Arrachequesne
- */
 public class DataTablesRepositoryImpl<T, ID extends Serializable> extends SimpleJpaRepository<T, ID>
     implements DataTablesRepository<T, ID> {
 
-  public DataTablesRepositoryImpl(JpaEntityInformation<T, ?> entityInformation,
+  DataTablesRepositoryImpl(JpaEntityInformation<T, ?> entityInformation,
       EntityManager entityManager) {
 
     super(entityInformation, entityManager);
@@ -70,9 +64,12 @@ public class DataTablesRepositoryImpl<T, ID extends Serializable> extends Simple
       }
       output.setRecordsTotal(recordsTotal);
 
-      Specification<T> specification = SpecificationFactory.createSpecification(input);
-      Page<T> data = findAll(Specifications.where(specification).and(additionalSpecification)
-          .and(preFilteringSpecification), getPageable(input));
+      SpecificationBuilder<T> specificationBuilder = new SpecificationBuilder<T>(input);
+      Page<T> data = findAll(
+              Specifications.where(specificationBuilder.build())
+                      .and(additionalSpecification)
+                      .and(preFilteringSpecification),
+              specificationBuilder.createPageable());
 
       @SuppressWarnings("unchecked")
       List<R> content =
