@@ -18,3 +18,7 @@ script: mvn test -Dspring.profiles.active=$DB
 before_script:
   - sh -c "if [ '$DB' = 'pgsql' ]; then psql -c 'CREATE DATABASE test;' -U postgres; fi"
   - sh -c "if [ '$DB' = 'mysql' ]; then mysql -e 'CREATE DATABASE IF NOT EXISTS test;' -uroot; fi"
+
+cache:
+  directories:
+  - $HOME/.m2
