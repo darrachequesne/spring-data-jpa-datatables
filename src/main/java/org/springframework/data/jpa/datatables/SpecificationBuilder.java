@@ -1,5 +1,6 @@
 package org.springframework.data.jpa.datatables;
 
+import org.hibernate.jpa.criteria.path.AbstractPathImpl;
 import org.springframework.data.jpa.datatables.mapping.DataTablesInput;
 import org.springframework.data.jpa.domain.Specification;
 
@@ -24,17 +25,12 @@ public class SpecificationBuilder<T> extends AbstractPredicateBuilder<Specificat
 
         @Override
         public Predicate toPredicate(Root<S> root, CriteriaQuery<?> query, CriteriaBuilder criteriaBuilder) {
-            initPredicatesRecursively(tree, root, criteriaBuilder);
-
-            boolean isCountQuery = query.getResultType() == Long.class;
-            if (!isCountQuery) {
-                addFetchRecursively(tree, root);
-            }
+            initPredicatesRecursively(tree, root, root, criteriaBuilder);
 
             return createFinalPredicate(criteriaBuilder);
         }
 
-        private void initPredicatesRecursively(Node<Filter> node, From<S, S> from, CriteriaBuilder criteriaBuilder) {
+        private void initPredicatesRecursively(Node<Filter> node, From<S, S> from, FetchParent<S, S> fetch, CriteriaBuilder criteriaBuilder) {
             if (node.isLeaf()) {
                 boolean hasColumnFilter = node.getData() != null;
                 if (hasColumnFilter) {
@@ -46,19 +42,20 @@ public class SpecificationBuilder<T> extends AbstractPredicateBuilder<Specificat
                 }
             }
             for (Node<Filter> child : node.getChildren()) {
-                From<S, S> childFrom = from;
-                if (!child.isLeaf()) {
-                    childFrom = from.join(child.getName(), JoinType.LEFT);
+                Path<Object> path = from.get(child.getName());
+                if (path instanceof AbstractPathImpl) {
+                    if (((AbstractPathImpl) path).getAttribute().isCollection()) {
+                        // ignore OneToMany and ManyToMany relationships
+                        continue;
+                    }
                 }
-                initPredicatesRecursively(child, childFrom, criteriaBuilder);
-            }
-        }
-
-        private void addFetchRecursively(Node<?> node, FetchParent<S, S> fetch) {
-            for (Node<?> child : node.getChildren()) {
-                if (child.isLeaf()) continue;
-                FetchParent<S, S> childFetch = fetch.fetch(child.getName(), JoinType.LEFT);
-                addFetchRecursively(child, childFetch);
+                if (child.isLeaf()) {
+                    initPredicatesRecursively(child, from, fetch, criteriaBuilder);
+                } else {
+                    Join<S, S> join = from.join(child.getName(), JoinType.LEFT);
+                    Fetch<S, S> childFetch = fetch.fetch(child.getName(), JoinType.LEFT);
+                    initPredicatesRecursively(child, join, childFetch, criteriaBuilder);
+                }
             }
         }
 
