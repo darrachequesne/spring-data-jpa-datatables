@@ -81,7 +81,7 @@ class ColumnFilter extends GlobalFilter {
 
         javax.persistence.criteria.Predicate predicate;
         if (isBooleanComparison) {
-            predicate = expression.as(Boolean.class).in(booleanValues);
+            predicate = expression.in(booleanValues);
         } else {
             predicate = expression.as(String.class).in(values);
         }

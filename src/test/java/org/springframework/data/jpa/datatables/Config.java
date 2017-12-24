@@ -76,13 +76,6 @@ public class Config {
     bean.setPackagesToScan(Config.class.getPackage().getName());
     bean.setDataSource(dataSource);
 
-    Properties jpaProperties = new Properties();
-    jpaProperties.setProperty(Environment.HBM2DDL_AUTO, "create-drop");
-    jpaProperties.setProperty(Environment.HBM2DDL_IMPORT_FILES, "init.sql");
-    jpaProperties.setProperty(Environment.HBM2DDL_IMPORT_FILES_SQL_EXTRACTOR,
-        MultipleLinesSqlCommandExtractor.class.getName());
-    bean.setJpaProperties(jpaProperties);
-
     return bean;
   }
 
