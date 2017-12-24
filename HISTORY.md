@@ -1,33 +1,56 @@
 
-4.1 / 2017-04-05
-==================
+<a name="4.2"></a>
+# [4.2](https://github.com/darrachequesne/spring-data-jpa-datatables/compare/v4.1...v4.2) / 2017-12-24
 
-  * [fix] Fix searching with the separator "+" (#55)
 
-4.0 / 2017-03-06
-==================
+### Bug Fixes
 
-  * [chore] Update bom to Brussels-RELEASE version (#51)
+  * Add proper JOIN FETCH clause (#67)
+  * Remove column duplicates when using JOIN FETCH (#64)
 
-3.1 / 2016-12-16
-==================
 
-  * [feat] Add the ability to filter on NULL values (#44)
-  * [docs] Update README (#45)
+<a name="4.1"></a>
+# [4.1](https://github.com/darrachequesne/spring-data-jpa-datatables/compare/v4.0...v4.1) / 2017-04-05
 
-3.0 / 2016-11-19
-==================
 
-  * [refactor] update mappings (and reduce boilerplate with lombok) (#35)
-  * [chore] update dependencies (using spring bom) (#36)
-  * [fix] Restrict eager loading to @OneToOne and @OneToMany relationships (#39)
+### Bug Fixes
+
+  * Fix searching with the separator "+" (#55)
+
+
+<a name="4.0"></a>
+# [4.0](https://github.com/darrachequesne/spring-data-jpa-datatables/compare/v3.1...v4.0) / 2017-03-06
+
+
+### BREAKING CHANGES
+
+  * Update bom to Brussels-RELEASE version (#51)
+
+
+<a name="3.1"></a>
+# [3.1](https://github.com/darrachequesne/spring-data-jpa-datatables/compare/v3.0...v3.1) / 2016-12-16
+
+
+### Features
+
+  * Add the ability to filter on NULL values (#44)
+
+
+<a name="3.0"></a>
+# [3.0](https://github.com/darrachequesne/spring-data-jpa-datatables/compare/v2.6...v3.0) / 2016-11-19
+
+
+### Bug Fixes
+
+  * Restrict eager loading to @OneToOne and @OneToMany relationships (#39)
+
 
 2.6 / 2016-10-13
 ==================
 
-  * [test] Add tests for MySQL and PostgreSQL (#32)
-  * [test] Add tests for querydsl implementation (#33)
-  * [chore] Update travis status badge to point towards master (#28)
+  * Add tests for MySQL and PostgreSQL (#32)
+  * Add tests for querydsl implementation (#33)
+  * Update travis status badge to point towards master (#28)
 
 2.5 / 2016-08-18
 ==================
