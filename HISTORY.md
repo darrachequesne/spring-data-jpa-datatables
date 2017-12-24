@@ -1,4 +1,13 @@
 
+<a name="4.3"></a>
+# [4.3](https://github.com/darrachequesne/spring-data-jpa-datatables/compare/v4.2...v4.3) / 2017-12-24
+
+
+### Bug Fixes
+
+  *  Remove JOIN FETCH when using COUNT query (#68)
+
+
 <a name="4.2"></a>
 # [4.2](https://github.com/darrachequesne/spring-data-jpa-datatables/compare/v4.1...v4.2) / 2017-12-24
 
