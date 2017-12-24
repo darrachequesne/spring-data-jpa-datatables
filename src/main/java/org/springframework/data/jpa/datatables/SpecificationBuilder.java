@@ -27,6 +27,11 @@ public class SpecificationBuilder<T> extends AbstractPredicateBuilder<Specificat
         public Predicate toPredicate(Root<S> root, CriteriaQuery<?> query, CriteriaBuilder criteriaBuilder) {
             initPredicatesRecursively(tree, root, root, criteriaBuilder);
 
+            boolean isCountQuery = query.getResultType() == Long.class;
+            if (isCountQuery) {
+                root.getFetches().clear();
+            }
+
             return createFinalPredicate(criteriaBuilder);
         }
 
