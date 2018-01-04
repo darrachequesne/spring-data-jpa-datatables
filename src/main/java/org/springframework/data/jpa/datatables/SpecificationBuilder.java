@@ -1,14 +1,25 @@
 package org.springframework.data.jpa.datatables;
 
-import org.hibernate.jpa.criteria.path.AbstractPathImpl;
-import org.springframework.data.jpa.datatables.mapping.DataTablesInput;
-import org.springframework.data.jpa.domain.Specification;
-
-import javax.persistence.criteria.*;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Fetch;
+import javax.persistence.criteria.FetchParent;
+import javax.persistence.criteria.From;
+import javax.persistence.criteria.Join;
+import javax.persistence.criteria.JoinType;
+import javax.persistence.criteria.Path;
+import javax.persistence.criteria.Predicate;
+import javax.persistence.criteria.Root;
 
+import org.springframework.data.jpa.datatables.mapping.DataTablesInput;
+import org.springframework.data.jpa.domain.Specification;
+
+import lombok.extern.slf4j.Slf4j;
+
+@Slf4j
 public class SpecificationBuilder<T> extends AbstractPredicateBuilder<Specification<T>> {
     public SpecificationBuilder(DataTablesInput input) {
         super(input);
@@ -48,8 +59,26 @@ public class SpecificationBuilder<T> extends AbstractPredicateBuilder<Specificat
             }
             for (Node<Filter> child : node.getChildren()) {
                 Path<Object> path = from.get(child.getName());
-                if (path instanceof AbstractPathImpl) {
-                    if (((AbstractPathImpl) path).getAttribute().isCollection()) {
+                
+                Class<?> abstractPathImpl=null;
+                try {
+                  abstractPathImpl = Class.forName("org.hibernate.query.criteria.internal.path.AbstractPathImpl");
+                } catch (ClassNotFoundException e1) {
+                  try {
+                    abstractPathImpl = Class.forName("org.hibernate.jpa.criteria.path.AbstractPathImpl");
+                  } catch (ClassNotFoundException e) {
+                  }
+                }
+                
+                if (abstractPathImpl.isAssignableFrom(path.getClass())) {
+                  Boolean isCollection = false;
+                  try {
+                    Object attribute = path.getClass().getMethod("getAttribute").invoke(path);
+                    isCollection = (Boolean) attribute.getClass().getMethod("isCollection").invoke(attribute);
+                  } catch (Exception e) {
+                    log.error("Impossible to get attribute isCollection", e);
+                  }
+                    if (isCollection) {
                         // ignore OneToMany and ManyToMany relationships
                         continue;
                     }
