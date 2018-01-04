@@ -1,16 +1,16 @@
 package org.springframework.data.jpa.datatables;
 
+import java.lang.reflect.InvocationTargetException;
 import java.sql.SQLException;
-import java.util.Properties;
 
+import javax.persistence.EntityManagerFactory;
 import javax.sql.DataSource;
 
 import org.hibernate.SessionFactory;
-import org.hibernate.cfg.Environment;
 import org.hibernate.jpa.HibernateEntityManagerFactory;
-import org.hibernate.tool.hbm2ddl.MultipleLinesSqlCommandExtractor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Primary;
 import org.springframework.context.annotation.Profile;
 import org.springframework.data.jpa.datatables.repository.DataTablesRepositoryFactoryBean;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
@@ -65,6 +65,7 @@ public class Config {
   }
 
   @Bean
+  @Primary
   public AbstractEntityManagerFactoryBean entityManagerFactory(DataSource dataSource)
       throws SQLException {
 
@@ -82,7 +83,17 @@ public class Config {
   @Bean
   public SessionFactory sessionFactory(AbstractEntityManagerFactoryBean entityManagerFactory)
       throws SQLException {
-    return ((HibernateEntityManagerFactory) entityManagerFactory.getObject()).getSessionFactory();
+    EntityManagerFactory emf = entityManagerFactory.getNativeEntityManagerFactory();
+    if (emf instanceof SessionFactory) {
+      return (SessionFactory) emf;
+    }else {
+      emf = entityManagerFactory.getObject();
+      try {
+        return (SessionFactory) emf.getClass().getMethod("getSessionFactory").invoke(emf);
+      } catch (Exception e) {
+        throw new RuntimeException(e);
+      }
+    }
   }
 
 }
