@@ -2,6 +2,7 @@ package org.springframework.data.jpa.datatables.qrepository;
 
 import java.io.Serializable;
 import java.util.List;
+import java.util.function.Function;
 
 import javax.persistence.EntityManager;
 
@@ -11,7 +12,7 @@ import org.springframework.data.jpa.datatables.PredicateBuilder;
 import org.springframework.data.jpa.datatables.mapping.DataTablesInput;
 import org.springframework.data.jpa.datatables.mapping.DataTablesOutput;
 import org.springframework.data.jpa.repository.support.JpaEntityInformation;
-import org.springframework.data.jpa.repository.support.QueryDslJpaRepository;
+import org.springframework.data.jpa.repository.support.QuerydslJpaRepository;
 import org.springframework.data.querydsl.EntityPathResolver;
 import org.springframework.data.querydsl.SimpleEntityPathResolver;
 
@@ -21,7 +22,7 @@ import com.querydsl.core.types.Predicate;
 import com.querydsl.core.types.dsl.PathBuilder;
 
 public class QDataTablesRepositoryImpl<T, ID extends Serializable>
-    extends QueryDslJpaRepository<T, ID> implements QDataTablesRepository<T, ID> {
+    extends QuerydslJpaRepository<T, ID> implements QDataTablesRepository<T, ID> {
 
   private static final EntityPathResolver DEFAULT_ENTITY_PATH_RESOLVER =
       SimpleEntityPathResolver.INSTANCE;
@@ -58,13 +59,13 @@ public class QDataTablesRepositoryImpl<T, ID extends Serializable>
   }
 
   @Override
-  public <R> DataTablesOutput<R> findAll(DataTablesInput input, Converter<T, R> converter) {
+  public <R> DataTablesOutput<R> findAll(DataTablesInput input, Function<T, R> converter) {
     return findAll(input, null, null, converter);
   }
 
   @Override
   public <R> DataTablesOutput<R> findAll(DataTablesInput input, Predicate additionalPredicate,
-      Predicate preFilteringPredicate, Converter<T, R> converter) {
+      Predicate preFilteringPredicate, Function<T, R> converter) {
     DataTablesOutput<R> output = new DataTablesOutput<R>();
     output.setDraw(input.getDraw());
     if (input.getLength() == 0) {

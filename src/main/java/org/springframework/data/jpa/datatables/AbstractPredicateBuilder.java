@@ -60,7 +60,7 @@ abstract class AbstractPredicateBuilder<T> {
                 orders.add(new Sort.Order(sortDirection, sortColumn));
             }
         }
-        Sort sort = orders.isEmpty() ? null : new Sort(orders);
+        Sort sort = orders.isEmpty() ? Sort.unsorted() : Sort.by(orders);
 
         if (input.getLength() == -1) {
             input.setStart(0);
@@ -83,7 +83,7 @@ abstract class AbstractPredicateBuilder<T> {
         }
 
         @Override
-        public int getOffset() {
+        public long getOffset() {
             return offset;
         }
 

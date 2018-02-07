@@ -33,7 +33,7 @@ public class RelationshipsRepositoryTest {
     @Before
     public void init() {
         repository.deleteAll();
-        repository.save(A.ALL);
+        repository.saveAll(A.ALL);
         input = getBasicInput();
     }
 

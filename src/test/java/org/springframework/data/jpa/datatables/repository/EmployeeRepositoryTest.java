@@ -5,7 +5,6 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.convert.converter.Converter;
 import org.springframework.data.jpa.datatables.Config;
 import org.springframework.data.jpa.datatables.mapping.DataTablesInput;
 import org.springframework.data.jpa.datatables.mapping.DataTablesOutput;
@@ -19,6 +18,7 @@ import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
+import java.util.function.Function;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -34,14 +34,14 @@ public class EmployeeRepositoryTest {
         return employeeRepository.findAll(input);
     }
 
-    protected DataTablesOutput<EmployeeDto> getOutput(DataTablesInput input, Converter<Employee, EmployeeDto> converter) {
+    protected DataTablesOutput<EmployeeDto> getOutput(DataTablesInput input, Function<Employee, EmployeeDto> converter) {
         return employeeRepository.findAll(input, converter);
     }
 
     @Before
     public void init() {
         employeeRepository.deleteAll();
-        employeeRepository.save(Employee.ALL);
+        employeeRepository.saveAll(Employee.ALL);
         input = getBasicInput();
     }
 
@@ -170,9 +170,9 @@ public class EmployeeRepositoryTest {
         assertThat(output.getData()).containsOnly(EmployeeDto.AIRI_SATOU);
     }
 
-    private static class EmployeeConverter implements Converter<Employee, EmployeeDto> {
+    private static class EmployeeConverter implements Function<Employee, EmployeeDto> {
         @Override
-        public EmployeeDto convert(Employee employee) {
+        public EmployeeDto apply(Employee employee) {
             return new EmployeeDto(employee.getId(), employee.getFirstName(), employee.getLastName());
         }
     }

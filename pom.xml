@@ -3,19 +3,19 @@
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 
-	<groupId>com.github.darrachequesne</groupId>
+	<groupId>com.github.iamareebjamal</groupId>
 	<artifactId>spring-data-jpa-datatables</artifactId>
-	<version>4.3</version>
+	<version>2.0-SNAPSHOT</version>
 
 	<name>Spring Data JPA for DataTables</name>
 	<description>Spring Data JPA extension to work with the great jQuery plug-in DataTables (http://datatables.net/)</description>
-	<url>https://github.com/darrachequesne/spring-data-jpa-datatables</url>
+	<url>https://github.com/iamareebjamal/spring-data-jpa-datatables</url>
 
 	<developers>
 		<developer>
-			<name>Damien Arrachequesne</name>
-			<email>damien.arrachequesne@gmail.com</email>
-			<organization>Freelancer</organization>
+			<name>Areeb Jamal</name>
+			<email>jamal.areeb@gmail.com</email>
+			<organization>Student</organization>
 		</developer>
 	</developers>
 
@@ -43,7 +43,7 @@
 	</licenses>
 
 	<scm>
-		<url>https://github.com/darrachequesne/spring-data-jpa-datatables</url>
+		<url>https://github.com/iamareebjamal/spring-data-jpa-datatables</url>
 	</scm>
 
 	<properties>
@@ -53,7 +53,7 @@
 		<version.plugin.maven-gpg-plugin>1.6</version.plugin.maven-gpg-plugin>
 
 		<!-- Source encoding -->
-		<java.version>1.6</java.version>
+		<java.version>1.8</java.version>
 		<maven.compiler.source>${java.version}</maven.compiler.source>
 		<maven.compiler.target>${java.version}</maven.compiler.target>
 		<source.encoding>UTF-8</source.encoding>
@@ -62,9 +62,9 @@
 	<dependencyManagement>
 		<dependencies>
 			<dependency>
-				<groupId>io.spring.platform</groupId>
-				<artifactId>platform-bom</artifactId>
-				<version>Brussels-RELEASE</version>
+				<groupId>org.springframework.boot</groupId>
+				<artifactId>spring-boot-dependencies</artifactId>
+				<version>2.0.0.RC1</version>
 				<type>pom</type>
 				<scope>import</scope>
 			</dependency>
@@ -133,12 +133,8 @@
 			<artifactId>hibernate-entitymanager</artifactId>
 		</dependency>
 		<dependency>
-			<groupId>org.hibernate</groupId>
+			<groupId>org.hibernate.validator</groupId>
 			<artifactId>hibernate-validator</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>javax.el</groupId>
-			<artifactId>javax.el-api</artifactId>
 		</dependency>
 
 		<dependency>
@@ -330,4 +326,26 @@
 			</build>
 		</profile>
 	</profiles>
+
+	<repositories>
+		<repository>
+			<id>spring-snapshots</id>
+			<url>http://repo.spring.io/snapshot</url>
+			<snapshots><enabled>true</enabled></snapshots>
+		</repository>
+		<repository>
+			<id>spring-milestones</id>
+			<url>http://repo.spring.io/milestone</url>
+		</repository>
+	</repositories>
+	<pluginRepositories>
+		<pluginRepository>
+			<id>spring-snapshots</id>
+			<url>http://repo.spring.io/snapshot</url>
+		</pluginRepository>
+		<pluginRepository>
+			<id>spring-milestones</id>
+			<url>http://repo.spring.io/milestone</url>
+		</pluginRepository>
+	</pluginRepositories>
 </project>

@@ -31,8 +31,8 @@ public class RepositoryTest {
 
   // returns the class of the proxied object
   @SuppressWarnings("unchecked")
-  protected <T> T getTargetObject(Object proxy) throws Exception {
-    return (T) ((Advised) proxy).getTargetSource().getTargetClass();
+  protected Class getTargetObject(Object proxy) throws Exception {
+    return ((Advised) proxy).getTargetSource().getTargetClass();
   }
 
 }
