@@ -15,6 +15,8 @@ import org.springframework.data.jpa.datatables.repository.EmployeeRepositoryTest
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
+import java.util.function.Function;
+
 import static org.assertj.core.api.Assertions.assertThat;
 
 @RunWith(SpringJUnit4ClassRunner.class)
@@ -29,7 +31,7 @@ public class QEmployeeRepositoryTest extends EmployeeRepositoryTest {
     }
 
     @Override
-    protected DataTablesOutput<EmployeeDto> getOutput(DataTablesInput input, Converter<Employee, EmployeeDto> converter) {
+    protected DataTablesOutput<EmployeeDto> getOutput(DataTablesInput input, Function<Employee, EmployeeDto> converter) {
         return employeeRepository.findAll(input, converter);
     }
 

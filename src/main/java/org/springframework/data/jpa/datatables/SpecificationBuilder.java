@@ -1,6 +1,6 @@
 package org.springframework.data.jpa.datatables;
 
-import org.hibernate.jpa.criteria.path.AbstractPathImpl;
+import org.hibernate.query.criteria.internal.path.AbstractPathImpl;
 import org.springframework.data.jpa.datatables.mapping.DataTablesInput;
 import org.springframework.data.jpa.domain.Specification;
 

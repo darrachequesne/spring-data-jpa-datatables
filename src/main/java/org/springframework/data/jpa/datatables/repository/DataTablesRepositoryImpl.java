@@ -1,19 +1,17 @@
 package org.springframework.data.jpa.datatables.repository;
 
-import java.io.Serializable;
-import java.util.List;
-
-import javax.persistence.EntityManager;
-
-import org.springframework.core.convert.converter.Converter;
 import org.springframework.data.domain.Page;
 import org.springframework.data.jpa.datatables.SpecificationBuilder;
 import org.springframework.data.jpa.datatables.mapping.DataTablesInput;
 import org.springframework.data.jpa.datatables.mapping.DataTablesOutput;
 import org.springframework.data.jpa.domain.Specification;
-import org.springframework.data.jpa.domain.Specifications;
 import org.springframework.data.jpa.repository.support.JpaEntityInformation;
 import org.springframework.data.jpa.repository.support.SimpleJpaRepository;
+
+import javax.persistence.EntityManager;
+import java.io.Serializable;
+import java.util.List;
+import java.util.function.Function;
 
 public class DataTablesRepositoryImpl<T, ID extends Serializable> extends SimpleJpaRepository<T, ID>
     implements DataTablesRepository<T, ID> {
@@ -42,14 +40,14 @@ public class DataTablesRepositoryImpl<T, ID extends Serializable> extends Simple
   }
 
   @Override
-  public <R> DataTablesOutput<R> findAll(DataTablesInput input, Converter<T, R> converter) {
+  public <R> DataTablesOutput<R> findAll(DataTablesInput input, Function<T, R> converter) {
     return findAll(input, null, null, converter);
   }
 
   @Override
   public <R> DataTablesOutput<R> findAll(DataTablesInput input,
       Specification<T> additionalSpecification, Specification<T> preFilteringSpecification,
-      Converter<T, R> converter) {
+      Function<T, R> converter) {
     DataTablesOutput<R> output = new DataTablesOutput<R>();
     output.setDraw(input.getDraw());
     if (input.getLength() == 0) {
@@ -66,7 +64,7 @@ public class DataTablesRepositoryImpl<T, ID extends Serializable> extends Simple
 
       SpecificationBuilder<T> specificationBuilder = new SpecificationBuilder<T>(input);
       Page<T> data = findAll(
-              Specifications.where(specificationBuilder.build())
+              Specification.where(specificationBuilder.build())
                       .and(additionalSpecification)
                       .and(preFilteringSpecification),
               specificationBuilder.createPageable());
