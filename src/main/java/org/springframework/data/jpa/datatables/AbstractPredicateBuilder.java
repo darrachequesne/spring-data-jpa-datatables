@@ -5,6 +5,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.datatables.mapping.Column;
 import org.springframework.data.jpa.datatables.mapping.DataTablesInput;
 import org.springframework.data.jpa.datatables.mapping.Search;
+import org.springframework.lang.NonNull;
 import org.springframework.util.StringUtils;
 
 import java.util.ArrayList;
@@ -19,9 +20,9 @@ abstract class AbstractPredicateBuilder<T> {
         this.input = input;
         this.hasGlobalFilter = input.getSearch() != null && StringUtils.hasText(input.getSearch().getValue());
         if (this.hasGlobalFilter) {
-            tree = new Node<Filter>(null, new GlobalFilter(input.getSearch().getValue()));
+            tree = new Node<>(null, new GlobalFilter(input.getSearch().getValue()));
         } else {
-            tree = new Node<Filter>(null);
+            tree = new Node<>(null);
         }
         initTree(input);
     }
@@ -38,7 +39,7 @@ abstract class AbstractPredicateBuilder<T> {
         boolean isLast = index + 1 == names.length;
         if (isLast) {
             boolean hasColumnFilter = search != null && StringUtils.hasText(search.getValue());
-            parent.addChild(new Node<Filter>(names[index], hasColumnFilter ? new ColumnFilter(search.getValue()) : null));
+            parent.addChild(new Node<>(names[index], hasColumnFilter ? new ColumnFilter(search.getValue()) : null));
         } else {
             Node<Filter> child = parent.getOrCreateChild(names[index]);
             addChild(child, index + 1, names, search);
@@ -51,7 +52,7 @@ abstract class AbstractPredicateBuilder<T> {
      * @return a {@link Pageable}, must not be {@literal null}.
      */
     public Pageable createPageable() {
-        List<Sort.Order> orders = new ArrayList<Sort.Order>();
+        List<Sort.Order> orders = new ArrayList<>();
         for (org.springframework.data.jpa.datatables.mapping.Order order : input.getOrder()) {
             Column column = input.getColumns().get(order.getColumn());
             if (column.getOrderable()) {
@@ -60,7 +61,7 @@ abstract class AbstractPredicateBuilder<T> {
                 orders.add(new Sort.Order(sortDirection, sortColumn));
             }
         }
-        Sort sort = orders.isEmpty() ? null : new Sort(orders);
+        Sort sort = orders.isEmpty() ? Sort.unsorted() : Sort.by(orders);
 
         if (input.getLength() == -1) {
             input.setStart(0);
@@ -83,7 +84,7 @@ abstract class AbstractPredicateBuilder<T> {
         }
 
         @Override
-        public int getOffset() {
+        public long getOffset() {
             return offset;
         }
 
@@ -93,21 +94,25 @@ abstract class AbstractPredicateBuilder<T> {
         }
 
         @Override
+        @NonNull
         public Sort getSort() {
             return sort;
         }
 
         @Override
+        @NonNull
         public Pageable next() {
             throw new UnsupportedOperationException();
         }
 
         @Override
+        @NonNull
         public Pageable previousOrFirst() {
             throw new UnsupportedOperationException();
         }
 
         @Override
+        @NonNull
         public Pageable first() {
             throw new UnsupportedOperationException();
         }

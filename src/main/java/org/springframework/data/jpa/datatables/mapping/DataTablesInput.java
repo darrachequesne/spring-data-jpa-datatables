@@ -1,16 +1,14 @@
 package org.springframework.data.jpa.datatables.mapping;
 
+import lombok.Data;
+
+import javax.validation.constraints.Min;
+import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.NotNull;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
-import javax.validation.constraints.Min;
-import javax.validation.constraints.NotNull;
-
-import org.hibernate.validator.constraints.NotEmpty;
-
-import lombok.Data;
 
 @Data
 public class DataTablesInput {
@@ -53,20 +51,20 @@ public class DataTablesInput {
    * Order parameter
    */
   @NotEmpty
-  private List<Order> order = new ArrayList<Order>();
+  private List<Order> order = new ArrayList<>();
 
   /**
    * Per-column search parameter
    */
   @NotEmpty
-  private List<Column> columns = new ArrayList<Column>();
+  private List<Column> columns = new ArrayList<>();
 
   /**
    * 
    * @return a {@link Map} of {@link Column} indexed by name
    */
   public Map<String, Column> getColumnsAsMap() {
-    Map<String, Column> map = new HashMap<String, Column>();
+    Map<String, Column> map = new HashMap<>();
     for (Column column : columns) {
       map.put(column.getData(), column);
     }

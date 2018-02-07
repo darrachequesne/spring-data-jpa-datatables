@@ -22,8 +22,8 @@ import static java.util.Collections.unmodifiableSet;
  * </ul>
  */
 class ColumnFilter extends GlobalFilter {
-    private Set<String> values = new HashSet<String>();
-    private Set<Boolean> booleanValues = new HashSet<Boolean>();
+    private final Set<String> values;
+    private final Set<Boolean> booleanValues;
     private boolean addNullCase;
     private boolean isBooleanComparison;
 
@@ -31,6 +31,7 @@ class ColumnFilter extends GlobalFilter {
         super(filterValue);
 
         isBooleanComparison = true;
+        Set<String> values = new HashSet<>();
         for (String value : filterValue.split("\\+")) {
             if ("NULL".equals(value)) {
                 addNullCase = true;
@@ -39,14 +40,15 @@ class ColumnFilter extends GlobalFilter {
                 values.add(nullOrTrimmedValue(value));
             }
         }
-        values = unmodifiableSet(values);
+        this.values = unmodifiableSet(values);
 
+        Set<Boolean> booleanValues = new HashSet<>();
         if (isBooleanComparison) {
             for (String value : values) {
                 booleanValues.add(Boolean.valueOf(value));
             }
-            booleanValues = unmodifiableSet(booleanValues);
         }
+        this.booleanValues = unmodifiableSet(booleanValues);
     }
 
     private boolean isBoolean(String filterValue) {

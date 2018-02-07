@@ -8,10 +8,10 @@ import org.springframework.data.jpa.datatables.mapping.DataTablesInput;
 import java.util.ArrayList;
 import java.util.List;
 
-public class PredicateBuilder<T> extends AbstractPredicateBuilder<Predicate> {
+public class PredicateBuilder extends AbstractPredicateBuilder<Predicate> {
     private final PathBuilder<?> entity;
-    private List<Predicate> columnPredicates = new ArrayList<Predicate>();
-    private List<Predicate> globalPredicates = new ArrayList<Predicate>();
+    private List<Predicate> columnPredicates = new ArrayList<>();
+    private List<Predicate> globalPredicates = new ArrayList<>();
 
     public PredicateBuilder(PathBuilder<?> entity, DataTablesInput input) {
         super(input);

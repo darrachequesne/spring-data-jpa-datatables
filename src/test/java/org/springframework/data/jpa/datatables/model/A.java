@@ -1,7 +1,6 @@
 package org.springframework.data.jpa.datatables.model;
 
 import lombok.*;
-import lombok.experimental.Tolerate;
 
 import javax.persistence.*;
 import java.util.Collections;
@@ -57,7 +56,7 @@ public class A {
 
     public static A A3 = A.builder()
             .name("A3")
-            .b(Collections.<B>emptyList())
+            .b(Collections.emptyList())
             .c(C2)
             .build();
 

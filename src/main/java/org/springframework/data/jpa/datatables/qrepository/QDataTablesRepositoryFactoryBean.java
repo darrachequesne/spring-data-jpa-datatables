@@ -1,15 +1,14 @@
 package org.springframework.data.jpa.datatables.qrepository;
 
-import java.io.Serializable;
-
-import javax.persistence.EntityManager;
-
 import org.springframework.beans.factory.FactoryBean;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.support.JpaRepositoryFactory;
 import org.springframework.data.jpa.repository.support.JpaRepositoryFactoryBean;
 import org.springframework.data.repository.core.RepositoryMetadata;
 import org.springframework.data.repository.core.support.RepositoryFactorySupport;
+
+import javax.persistence.EntityManager;
+import java.io.Serializable;
 
 /**
  * {@link FactoryBean} creating DataTablesRepositoryFactory instances.
@@ -23,17 +22,16 @@ public class QDataTablesRepositoryFactoryBean<R extends JpaRepository<T, ID>, T,
     super(repositoryInterface);
   }
 
-protected RepositoryFactorySupport createRepositoryFactory(EntityManager entityManager) {
-    return new DataTablesRepositoryFactory<T, ID>(entityManager);
+  protected RepositoryFactorySupport createRepositoryFactory(EntityManager entityManager) {
+    return new DataTablesRepositoryFactory(entityManager);
   }
 
-  private static class DataTablesRepositoryFactory<T, ID extends Serializable>
-      extends JpaRepositoryFactory {
-
-    public DataTablesRepositoryFactory(EntityManager entityManager) {
+  private static class DataTablesRepositoryFactory extends JpaRepositoryFactory {
+    DataTablesRepositoryFactory(EntityManager entityManager) {
       super(entityManager);
     }
 
+    @Override
     protected Class<?> getRepositoryBaseClass(RepositoryMetadata metadata) {
       Class<?> repositoryInterface = metadata.getRepositoryInterface();
       if (QDataTablesRepository.class.isAssignableFrom(repositoryInterface)) {

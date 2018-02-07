@@ -1,13 +1,13 @@
 package org.springframework.data.jpa.datatables;
 
-import org.hibernate.jpa.criteria.path.AbstractPathImpl;
+import org.hibernate.query.criteria.internal.path.AbstractPathImpl;
 import org.springframework.data.jpa.datatables.mapping.DataTablesInput;
 import org.springframework.data.jpa.domain.Specification;
+import org.springframework.lang.NonNull;
 
 import javax.persistence.criteria.*;
 import java.util.ArrayList;
 import java.util.List;
-
 
 public class SpecificationBuilder<T> extends AbstractPredicateBuilder<Specification<T>> {
     public SpecificationBuilder(DataTablesInput input) {
@@ -16,15 +16,15 @@ public class SpecificationBuilder<T> extends AbstractPredicateBuilder<Specificat
 
     @Override
     public Specification<T> build() {
-        return new DataTablesSpecification<T>();
+        return new DataTablesSpecification<>();
     }
 
     private class DataTablesSpecification<S> implements Specification<S> {
-        private List<Predicate> columnPredicates = new ArrayList<Predicate>();
-        private List<Predicate> globalPredicates = new ArrayList<Predicate>();
+        private List<Predicate> columnPredicates = new ArrayList<>();
+        private List<Predicate> globalPredicates = new ArrayList<>();
 
         @Override
-        public Predicate toPredicate(Root<S> root, CriteriaQuery<?> query, CriteriaBuilder criteriaBuilder) {
+        public Predicate toPredicate(@NonNull Root<S> root, @NonNull CriteriaQuery<?> query, @NonNull CriteriaBuilder criteriaBuilder) {
             initPredicatesRecursively(tree, root, root, criteriaBuilder);
 
             boolean isCountQuery = query.getResultType() == Long.class;
@@ -65,7 +65,7 @@ public class SpecificationBuilder<T> extends AbstractPredicateBuilder<Specificat
         }
 
         private Predicate createFinalPredicate(CriteriaBuilder criteriaBuilder) {
-            List<Predicate> allPredicates = new ArrayList<Predicate>(columnPredicates);
+            List<Predicate> allPredicates = new ArrayList<>(columnPredicates);
 
             if (!globalPredicates.isEmpty()) {
                 allPredicates.add(criteriaBuilder.or(globalPredicates.toArray(new Predicate[0])));

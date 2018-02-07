@@ -23,16 +23,15 @@ public class RepositoryTest {
   private @Autowired OfficeRepository officeRepository;
 
   @Test
-  public void checkGeneratedRepositories() throws Exception {
+  public void checkGeneratedRepositories() {
     assertThat(getTargetObject(employeeRepository)).isEqualTo(DataTablesRepositoryImpl.class);
     assertThat(getTargetObject(officeRepository)).isEqualTo(SimpleJpaRepository.class);
     assertThat(getTargetObject(qEmployeeRepository)).isEqualTo(QDataTablesRepositoryImpl.class);
   }
 
   // returns the class of the proxied object
-  @SuppressWarnings("unchecked")
-  protected <T> T getTargetObject(Object proxy) throws Exception {
-    return (T) ((Advised) proxy).getTargetSource().getTargetClass();
+  private Class getTargetObject(Object proxy) {
+    return ((Advised) proxy).getTargetSource().getTargetClass();
   }
 
 }

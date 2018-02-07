@@ -3,7 +3,6 @@ package org.springframework.data.jpa.datatables.qrepository;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.convert.converter.Converter;
 import org.springframework.data.jpa.datatables.Config;
 import org.springframework.data.jpa.datatables.QConfig;
 import org.springframework.data.jpa.datatables.mapping.DataTablesInput;
@@ -14,6 +13,8 @@ import org.springframework.data.jpa.datatables.model.QEmployee;
 import org.springframework.data.jpa.datatables.repository.EmployeeRepositoryTest;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+
+import java.util.function.Function;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -29,7 +30,7 @@ public class QEmployeeRepositoryTest extends EmployeeRepositoryTest {
     }
 
     @Override
-    protected DataTablesOutput<EmployeeDto> getOutput(DataTablesInput input, Converter<Employee, EmployeeDto> converter) {
+    protected DataTablesOutput<EmployeeDto> getOutput(DataTablesInput input, Function<Employee, EmployeeDto> converter) {
         return employeeRepository.findAll(input, converter);
     }
 

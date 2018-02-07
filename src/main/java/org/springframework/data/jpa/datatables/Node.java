@@ -6,7 +6,7 @@ import java.util.List;
 class Node<T> {
     private final String name;
     private final T data;
-    private List<Node<T>> children = new ArrayList<Node<T>>();
+    private List<Node<T>> children = new ArrayList<>();
 
     Node(String name, T data) {
         this.name = name;
@@ -28,7 +28,7 @@ class Node<T> {
                 return child;
             }
         }
-        Node<T> child = new Node<T>(name);
+        Node<T> child = new Node<>(name);
         children.add(child);
         return child;
     }
