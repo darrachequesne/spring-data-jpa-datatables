@@ -24,7 +24,7 @@ public class UserRestController {
 
 ## Maven dependency
 
-```
+```xml
 <dependency>
 	<groupId>com.github.darrachequesne</groupId>
 	<artifactId>spring-data-jpa-datatables</artifactId>
@@ -39,11 +39,11 @@ Please see the [sample project](https://github.com/darrachequesne/spring-data-jp
 #### 1. Enable the use of `DataTablesRepository` factory
 
 With either
-```
+```java
 @EnableJpaRepositories(repositoryFactoryBeanClass = DataTablesRepositoryFactoryBean.class)
 ```
 or its XML counterpart
-```
+```xml
 <jpa:repositories factory-class="org.springframework.data.jpa.datatables.repository.DataTablesRepositoryFactoryBean" />
 ```
 
@@ -88,11 +88,18 @@ It overrides jQuery data serialization to allow Spring MVC to correctly map inpu
 #### On the server-side
 
 The repositories now expose the following methods:
-* `DataTablesOutput<T> findAll(DataTablesInput i);`
-* `DataTablesOutput<R> findAll(DataTablesInput i, Converter<T, R> c);`
-* `DataTablesOutput<T> findAll(DataTablesInput i, Specification<T> a);`
-* `DataTablesOutput<T> findAll(DataTablesInput i, Specification<T> a, Specification<T> p);`
-* `DataTablesOutput<R> findAll(DataTablesInput i, Specification<T> a, Specification<T> p, Converter<T, R> c);`
+
+```java
+DataTablesOutput<T> findAll(DataTablesInput input);
+DataTablesOutput<R> findAll(DataTablesInput input, Function<T, R> converter);
+DataTablesOutput<T> findAll(DataTablesInput input, Specification<T> additionalSpecification);
+
+DataTablesOutput<T> findAll(DataTablesInput input, Specification<T> additionalSpecification,
+		Specification<T> preFilteringSpecification);
+
+DataTablesOutput<R> findAll(DataTablesInput input, Specification<T> additionalSpecification,
+		Specification<T> preFilteringSpecification, Function<T, R> converter);
+```
 
 **Note**: since version 2.0, QueryDSL is also supported:
 * replace `DataTablesRepositoryFactoryBean` with `QDataTablesRepositoryFactoryBean`
@@ -100,11 +107,17 @@ The repositories now expose the following methods:
 
 and your repositories will now expose:
 
-* `DataTablesOutput<T> findAll(DataTablesInput i);`
-* `DataTablesOutput<R> findAll(DataTablesInput i, Converter<T, R> c);`
-* `DataTablesOutput<T> findAll(DataTablesInput i, com.mysema.querydsl.Predicate a);`
-* `DataTablesOutput<T> findAll(DataTablesInput i, com.mysema.querydsl.Predicate a, com.mysema.querydsl.Predicate p);`
-* `DataTablesOutput<R> findAll(DataTablesInput i, com.mysema.querydsl.Predicate a, com.mysema.querydsl.Predicate p, Converter<T, R> c);`
+```java
+DataTablesOutput<T> findAll(DataTablesInput input);
+DataTablesOutput<R> findAll(DataTablesInput input, Function<T, R> converter);
+DataTablesOutput<T> findAll(DataTablesInput input, Predicate additionalPredicate);
+
+DataTablesOutput<T> findAll(DataTablesInput input, Predicate additionalPredicate,
+		Predicate preFilteringPredicate);
+
+DataTablesOutput<R> findAll(DataTablesInput input, Predicate additionalPredicate,
+		Predicate preFilteringPredicate, Function<T, R> converter);
+```
 
 Your controllers should be able to handle the parameters sent by DataTables:
 
@@ -216,3 +229,17 @@ Supported filters:
 Also supports paging and sorting.
 
 **Note**: the `regex` flag is currently ignored because JPQL only supports `LIKE` expressions (with `%` and `_` tokens).
+
+Yet you should be able to use the DBMS-specific regex operator with the `CriteriaBuilder.function()` method.
+
+Example with H2 [REGEXP_LIKE](http://www.h2database.com/html/functions.html#regexp_like):
+
+```java
+Column column = input.getColumn("my_column");
+column.setSearchable(false); // so the default filter will not be applied
+String regexValue = column.getSearch().getValue();
+DataTablesOutput<...> output = repository.findAll(input, (root, query, builder) -> {
+  Expression<String> regex = builder.function("REGEXP_LIKE", String.class, root.get("my_column"), builder.literal(regexValue));
+  return builder.equal(regex, builder.literal(1));
+});
+```
