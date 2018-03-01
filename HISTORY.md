@@ -1,4 +1,13 @@
 
+<a name="5.0.0"></a>
+# [5.0.0](https://github.com/darrachequesne/spring-data-jpa-datatables/compare/v4.3...v5.0.0) / 2018-03-01
+
+
+### BREAKING CHANGES
+
+  * Update to spring boot 2.0.0 (#73)
+
+
 <a name="4.3"></a>
 # [4.3](https://github.com/darrachequesne/spring-data-jpa-datatables/compare/v4.2...v4.3) / 2017-12-24
 
