@@ -42,6 +42,7 @@ public class UserRestController {
   - [Apply filters](#apply-filters)
   - [Manage non-searchable fields](#manage-non-searchable-fields)
   - [Limit the exposed attributes of the entities](#limit-the-exposed-attributes-of-the-entities)
+  - [Search on a rendered column](#search-on-a-rendered-column)
 - [Troubleshooting](#troubleshooting)
 
 ## Maven dependency
@@ -462,6 +463,77 @@ public class User {
 
 }
 ```
+
+### Search on a rendered column
+
+Let's say you have an `User` entity with two attributes, `firstName` and `lastName`.
+
+To display the rendered column on the client-side:
+
+```js
+$('table#sample').DataTable({
+  ajax: '/data/users',
+  serverSide: true,
+  columns : [
+    {
+      data: 'fullName',
+      render: (_, __, row) => `${row.firstName} ${row.lastName}`,
+      searchable: false,
+      orderable: false
+    }
+  ]
+});
+```
+
+Both `searchable` and `orderable` option are necessary, because the `User` entity has no`fullName` attribute.
+
+To filter on the server-side, you'll have to manually create the matching specification:
+
+```java
+@RequestMapping(value = "/data/users", method = RequestMethod.GET)
+public DataTablesOutput<User> list(@Valid DataTablesInput input) {
+    String searchValue = escapeContent(input.getSearch().getValue());
+    input.getSearch().setValue(""); // prevent search on other fields
+
+    Specification<User> fullNameSpecification = (Specification<User>) (root, query, criteriaBuilder) -> {
+        if (!hasText(searchValue)) {
+            return null;
+        }
+        String[] parts = searchValue.split(" ");
+        Expression<String> firstNameExpression = criteriaBuilder.lower(root.get("firstName"));
+        Expression<String> lastNameExpression = criteriaBuilder.lower(root.get("lastName"));
+        if (parts.length == 2 && hasText(parts[0]) && hasText(parts[1])) {
+            return criteriaBuilder.or(
+                    criteriaBuilder.and(
+                            criteriaBuilder.equal(firstNameExpression, parts[0]),
+                            criteriaBuilder.like(lastNameExpression, parts[1] + "%", '~')
+                    ),
+                    criteriaBuilder.and(
+                            criteriaBuilder.equal(lastNameExpression, parts[0]),
+                            criteriaBuilder.like(firstNameExpression, parts[1] + "%", '~')
+                    )
+            );
+        } else {
+            return criteriaBuilder.or(
+                    criteriaBuilder.like(firstNameExpression, searchValue + "%", '~'),
+                    criteriaBuilder.like(lastNameExpression, searchValue + "%", '~')
+            );
+        }
+    };
+    return userRepository.findAll(input, fullNameSpecification);
+}
+
+private String escapeContent(String content) {
+    return content
+            .replaceAll("~", "~~")
+            .replaceAll("%", "~%")
+            .replaceAll("_", "~_")
+            .trim()
+            .toLowerCase();
+}
+```
+
+You can find a complete example [here](https://github.com/darrachequesne/spring-data-jpa-datatables-sample).
 
 Back to [top](#spring-data-jpa-datatables).
 
