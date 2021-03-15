@@ -34,7 +34,7 @@ public class UserRestController {
 - [Getting started](#getting-started)
   - [1. Enable the use of `DataTablesRepository` factory](#1-enable-the-use-of-datatablesrepository-factory)
   - [2. Create a new entity](#2-create-a-new-entity)
-  - [3. Extend the DataTablesRepository interface](3-extend-the-datatablesrepository-interface)
+  - [3. Extend the DataTablesRepository interface](#3-extend-the-datatablesrepository-interface)
   - [4. On the client-side, create a new DataTable object](#4-on-the-client-side-create-a-new-datatable-object)
   - [5. Fix the serialization / deserialization of the query parameters](#5-fix-the-serialization--deserialization-of-the-query-parameters)
 - [API](#api)
@@ -43,6 +43,7 @@ public class UserRestController {
   - [Manage non-searchable fields](#manage-non-searchable-fields)
   - [Limit the exposed attributes of the entities](#limit-the-exposed-attributes-of-the-entities)
   - [Search on a rendered column](#search-on-a-rendered-column)
+  - [Use with the SearchPanes extension](#use-with-the-searchpanes-extension)
 - [Troubleshooting](#troubleshooting)
 
 ## Maven dependency
@@ -537,6 +538,52 @@ You can find a complete example [here](https://github.com/darrachequesne/spring-
 
 Back to [top](#spring-data-jpa-datatables).
 
+### Use with the SearchPanes extension
+
+Server-side:
+
+```java
+@RestController
+@RequiredArgsConstructor
+public class UserRestController {
+  private final UserRepository userRepository;
+
+  @RequestMapping(value = "/data/users", method = RequestMethod.GET)
+  public DataTablesOutput<User> getUsers(@Valid DataTablesInput input, @RequestParam Map<String, String> queryParams) {
+    input.parseSearchPanesFromQueryParams(queryParams, Arrays.asList("position", "status"));
+    return userRepository.findAll(input);
+  }
+}
+```
+
+Client-side:
+
+```js
+$(document).ready(function() {
+  var table = $('table#sample').DataTable({
+    ajax : '/data/users',
+    serverSide: true,
+    dom: 'Pfrtip',
+    columns : [{
+      data : 'id'
+    }, {
+      data : 'mail'
+    }, {
+      data : 'position'
+    }, {
+      data : 'status'
+    }]
+  });
+}
+```
+
+Regarding the deserialization issue detailed [above](#5-fix-the-serialization--deserialization-of-the-query-parameters), here is the compatibility matrix:
+
+| Solution | Compatibility with the SearchPanes extension |
+| --- | --- |
+| `jquery.spring-friendly.js` | YES |
+| POST requests | NO |
+| `flatten()` method | NO |
 
 ## Troubleshooting
 

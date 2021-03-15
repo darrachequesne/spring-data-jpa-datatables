@@ -5,13 +5,18 @@ import lombok.Data;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 @Data
 public class DataTablesInput {
+  /**
+   * Format: <code>searchPanes.$attribute.0</code> (<code>searchPanes[$attribute][0]</code> without jquery.spring-friendly.js)
+   *
+   * @see <a href="https://github.com/DataTables/SearchPanes/blob/5e6d3229cd90594cc67d6d266321f1c922fc9231/src/searchPanes.ts#L119-L137">source</a>
+   */
+  private static final Pattern SEARCH_PANES_REGEX = Pattern.compile("^searchPanes\\.(\\w+)\\.\\d+$");
 
   /**
    * Draw counter. This is used by DataTables to ensure that the Ajax returns from server-side
@@ -58,6 +63,11 @@ public class DataTablesInput {
    */
   @NotEmpty
   private List<Column> columns = new ArrayList<>();
+
+  /**
+   * Input for the <a href="https://datatables.net/extensions/searchpanes/">SearchPanes extension</a>
+   */
+  private Map<String, Set<String>> searchPanes;
 
   /**
    * 
@@ -119,6 +129,23 @@ public class DataTablesInput {
       }
       order.add(new Order(i, ascending ? "asc" : "desc"));
     }
+  }
+
+  public void parseSearchPanesFromQueryParams(Map<String, String> queryParams, Collection<String> attributes) {
+    Map<String, Set<String>> searchPanes = new HashMap<>();
+    attributes.forEach(attribute -> searchPanes.put(attribute, new HashSet<>()));
+
+    queryParams.forEach((key, value) -> {
+      Matcher matcher = SEARCH_PANES_REGEX.matcher(key);
+      if (matcher.matches()) {
+        String attribute = matcher.group(1);
+        if (attributes.contains(attribute)) {
+          searchPanes.get(attribute).add(value);
+        }
+      }
+    });
+
+    this.searchPanes = searchPanes;
   }
 
 }

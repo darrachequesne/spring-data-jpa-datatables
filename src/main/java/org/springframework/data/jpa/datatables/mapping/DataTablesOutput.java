@@ -40,6 +40,12 @@ public class DataTablesOutput<T> {
   private List<T> data = Collections.emptyList();
 
   /**
+   * Output for the <a href="https://datatables.net/extensions/searchpanes/">SearchPanes extension</a>
+   */
+  @JsonView(View.class)
+  private SearchPanes searchPanes;
+
+  /**
    * Optional: If an error occurs during the running of the server-side processing script, you can
    * inform the user of this error by passing back the error message to be displayed using this
    * parameter. Do not include if there is no error.
