@@ -22,6 +22,14 @@ public class PredicateBuilder extends AbstractPredicateBuilder<Predicate> {
     public Predicate build() {
         initPredicatesRecursively(tree, entity);
 
+        if (input.getSearchPanes() != null) {
+            input.getSearchPanes().forEach((attribute, values) -> {
+                if (!values.isEmpty()) {
+                    columnPredicates.add(entity.get(attribute).in(values));
+                }
+            });
+        }
+
         return createFinalPredicate();
     }
 

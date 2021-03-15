@@ -2,12 +2,14 @@ package org.springframework.data.jpa.datatables.qrepository;
 
 import com.querydsl.core.BooleanBuilder;
 import com.querydsl.core.types.EntityPath;
+import com.querydsl.core.types.Ops;
 import com.querydsl.core.types.Predicate;
 import com.querydsl.core.types.dsl.PathBuilder;
 import org.springframework.data.domain.Page;
 import org.springframework.data.jpa.datatables.PredicateBuilder;
 import org.springframework.data.jpa.datatables.mapping.DataTablesInput;
 import org.springframework.data.jpa.datatables.mapping.DataTablesOutput;
+import org.springframework.data.jpa.datatables.mapping.SearchPanes;
 import org.springframework.data.jpa.repository.support.JpaEntityInformation;
 import org.springframework.data.jpa.repository.support.QuerydslJpaRepository;
 import org.springframework.data.querydsl.EntityPathResolver;
@@ -15,8 +17,13 @@ import org.springframework.data.querydsl.SimpleEntityPathResolver;
 
 import javax.persistence.EntityManager;
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.function.Function;
+
+import static com.querydsl.core.types.dsl.Expressions.stringOperation;
 
 public class QDataTablesRepositoryImpl<T, ID extends Serializable>
     extends QuerydslJpaRepository<T, ID> implements QDataTablesRepository<T, ID> {
@@ -91,10 +98,38 @@ public class QDataTablesRepositoryImpl<T, ID extends Serializable>
       output.setData(content);
       output.setRecordsFiltered(data.getTotalElements());
 
+      if (input.getSearchPanes() != null) {
+        output.setSearchPanes(computeSearchPanes(input, predicate));
+      }
     } catch (Exception e) {
       output.setError(e.toString());
     }
 
     return output;
+  }
+
+  private SearchPanes computeSearchPanes(DataTablesInput input, Predicate predicate) {
+    Map<String, List<SearchPanes.Item>> options = new HashMap<>();
+
+    input.getSearchPanes().forEach((attribute, values) -> {
+      List<SearchPanes.Item> items = new ArrayList<>();
+      PathBuilder<Object> path = this.builder.get(attribute);
+
+      this.createQuery()
+              .select(stringOperation(Ops.STRING_CAST, path), path.count())
+              .where(predicate)
+              .groupBy(path)
+              .fetchResults()
+              .getResults()
+              .forEach(tuple -> {
+                String value = tuple.get(0, String.class);
+                long count = tuple.get(1, Long.class);
+                items.add(new SearchPanes.Item(value, value, count, count));
+              });
+
+      options.put(attribute, items);
+    });
+
+    return new SearchPanes(options);
   }
 }

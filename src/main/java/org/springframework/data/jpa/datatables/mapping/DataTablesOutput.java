@@ -1,6 +1,7 @@
 package org.springframework.data.jpa.datatables.mapping;
 
 import com.fasterxml.jackson.annotation.JsonView;
+import lombok.AllArgsConstructor;
 import lombok.Data;
 
 import java.util.Collections;
@@ -38,6 +39,12 @@ public class DataTablesOutput<T> {
    */
   @JsonView(View.class)
   private List<T> data = Collections.emptyList();
+
+  /**
+   * Output for the <a href="https://datatables.net/extensions/searchpanes/">SearchPanes extension</a>
+   */
+  @JsonView(View.class)
+  private SearchPanes searchPanes;
 
   /**
    * Optional: If an error occurs during the running of the server-side processing script, you can

@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.jpa.datatables.Config;
 import org.springframework.data.jpa.datatables.mapping.DataTablesInput;
 import org.springframework.data.jpa.datatables.mapping.DataTablesOutput;
+import org.springframework.data.jpa.datatables.mapping.SearchPanes;
 import org.springframework.data.jpa.datatables.model.Employee;
 import org.springframework.data.jpa.datatables.model.EmployeeDto;
 import org.springframework.data.jpa.domain.Specification;
@@ -18,8 +19,14 @@ import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
 import java.util.function.Function;
 
+import static java.util.Arrays.asList;
+import static java.util.Collections.emptySet;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @RunWith(SpringJUnit4ClassRunner.class)
@@ -253,6 +260,29 @@ public class EmployeeRepositoryTest {
 
         DataTablesOutput<Employee> output = getOutput(input);
         assertThat(output.getError()).isNotNull();
+    }
+
+    @Test
+    public void withSearchPanes() {
+        Map<String, Set<String>> searchPanes = new HashMap<>();
+        searchPanes.put("position", new HashSet<>(asList("Software Engineer", "Integration Specialist")));
+        searchPanes.put("age", emptySet());
+
+        input.setSearchPanes(searchPanes);
+
+        DataTablesOutput<Employee> output = getOutput(input);
+        assertThat(output.getRecordsFiltered()).isEqualTo(3);
+        assertThat(output.getSearchPanes()).isNotNull();
+
+        assertThat(output.getSearchPanes().getOptions().get("position")).containsOnly(
+                new SearchPanes.Item("Software Engineer", "Software Engineer", 2, 2),
+                new SearchPanes.Item("Integration Specialist", "Integration Specialist", 1, 1)
+        );
+        assertThat(output.getSearchPanes().getOptions().get("age")).containsOnly(
+                new SearchPanes.Item("28", "28", 1, 1),
+                new SearchPanes.Item("41", "41", 1, 1),
+                new SearchPanes.Item("61", "61", 1, 1)
+        );
     }
 
     private static DataTablesInput getBasicInput() {
