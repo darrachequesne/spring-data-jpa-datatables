@@ -2,13 +2,13 @@ sudo: false
 language: java
 jdk:
   - openjdk8
+  - openjdk11
+  - openjdk14
 services:
   - mysql
   - postgresql
 matrix:
   include:
-  - jdk: openjdk8
-    env: DB=h2
   - jdk: openjdk8
     env: DB=mysql
   - jdk: openjdk8
