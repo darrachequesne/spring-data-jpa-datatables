@@ -1,4 +1,11 @@
 
+<a name="5.1.0"></a>
+# [5.1.0](https://github.com/darrachequesne/spring-data-jpa-datatables/compare/v5.0.0...v5.1.0) / 2021-03-17
+
+### Features
+
+* add support for the SearchPanes extension ([16803f9](https://github.com/darrachequesne/spring-data-jpa-datatables/commit/16803f9d1e4f8c8c7b128a55b0be96d8cec36382))
+
 <a name="5.0.0"></a>
 # [5.0.0](https://github.com/darrachequesne/spring-data-jpa-datatables/compare/v4.3...v5.0.0) / 2018-03-01
 
