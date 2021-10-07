@@ -9,6 +9,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.jpa.datatables.PredicateBuilder;
 import org.springframework.data.jpa.datatables.mapping.DataTablesInput;
 import org.springframework.data.jpa.datatables.mapping.DataTablesOutput;
+import org.springframework.data.jpa.datatables.mapping.SearchBuilder;
 import org.springframework.data.jpa.datatables.mapping.SearchPanes;
 import org.springframework.data.jpa.repository.support.JpaEntityInformation;
 import org.springframework.data.jpa.repository.support.QuerydslJpaRepository;
@@ -100,6 +101,10 @@ public class QDataTablesRepositoryImpl<T, ID extends Serializable>
 
       if (input.getSearchPanes() != null) {
         output.setSearchPanes(computeSearchPanes(input, predicate));
+      }
+
+      if (input.getSearchBuilder() != null) {
+        output.setSearchBuilder(input.getSearchBuilder());
       }
     } catch (Exception e) {
       output.setError(e.toString());

@@ -5,7 +5,13 @@ import lombok.Data;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -68,6 +74,11 @@ public class DataTablesInput {
    * Input for the <a href="https://datatables.net/extensions/searchpanes/">SearchPanes extension</a>
    */
   private Map<String, Set<String>> searchPanes;
+
+  /**
+   * Input for the <a href="https://datatables.net/extensions/searchbuilder/">SearchBuilder extension</a>
+   */
+  private SearchBuilder searchBuilder;
 
   /**
    * 
