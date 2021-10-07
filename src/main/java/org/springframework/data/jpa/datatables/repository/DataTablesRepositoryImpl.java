@@ -86,6 +86,10 @@ public class DataTablesRepositoryImpl<T, ID extends Serializable> extends Simple
       if (input.getSearchPanes() != null) {
         output.setSearchPanes(computeSearchPanes(input, specification));
       }
+
+      if (input.getSearchBuilder() != null) {
+        output.setSearchBuilder(input.getSearchBuilder());
+      }
     } catch (Exception e) {
       output.setError(e.toString());
     }

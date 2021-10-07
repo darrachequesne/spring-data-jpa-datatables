@@ -1,5 +1,6 @@
 package org.springframework.data.jpa.datatables.mapping;
 
+import com.fasterxml.jackson.annotation.JsonView;
 import lombok.Data;
 
 import javax.validation.constraints.Min;
@@ -68,6 +69,11 @@ public class DataTablesInput {
    * Input for the <a href="https://datatables.net/extensions/searchpanes/">SearchPanes extension</a>
    */
   private Map<String, Set<String>> searchPanes;
+
+  /**
+   * Input for the <a href="https://datatables.net/extensions/searchbuilder/">SearchBuilder extension</a>
+   */
+  private SearchBuilder searchBuilder;
 
   /**
    * 
