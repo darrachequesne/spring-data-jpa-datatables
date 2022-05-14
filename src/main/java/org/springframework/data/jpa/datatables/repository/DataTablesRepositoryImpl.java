@@ -1,5 +1,6 @@
 package org.springframework.data.jpa.datatables.repository;
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.jpa.datatables.SpecificationBuilder;
 import org.springframework.data.jpa.datatables.mapping.DataTablesInput;
@@ -20,6 +21,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
 
+@Slf4j
 public class DataTablesRepositoryImpl<T, ID extends Serializable> extends SimpleJpaRepository<T, ID>
     implements DataTablesRepository<T, ID> {
   private final EntityManager entityManager;
@@ -87,6 +89,7 @@ public class DataTablesRepositoryImpl<T, ID extends Serializable> extends Simple
         output.setSearchPanes(computeSearchPanes(input, specification));
       }
     } catch (Exception e) {
+      log.warn("error while fetching records", e);
       output.setError(e.toString());
     }
 

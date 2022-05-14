@@ -5,6 +5,7 @@ import com.querydsl.core.types.EntityPath;
 import com.querydsl.core.types.Ops;
 import com.querydsl.core.types.Predicate;
 import com.querydsl.core.types.dsl.PathBuilder;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.jpa.datatables.PredicateBuilder;
 import org.springframework.data.jpa.datatables.mapping.DataTablesInput;
@@ -25,6 +26,7 @@ import java.util.function.Function;
 
 import static com.querydsl.core.types.dsl.Expressions.stringOperation;
 
+@Slf4j
 public class QDataTablesRepositoryImpl<T, ID extends Serializable>
     extends QuerydslJpaRepository<T, ID> implements QDataTablesRepository<T, ID> {
 
@@ -102,6 +104,7 @@ public class QDataTablesRepositoryImpl<T, ID extends Serializable>
         output.setSearchPanes(computeSearchPanes(input, predicate));
       }
     } catch (Exception e) {
+      log.warn("error while fetching records", e);
       output.setError(e.toString());
     }
 
