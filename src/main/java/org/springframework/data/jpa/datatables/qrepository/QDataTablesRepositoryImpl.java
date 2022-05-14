@@ -5,6 +5,7 @@ import com.querydsl.core.types.EntityPath;
 import com.querydsl.core.types.Ops;
 import com.querydsl.core.types.Predicate;
 import com.querydsl.core.types.dsl.PathBuilder;
+
 import org.springframework.data.domain.Page;
 import org.springframework.data.jpa.datatables.PredicateBuilder;
 import org.springframework.data.jpa.datatables.mapping.DataTablesInput;
@@ -15,7 +16,6 @@ import org.springframework.data.jpa.repository.support.QuerydslJpaRepository;
 import org.springframework.data.querydsl.EntityPathResolver;
 import org.springframework.data.querydsl.SimpleEntityPathResolver;
 
-import javax.persistence.EntityManager;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -23,8 +23,13 @@ import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
 
+import javax.persistence.EntityManager;
+
+import lombok.extern.slf4j.Slf4j;
+
 import static com.querydsl.core.types.dsl.Expressions.stringOperation;
 
+@Slf4j
 public class QDataTablesRepositoryImpl<T, ID extends Serializable>
     extends QuerydslJpaRepository<T, ID> implements QDataTablesRepository<T, ID> {
 
@@ -102,7 +107,8 @@ public class QDataTablesRepositoryImpl<T, ID extends Serializable>
         output.setSearchPanes(computeSearchPanes(input, predicate));
       }
     } catch (Exception e) {
-      output.setError(e.toString());
+		log.error("QDataTablesRepository.findAll failed", e);
+        output.setError(e.toString());
     }
 
     return output;

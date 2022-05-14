@@ -9,10 +9,6 @@ import org.springframework.data.jpa.domain.Specification;
 import org.springframework.data.jpa.repository.support.JpaEntityInformation;
 import org.springframework.data.jpa.repository.support.SimpleJpaRepository;
 
-import javax.persistence.EntityManager;
-import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.Root;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -20,6 +16,15 @@ import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
 
+import javax.persistence.EntityManager;
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Root;
+
+import lombok.extern.slf4j.Slf4j;
+
+
+@Slf4j
 public class DataTablesRepositoryImpl<T, ID extends Serializable> extends SimpleJpaRepository<T, ID>
     implements DataTablesRepository<T, ID> {
   private final EntityManager entityManager;
@@ -87,7 +92,8 @@ public class DataTablesRepositoryImpl<T, ID extends Serializable> extends Simple
         output.setSearchPanes(computeSearchPanes(input, specification));
       }
     } catch (Exception e) {
-      output.setError(e.toString());
+		log.error("DataTablesRepository.findAll failed", e);
+        output.setError(e.toString());
     }
 
     return output;
