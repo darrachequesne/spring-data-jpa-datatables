@@ -41,7 +41,7 @@ public class Config {
         dataSource.setDriverClassName("com.mysql.jdbc.Driver");
         dataSource.setUrl("jdbc:mysql://127.0.0.1/test");
         dataSource.setUsername("root");
-        dataSource.setPassword("");
+        dataSource.setPassword("changeit");
         return dataSource;
     }
 
@@ -50,9 +50,9 @@ public class Config {
     public DataSource dataSource_PostgreSQL() throws SQLException {
         DriverManagerDataSource dataSource = new DriverManagerDataSource();
         dataSource.setDriverClassName("org.postgresql.Driver");
-        dataSource.setUrl("jdbc:postgresql://127.0.0.1/test");
+        dataSource.setUrl("jdbc:postgresql://127.0.0.1/postgres");
         dataSource.setUsername("postgres");
-        dataSource.setPassword("");
+        dataSource.setPassword("postgres");
         return dataSource;
     }
 
