@@ -18,6 +18,7 @@ import org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter;
 
 import javax.sql.DataSource;
 import java.sql.SQLException;
+import java.util.Properties;
 
 /**
  * Spring JavaConfig configuration for general infrastructure.
@@ -61,23 +62,13 @@ public class Config {
         LocalSessionFactoryBean factory = new LocalSessionFactoryBean();
         factory.setPackagesToScan(Config.class.getPackage().getName());
         factory.setDataSource(dataSource);
+
+        Properties properties = new Properties();
+        properties.setProperty("hibernate.hbm2ddl.auto", "create");
+        factory.setHibernateProperties(properties);
+
         factory.afterPropertiesSet();
         return factory.getObject();
-    }
-
-    @Bean
-    public AbstractEntityManagerFactoryBean entityManager(DataSource dataSource)
-            throws SQLException {
-
-        HibernateJpaVendorAdapter jpaVendorAdapter = new HibernateJpaVendorAdapter();
-        jpaVendorAdapter.setGenerateDdl(true);
-
-        LocalContainerEntityManagerFactoryBean bean = new LocalContainerEntityManagerFactoryBean();
-        bean.setJpaVendorAdapter(jpaVendorAdapter);
-        bean.setPackagesToScan(Config.class.getPackage().getName());
-        bean.setDataSource(dataSource);
-
-        return bean;
     }
 
     @Bean

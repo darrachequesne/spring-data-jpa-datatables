@@ -1,6 +1,5 @@
 package org.springframework.data.jpa.datatables.repository;
 
-import com.google.common.collect.Lists;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -88,7 +87,7 @@ public class EmployeeRepositoryTest {
         input.addOrder("age", false);
 
         DataTablesOutput<Employee> output = getOutput(input);
-        assertThat(output.getData()).containsExactlyElementsOf(Lists.reverse(Employee.ALL_SORTED_BY_AGE));
+        assertThat(output.getData()).containsExactlyElementsOf(Employee.ALL_SORTED_BY_AGE_DESC);
     }
 
     @Test

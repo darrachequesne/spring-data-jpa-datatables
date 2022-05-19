@@ -126,6 +126,11 @@ abstract class AbstractPredicateBuilder<T> {
         public int getPageNumber() {
             throw new UnsupportedOperationException();
         }
+
+        @Override
+        public Pageable withPage(int pageNumber) {
+            throw new UnsupportedOperationException();
+        }
     }
 
 }

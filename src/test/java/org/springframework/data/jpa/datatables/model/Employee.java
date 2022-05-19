@@ -7,9 +7,14 @@ import lombok.Setter;
 import lombok.experimental.Tolerate;
 
 import javax.persistence.*;
+import java.util.Comparator;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import static java.util.Arrays.asList;
+import static java.util.Comparator.comparingInt;
+import static java.util.Comparator.reverseOrder;
+import static java.util.stream.Collectors.toList;
 
 @Data
 @Setter(AccessLevel.NONE)
@@ -102,13 +107,9 @@ public class Employee {
             BRIELLE_WILLIAMSON
     );
 
-    public static List<Employee> ALL_SORTED_BY_AGE = asList(
-            BRENDEN_WAGNER,
-            AIRI_SATOU,
-            BRADLEY_GREER,
-            ANGELICA_RAMOS,
-            BRIELLE_WILLIAMSON,
-            ASHTON_COX
-    );
+  public static List<Employee> ALL_SORTED_BY_AGE =
+      ALL.stream().sorted(comparingInt(e -> e.age)).collect(toList());
 
+  public static List<Employee> ALL_SORTED_BY_AGE_DESC =
+      ALL.stream().sorted(comparingInt(e -> -e.age)).collect(toList());
 }
