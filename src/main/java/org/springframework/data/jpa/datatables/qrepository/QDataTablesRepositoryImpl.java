@@ -71,6 +71,8 @@ public class QDataTablesRepositoryImpl<T, ID extends Serializable>
   @Override
   public <R> DataTablesOutput<R> findAll(DataTablesInput input, Predicate additionalPredicate,
       Predicate preFilteringPredicate, Function<T, R> converter) {
+    log.debug("input: {}", input);
+
     DataTablesOutput<R> output = new DataTablesOutput<>();
     output.setDraw(input.getDraw());
     if (input.getLength() == 0) {
@@ -108,6 +110,7 @@ public class QDataTablesRepositoryImpl<T, ID extends Serializable>
       output.setError(e.toString());
     }
 
+    log.debug("output: {}", output);
     return output;
   }
 

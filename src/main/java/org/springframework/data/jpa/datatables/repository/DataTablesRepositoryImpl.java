@@ -59,6 +59,8 @@ public class DataTablesRepositoryImpl<T, ID extends Serializable> extends Simple
   public <R> DataTablesOutput<R> findAll(DataTablesInput input,
       Specification<T> additionalSpecification, Specification<T> preFilteringSpecification,
       Function<T, R> converter) {
+    log.debug("input: {}", input);
+
     DataTablesOutput<R> output = new DataTablesOutput<>();
     output.setDraw(input.getDraw());
     if (input.getLength() == 0) {
@@ -93,6 +95,7 @@ public class DataTablesRepositoryImpl<T, ID extends Serializable> extends Simple
       output.setError(e.toString());
     }
 
+    log.debug("output: {}", output);
     return output;
   }
 
