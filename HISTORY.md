@@ -1,3 +1,12 @@
+<a name="5.2.0"></a>
+# [5.2.0](https://github.com/darrachequesne/spring-data-jpa-datatables/compare/v5.1.0...v5.2.0) / 2022-05-19
+
+
+### Features
+
+* log errors ([#144](https://github.com/darrachequesne/spring-data-jpa-datatables/issues/144)) ([d102cfa](https://github.com/darrachequesne/spring-data-jpa-datatables/commit/d102cfabc3a67b3dd1768e373e21f0855f94a43a))
+
+
 
 <a name="5.1.0"></a>
 # [5.1.0](https://github.com/darrachequesne/spring-data-jpa-datatables/compare/v5.0.0...v5.1.0) / 2021-03-17
