@@ -7,7 +7,7 @@ import org.springframework.data.jpa.repository.support.JpaRepositoryFactoryBean;
 import org.springframework.data.repository.core.RepositoryMetadata;
 import org.springframework.data.repository.core.support.RepositoryFactorySupport;
 
-import javax.persistence.EntityManager;
+import jakarta.persistence.EntityManager;
 import java.io.Serializable;
 
 /**
@@ -22,6 +22,7 @@ public class QDataTablesRepositoryFactoryBean<R extends JpaRepository<T, ID>, T,
     super(repositoryInterface);
   }
 
+  @Override
   protected RepositoryFactorySupport createRepositoryFactory(EntityManager entityManager) {
     return new DataTablesRepositoryFactory(entityManager);
   }

@@ -1,6 +1,6 @@
 package org.springframework.data.jpa.datatables.mapping;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;;
 
 import java.util.*;
 

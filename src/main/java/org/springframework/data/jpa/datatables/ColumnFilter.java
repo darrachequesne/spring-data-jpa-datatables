@@ -4,9 +4,9 @@ import com.querydsl.core.types.Ops;
 import com.querydsl.core.types.Predicate;
 import com.querydsl.core.types.dsl.*;
 
-import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.Expression;
-import javax.persistence.criteria.From;
+import jakarta.persistence.criteria.CriteriaBuilder;
+import jakarta.persistence.criteria.Expression;
+import jakarta.persistence.criteria.From;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -72,7 +72,7 @@ class ColumnFilter extends GlobalFilter {
     }
 
     @Override
-    public javax.persistence.criteria.Predicate createPredicate(From<?, ?> from, CriteriaBuilder criteriaBuilder, String attributeName) {
+    public jakarta.persistence.criteria.Predicate createPredicate(From<?, ?> from, CriteriaBuilder criteriaBuilder, String attributeName) {
         Expression<?> expression = from.get(attributeName);
 
         if (values.isEmpty()) {
@@ -81,7 +81,7 @@ class ColumnFilter extends GlobalFilter {
             return super.createPredicate(from, criteriaBuilder, attributeName);
         }
 
-        javax.persistence.criteria.Predicate predicate;
+        jakarta.persistence.criteria.Predicate predicate;
         if (isBooleanComparison) {
             predicate = expression.in(booleanValues);
         } else {

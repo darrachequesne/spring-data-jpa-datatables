@@ -2,7 +2,7 @@ package org.springframework.data.jpa.datatables.model;
 
 import lombok.*;
 
-import javax.persistence.*;
+import jakarta.persistence.*;
 import java.util.Collections;
 import java.util.List;
 

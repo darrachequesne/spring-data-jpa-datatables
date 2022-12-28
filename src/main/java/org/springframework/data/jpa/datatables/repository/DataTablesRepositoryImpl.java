@@ -1,6 +1,13 @@
 package org.springframework.data.jpa.datatables.repository;
 
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.criteria.CriteriaBuilder;
+import jakarta.persistence.criteria.CriteriaQuery;
+import jakarta.persistence.criteria.Root;
 import lombok.extern.slf4j.Slf4j;
+import org.hibernate.query.sqm.tree.domain.AbstractSqmFrom;
+import org.hibernate.query.sqm.tree.domain.SqmPath;
+import org.hibernate.query.sqm.tree.from.SqmAttributeJoin;
 import org.springframework.data.domain.Page;
 import org.springframework.data.jpa.datatables.SpecificationBuilder;
 import org.springframework.data.jpa.datatables.mapping.DataTablesInput;
@@ -10,10 +17,6 @@ import org.springframework.data.jpa.domain.Specification;
 import org.springframework.data.jpa.repository.support.JpaEntityInformation;
 import org.springframework.data.jpa.repository.support.SimpleJpaRepository;
 
-import javax.persistence.EntityManager;
-import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.Root;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -88,7 +91,8 @@ public class DataTablesRepositoryImpl<T, ID extends Serializable> extends Simple
       output.setRecordsFiltered(data.getTotalElements());
 
       if (input.getSearchPanes() != null) {
-        output.setSearchPanes(computeSearchPanes(input, specification));
+        SpecificationBuilder<T> specificationSearchPaneBuilder = new SpecificationBuilder<>(input);
+        output.setSearchPanes(computeSearchPanes(input, specificationSearchPaneBuilder.buildSearchPane()));
       }
     } catch (Exception e) {
       log.warn("error while fetching records", e);
@@ -100,16 +104,15 @@ public class DataTablesRepositoryImpl<T, ID extends Serializable> extends Simple
   }
 
   private SearchPanes computeSearchPanes(DataTablesInput input, Specification<T> specification) {
-    CriteriaBuilder criteriaBuilder = this.entityManager.getCriteriaBuilder();
     Map<String, List<SearchPanes.Item>> options = new HashMap<>();
 
     input.getSearchPanes().forEach((attribute, values) -> {
+      CriteriaBuilder criteriaBuilder = this.entityManager.getCriteriaBuilder();
       CriteriaQuery<Object[]> query = criteriaBuilder.createQuery(Object[].class);
       Root<T> root = query.from(getDomainClass());
       query.multiselect(root.get(attribute), criteriaBuilder.count(root));
       query.groupBy(root.get(attribute));
       query.where(specification.toPredicate(root, query, criteriaBuilder));
-      root.getFetches().clear();
 
       List<SearchPanes.Item> items = new ArrayList<>();
 
