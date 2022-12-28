@@ -1,11 +1,11 @@
 package org.springframework.data.jpa.datatables;
 
-import org.hibernate.query.criteria.internal.path.AbstractPathImpl;
+import jakarta.persistence.metamodel.Bindable.BindableType;
 import org.springframework.data.jpa.datatables.mapping.DataTablesInput;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.lang.NonNull;
 
-import javax.persistence.criteria.*;
+import jakarta.persistence.criteria.*;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -20,12 +20,12 @@ public class SpecificationBuilder<T> extends AbstractPredicateBuilder<Specificat
     }
 
     private class DataTablesSpecification<S> implements Specification<S> {
-        private List<Predicate> columnPredicates = new ArrayList<>();
-        private List<Predicate> globalPredicates = new ArrayList<>();
+        protected List<Predicate> columnPredicates = new ArrayList<>();
+        protected List<Predicate> globalPredicates = new ArrayList<>();
 
         @Override
         public Predicate toPredicate(@NonNull Root<S> root, @NonNull CriteriaQuery<?> query, @NonNull CriteriaBuilder criteriaBuilder) {
-            initPredicatesRecursively(tree, root, root, criteriaBuilder);
+            initPredicatesRecursively(query,tree, root, root, criteriaBuilder);
 
             if (input.getSearchPanes() != null) {
                 input.getSearchPanes().forEach((attribute, values) -> {
@@ -35,15 +35,16 @@ public class SpecificationBuilder<T> extends AbstractPredicateBuilder<Specificat
                 });
             }
 
-            boolean isCountQuery = query.getResultType() == Long.class;
-            if (isCountQuery) {
-                root.getFetches().clear();
-            }
-
-            return createFinalPredicate(criteriaBuilder);
+            final Predicate predicate = createFinalPredicate(criteriaBuilder);
+            columnPredicates.clear();
+            return predicate;
         }
 
-        private void initPredicatesRecursively(Node<Filter> node, From<S, S> from, FetchParent<S, S> fetch, CriteriaBuilder criteriaBuilder) {
+        private boolean isCountQuery(CriteriaQuery<?> query) {
+            return query.getResultType() == Long.class;
+        }
+
+        protected void initPredicatesRecursively(CriteriaQuery<?> query, Node<Filter> node, From<S, S> from, FetchParent<S, S> fetch, CriteriaBuilder criteriaBuilder) {
             if (node.isLeaf()) {
                 boolean hasColumnFilter = node.getData() != null;
                 if (hasColumnFilter) {
@@ -56,23 +57,26 @@ public class SpecificationBuilder<T> extends AbstractPredicateBuilder<Specificat
             }
             for (Node<Filter> child : node.getChildren()) {
                 Path<Object> path = from.get(child.getName());
-                if (path instanceof AbstractPathImpl) {
-                    if (((AbstractPathImpl) path).getAttribute().isCollection()) {
-                        // ignore OneToMany and ManyToMany relationships
-                        continue;
-                    }
+                if (path.getModel().getBindableType() == BindableType.PLURAL_ATTRIBUTE) { // TODO
+                    // ignore OneToMany and ManyToMany relationships
+                    continue;
                 }
                 if (child.isLeaf()) {
-                    initPredicatesRecursively(child, from, fetch, criteriaBuilder);
+                    initPredicatesRecursively(query,child, from, fetch, criteriaBuilder);
                 } else {
                     Join<S, S> join = from.join(child.getName(), JoinType.LEFT);
-                    Fetch<S, S> childFetch = fetch.fetch(child.getName(), JoinType.LEFT);
-                    initPredicatesRecursively(child, join, childFetch, criteriaBuilder);
+
+                    if (isCountQuery(query)) {
+                        initPredicatesRecursively(query,child, join, join, criteriaBuilder);
+                    } else {
+                        Fetch<S, S> childFetch = fetch.fetch(child.getName(), JoinType.LEFT);
+                        initPredicatesRecursively(query,child, join, childFetch, criteriaBuilder);
+                    }
                 }
             }
         }
 
-        private Predicate createFinalPredicate(CriteriaBuilder criteriaBuilder) {
+        protected Predicate createFinalPredicate(CriteriaBuilder criteriaBuilder) {
             List<Predicate> allPredicates = new ArrayList<>(columnPredicates);
 
             if (!globalPredicates.isEmpty()) {
@@ -83,4 +87,38 @@ public class SpecificationBuilder<T> extends AbstractPredicateBuilder<Specificat
         }
     }
 
+    private class DataTablesSearchPaneSpecification<S> extends DataTablesSpecification<S> {
+
+        @Override
+        protected void initPredicatesRecursively(CriteriaQuery<?> query, Node<Filter> node, From<S, S> from,
+            FetchParent<S, S> fetch, CriteriaBuilder criteriaBuilder) {
+            if (node.isLeaf()) {
+                boolean hasColumnFilter = node.getData() != null;
+                if (hasColumnFilter) {
+                    Filter columnFilter = node.getData();
+                    columnPredicates.add(columnFilter.createPredicate(from, criteriaBuilder, node.getName()));
+                } else if (hasGlobalFilter) {
+                    Filter globalFilter = tree.getData();
+                    globalPredicates.add(globalFilter.createPredicate(from, criteriaBuilder, node.getName()));
+                }
+            }
+            for (Node<Filter> child : node.getChildren()) {
+                Path<Object> path = from.get(child.getName());
+                if (path.getModel().getBindableType() == BindableType.PLURAL_ATTRIBUTE) { // TODO
+                    // ignore OneToMany and ManyToMany relationships
+                    continue;
+                }
+                if (child.isLeaf()) {
+                    initPredicatesRecursively(query,child, from, fetch, criteriaBuilder);
+                } else {
+                    Join<S, S> join = from.join(child.getName(), JoinType.LEFT);
+                    initPredicatesRecursively(query,child, join, fetch, criteriaBuilder);
+                }
+            }
+        }
+    }
+
+    public Specification<T> buildSearchPane() {
+        return new DataTablesSearchPaneSpecification<>();
+    }
 }

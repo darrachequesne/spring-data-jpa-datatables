@@ -3,6 +3,7 @@ package org.springframework.data.jpa.datatables.repository;
 import org.springframework.data.jpa.datatables.mapping.DataTablesInput;
 import org.springframework.data.jpa.datatables.mapping.DataTablesOutput;
 import org.springframework.data.jpa.domain.Specification;
+import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.repository.NoRepositoryBean;
 import org.springframework.data.repository.PagingAndSortingRepository;
@@ -18,7 +19,7 @@ import java.util.function.Function;
  */
 @NoRepositoryBean
 public interface DataTablesRepository<T, ID extends Serializable>
-    extends PagingAndSortingRepository<T, ID>, JpaSpecificationExecutor<T> {
+    extends PagingAndSortingRepository<T, ID>, JpaSpecificationExecutor<T>, JpaRepository<T, ID> {
 
   /**
    * Returns the filtered list for the given {@link DataTablesInput}.
