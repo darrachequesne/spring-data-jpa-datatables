@@ -98,6 +98,17 @@ public class EmployeeRepositoryTest {
     }
 
     @Test
+    void globalFilterWithMultiplePages() {
+        input.getSearch().setValue("e");
+        input.setLength(1);
+
+        DataTablesOutput<Employee> output = getOutput(input);
+        assertThat(output.getError()).isNull();
+        assertThat(output.getRecordsFiltered()).isEqualTo(6);
+        assertThat(output.getRecordsTotal()).isEqualTo(6);
+    }
+
+    @Test
     void globalFilterIgnoreCaseIgnoreSpace() {
         input.getSearch().setValue(" aMoS  ");
 
