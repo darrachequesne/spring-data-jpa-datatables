@@ -1,5 +1,6 @@
 # History
 
+- [6.0.1](#601-2023-02-12) (Feb 2023)
 - [6.0.0](#600-2023-01-02) (Jan 2023)
 - [5.2.0](#520-2022-05-19) (May 2022)
 - [5.1.0](#510-2021-03-17) (Mar 2021)
@@ -14,6 +15,15 @@
 
 
 # Release notes
+
+## [6.0.1](https://github.com/darrachequesne/spring-data-jpa-datatables/compare/v6.0.0...v6.0.1) (2023-02-12)
+
+
+### Bug Fixes
+
+* fix integration with Spring Boot 3 ([a6a8a0d](https://github.com/darrachequesne/spring-data-jpa-datatables/commit/a6a8a0d9d97919e8321927ac4f35078844cdfa26))
+
+
 
 ## [6.0.0](https://github.com/darrachequesne/spring-data-jpa-datatables/compare/v5.2.0...v6.0.0) (2023-01-02)
 
