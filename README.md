@@ -32,11 +32,12 @@ public class UserRestController {
 
 - [Maven dependency](#maven-dependency)
 - [Getting started](#getting-started)
-  - [1. Enable the use of `DataTablesRepository` factory](#1-enable-the-use-of-datatablesrepository-factory)
-  - [2. Create a new entity](#2-create-a-new-entity)
-  - [3. Extend the DataTablesRepository interface](#3-extend-the-datatablesrepository-interface)
-  - [4. On the client-side, create a new DataTable object](#4-on-the-client-side-create-a-new-datatable-object)
-  - [5. Fix the serialization / deserialization of the query parameters](#5-fix-the-serialization--deserialization-of-the-query-parameters)
+  - [Step 1 - Enable the use of the `DataTablesRepository` factory](#step-1---enable-the-use-of-the-datatablesrepository-factory)
+  - [Step 2 - Create a new entity](#step-2---create-a-new-entity)
+  - [Step 3 - Extend the DataTablesRepository interface](#step-3---extend-the-datatablesrepository-interface)
+  - [Step 4 - Use the repository in your controllers](#step-4---use-the-repository-in-your-controllers)
+  - [Step 5 - On the client-side, create a new DataTable object](#step-5---on-the-client-side-create-a-new-datatable-object)
+  - [Step 6 - Fix the serialization / deserialization of the query parameters](#step-6---fix-the-serialization--deserialization-of-the-query-parameters)
 - [API](#api)
 - [How to](#how-to)
   - [Apply filters](#apply-filters)
@@ -44,6 +45,10 @@ public class UserRestController {
   - [Limit the exposed attributes of the entities](#limit-the-exposed-attributes-of-the-entities)
   - [Search on a rendered column](#search-on-a-rendered-column)
   - [Use with the SearchPanes extension](#use-with-the-searchpanes-extension)
+- [Examples of additional specification](#examples-of-additional-specification)
+  - [Specific date](#specific-date)
+  - [Range of integers](#range-of-integers)
+  - [Range of dates](#range-of-dates)
 - [Troubleshooting](#troubleshooting)
 
 ## Maven dependency
@@ -65,14 +70,14 @@ Compatibility with Spring Boot:
 | 6.x           | [3](https://www.springcloud.io/post/2022-11/springboot3-upgrade-guide/) |
 
 
-Back to [top](#spring-data-jpa-datatables).
+Back to [top](#contents).
 
 
 ## Getting started
 
 Please see the [sample project](https://github.com/darrachequesne/spring-data-jpa-datatables-sample) for a complete example.
 
-### 1. Enable the use of `DataTablesRepository` factory
+### Step 1 - Enable the use of the `DataTablesRepository` factory
 
 With either
 
@@ -100,7 +105,7 @@ public class DefaultJpaConfiguration {}
 public class DataTablesConfiguration {}
 ```
 
-### 2. Create a new entity
+### Step 2 - Create a new entity
 
 ```java
 @Entity
@@ -117,7 +122,7 @@ public class User {
 }
 ```
 
-### 3. Extend the DataTablesRepository interface
+### Step 3 - Extend the DataTablesRepository interface
 
 ```java
 public interface UserRepository extends DataTablesRepository<User, Integer> {}
@@ -125,13 +130,28 @@ public interface UserRepository extends DataTablesRepository<User, Integer> {}
 
 The `DataTablesRepository` interface extends both [PagingAndSortingRepository](https://docs.spring.io/spring-data/commons/docs/current/api/org/springframework/data/repository/PagingAndSortingRepository.html) and [JpaSpecificationExecutor](https://docs.spring.io/spring-data/jpa/docs/current/api/org/springframework/data/jpa/repository/JpaSpecificationExecutor.html).
 
-### 4. On the client-side, create a new DataTable object
+### Step 4 - Use the repository in your controllers
+
+```java
+@RestController
+@RequiredArgsConstructor
+public class MyController {
+  private final UserRepository userRepository;
+
+  @RequestMapping(value = "/data/users", method = RequestMethod.GET)
+  public DataTablesOutput<User> getUsers(@Valid DataTablesInput input) {
+    return userRepository.findAll(input);
+  }
+}
+```
+
+### Step 5 - On the client-side, create a new DataTable object
 
 ```javascript
 $(document).ready(function() {
   var table = $('table#sample').DataTable({
-    'ajax' : '/data/users',
-    'serverSide' : true,
+    ajax : '/data/users',
+    serverSide : true,
     columns : [{
       data : 'id'
     }, {
@@ -146,17 +166,27 @@ $(document).ready(function() {
 }
 ```
 
-### 5. Fix the serialization / deserialization of the query parameters
+### Step 6 - Fix the serialization / deserialization of the query parameters
 
 By default, the [parameters](https://datatables.net/manual/server-side#Sent-parameters) sent by the plugin cannot be deserialized by Spring MVC and will throw the following exception: `InvalidPropertyException: Invalid property 'columns[0][data]' of bean class [org.springframework.data.jpa.datatables.mapping.DataTablesInput]`.
 
 There are multiple solutions to this issue:
 
-- include the [jquery.spring-friendly.js](jquery.spring-friendly.js) file found at the root of the repository
+- [Solution n°1 - custom serialization](#solution-n1---custom-serialization)
+- [Solution n°2 - POST requests](#solution-n2---post-requests)
+- [Solution n°3 - manual serialization](#solution-n3---manual-serialization)
 
-It overrides jQuery data serialization to allow Spring MVC to correctly map input parameters (by changing `column[0][data]` into `column[0].data` in request payload)
+#### Solution n°1 - custom serialization
 
-- retrieve data with POST requests
+You need to include the [jquery.spring-friendly.js](jquery.spring-friendly.js) file found at the root of the repository.
+
+```html
+<script src="jquery.spring-friendly.js" />
+```
+
+It overrides the default serialization of the HTTP request parameters to allow Spring MVC to correctly map them, by changing `column[0][data]` into `column[0].data` in the request payload.
+
+#### Solution n°2 - POST requests
 
 Client-side:
 
@@ -176,13 +206,16 @@ $('table#sample').DataTable({
 Server-side:
 
 ```java
-@RequestMapping(value = "/data/users", method = RequestMethod.POST)
-public DataTablesOutput<User> getUsers(@Valid @RequestBody DataTablesInput input) {
-  return userRepository.findAll(input);
+@RestController
+public class MyController {
+  @RequestMapping(value = '/data/users', method = RequestMethod.POST)
+  public DataTablesOutput<User> getUsers(@Valid @RequestBody DataTablesInput input) {
+    return userRepository.findAll(input);
+  }
 }
 ```
 
-- manually serialize the query parameters
+#### Solution n°3 - manual serialization
 
 ```javascript
 
@@ -219,7 +252,7 @@ $('table#sample').DataTable({
 })
 ```
 
-Back to [top](#spring-data-jpa-datatables).
+Back to [top](#contents).
 
 
 ## API
@@ -227,15 +260,35 @@ Back to [top](#spring-data-jpa-datatables).
 The repositories now expose the following methods:
 
 ```java
-DataTablesOutput<T> findAll(DataTablesInput input);
-DataTablesOutput<R> findAll(DataTablesInput input, Function<T, R> converter);
-DataTablesOutput<T> findAll(DataTablesInput input, Specification<T> additionalSpecification);
+public interface DataTablesRepository<T, ID extends Serializable> {
 
-DataTablesOutput<T> findAll(DataTablesInput input, Specification<T> additionalSpecification,
-    Specification<T> preFilteringSpecification);
+    DataTablesOutput<T> findAll(
+        DataTablesInput input
+    );
 
-DataTablesOutput<R> findAll(DataTablesInput input, Specification<T> additionalSpecification,
-    Specification<T> preFilteringSpecification, Function<T, R> converter);
+    DataTablesOutput<R> findAll(
+        DataTablesInput input,
+        Function<T, R> converter
+    );
+
+    DataTablesOutput<T> findAll(
+        DataTablesInput input,
+        Specification<T> additionalSpecification
+    );
+
+    DataTablesOutput<T> findAll(
+        DataTablesInput input,
+        Specification<T> additionalSpecification,
+        Specification<T> preFilteringSpecification
+    );
+
+    DataTablesOutput<R> findAll(
+        DataTablesInput input,
+        Specification<T> additionalSpecification,
+        Specification<T> preFilteringSpecification,
+        Function<T, R> converter
+    );
+}
 ```
 
 **Note**: since version 2.0, QueryDSL is also supported:
@@ -245,15 +298,35 @@ DataTablesOutput<R> findAll(DataTablesInput input, Specification<T> additionalSp
 and your repositories will now expose:
 
 ```java
-DataTablesOutput<T> findAll(DataTablesInput input);
-DataTablesOutput<R> findAll(DataTablesInput input, Function<T, R> converter);
-DataTablesOutput<T> findAll(DataTablesInput input, Predicate additionalPredicate);
+public interface QDataTablesRepository<T, ID extends Serializable> {
 
-DataTablesOutput<T> findAll(DataTablesInput input, Predicate additionalPredicate,
-    Predicate preFilteringPredicate);
+    DataTablesOutput<T> findAll(
+        DataTablesInput input
+    );
 
-DataTablesOutput<R> findAll(DataTablesInput input, Predicate additionalPredicate,
-    Predicate preFilteringPredicate, Function<T, R> converter);
+    DataTablesOutput<R> findAll(
+        DataTablesInput input,
+        Function<T, R> converter
+    );
+
+    DataTablesOutput<T> findAll(
+        DataTablesInput input,
+        Predicate additionalPredicate
+    );
+
+    DataTablesOutput<T> findAll(
+        DataTablesInput input,
+        Predicate additionalPredicate,
+        Predicate preFilteringPredicate
+    );
+
+    DataTablesOutput<R> findAll(
+        DataTablesInput input,
+        Predicate additionalPredicate,
+        Predicate preFilteringPredicate,
+        Function<T, R> converter
+    );
+}
 ```
 
 Your controllers should be able to handle the parameters sent by DataTables:
@@ -265,14 +338,12 @@ public class UserRestController {
   @Autowired
   private UserRepository userRepository;
 
-  @JsonView(DataTablesOutput.View.class)
   @RequestMapping(value = "/data/users", method = RequestMethod.GET)
   public DataTablesOutput<User> getUsers(@Valid DataTablesInput input) {
     return userRepository.findAll(input);
   }
 
   // or with some preprocessing
-  @JsonView(DataTablesOutput.View.class)
   @RequestMapping(value = "/data/users", method = RequestMethod.GET)
   public DataTablesOutput<User> getUsers(@Valid DataTablesInput input) {
     ColumnParameter parameter0 = input.getColumns().get(0);
@@ -282,7 +353,6 @@ public class UserRestController {
   }
 
   // or with an additional filter allowing to 'hide' data from the client (the filter will be applied on both the count and the data queries, and may impact the recordsTotal in the output)
-  @JsonView(DataTablesOutput.View.class)
   @RequestMapping(value = "/data/users", method = RequestMethod.GET)
   public DataTablesOutput<User> getUsers(@Valid DataTablesInput input) {
     return userRepository.findAll(input, null, removeHiddenEntitiesSpecification);
@@ -366,12 +436,18 @@ Also supports paging and sorting.
 is converted into the following SQL (through the [Criteria API](https://www.objectdb.com/java/jpa/query/criteria)):
 
 ```sql
-SELECT user0_.id AS id1_0_0_,
-       user0_.first_name AS first_na3_0_0_,
-       user0_.last_name AS last_nam4_0_0_
-FROM users user0_
-WHERE (user0_.id LIKE "%john%" OR user0_.first_name LIKE "%john%" OR user0_.last_name LIKE "%john%")
-ORDER BY user0_.id ASC LIMIT 10
+SELECT
+    user0_.id AS id1_0_0_,
+    user0_.first_name AS first_na3_0_0_,
+    user0_.last_name AS last_nam4_0_0_
+FROM
+    users user0_
+WHERE
+    user0_.id LIKE "%john%"
+    OR user0_.first_name LIKE "%john%"
+    OR user0_.last_name LIKE "%john%"
+ORDER BY user0_.id ASC
+LIMIT 10
 ```
 
 **Note**: the `regex` flag is currently ignored because JPQL only supports `LIKE` expressions (with `%` and `_` tokens).
@@ -408,14 +484,18 @@ $(document).ready(function() {
       orderable: false
     }]
   });
-}
+});
 ```
 
 ### Limit the exposed attributes of the entities
 
-There are several ways to restrict the attributes of the entities on the server-side:
+There are several ways to restrict the attributes of an entity on the server-side:
 
-- using DTO
+- [with a DTO](#with-a-dto)
+- [with `@JsonView`](#with-jsonview)
+- [with `@JsonIgnore`](#with-jsonignore)
+
+#### With a DTO
 
 ```java
 @RestController
@@ -431,7 +511,9 @@ public class UserRestController {
 }
 ```
 
-- using `@JsonView`
+The `toUserDTO()` method converts the `User` entity into a `UserDTO` object. You can also use a mapping framework such as [Orika](https://github.com/orika-mapper/orika) or [MapStruct](https://mapstruct.org/).
+
+#### With `@JsonView`
 
 ```java
 @Entity
@@ -460,7 +542,7 @@ public class UserRestController {
 
 ```
 
-- using `@JsonIgnore`
+#### With `@JsonIgnore`
 
 ```java
 @Entity
@@ -545,7 +627,7 @@ private String escapeContent(String content) {
 
 You can find a complete example [here](https://github.com/darrachequesne/spring-data-jpa-datatables-sample).
 
-Back to [top](#spring-data-jpa-datatables).
+Back to [top](#contents).
 
 ### Use with the SearchPanes extension
 
@@ -588,11 +670,200 @@ $(document).ready(function() {
 
 Regarding the deserialization issue detailed [above](#5-fix-the-serialization--deserialization-of-the-query-parameters), here is the compatibility matrix:
 
-| Solution | Compatibility with the SearchPanes extension |
-| --- | --- |
-| `jquery.spring-friendly.js` | YES |
-| POST requests | NO |
-| `flatten()` method | NO |
+| Solution                                                    | Compatibility with the SearchPanes extension |
+|-------------------------------------------------------------|----------------------------------------------|
+| [Custom serialization](#solution-n1---custom-serialization) | YES                                          |
+| [POST requests](#solution-n2---post-requests)               | NO                                           |
+| [Manual serialization](#solution-n3---manual-serialization) | NO                                           |
+
+## Examples of additional specification
+
+- [Specific date](#specific-date)
+- [Range of integers](#range-of-integers)
+- [Range of dates](#range-of-dates)
+
+### Specific date
+
+```java
+class DateSpecification implements Specification<MyEntity> {
+  private final LocalDate value;
+
+  DateSpecification(Column column) {
+    String value = column.getSearch().getValue();
+    column.setSearchable(false); // either here or in the table definition
+    this.value = parseValue(value);
+  }
+
+  private LocalDate parseValue(String value) {
+    if (hasText(value)) {
+      try {
+        return LocalDate.parse(value);
+      } catch (DateTimeParseException e) {
+        return null;
+      }
+    }
+    return null;
+  }
+
+  @Override
+  public Predicate toPredicate(Root<MyEntity> root, CriteriaQuery<?> query, CriteriaBuilder criteriaBuilder) {
+    Expression<LocalDate> expr = root.get("myColumn").as(LocalDate.class);
+    if (this.value != null) {
+      return criteriaBuilder.equal(expr, this.value);
+    } else {
+      return criteriaBuilder.conjunction();
+    }
+  }
+}
+```
+
+And then:
+
+```java
+@RestController
+public class MyController {
+
+  @RequestMapping(value = "/entities", method = RequestMethod.GET)
+  public DataTablesOutput<MyEntity> list(@Valid DataTablesInput input) {
+    return myRepository.findAll(input, new DateSpecification(input.getColumn("myField")));
+  }
+}
+```
+
+### Range of integers
+
+```java
+class IntegerRangeSpecification implements Specification<MyEntity> {
+  private final Integer minValue;
+  private final Integer maxValue;
+
+  IntegerRangeSpecification(Column column) {
+    String value = column.getSearch().getValue();
+    column.setSearchable(false); // either here or in the table definition
+    if (!hasText(value)) {
+      minValue = maxValue = null;
+      return;
+    }
+    String[] bounds = value.split(";");
+    minValue = parseValue(bounds, 0);
+    maxValue = parseValue(bounds, 1);
+  }
+
+  private Integer parseValue(String[] bounds, int index) {
+    if (bounds.length > index && hasText(bounds[index])) {
+      try {
+        return Integer.valueOf(bounds[index]);
+      } catch (NumberFormatException e) {
+        return null;
+      }
+    }
+    return null;
+  }
+
+  @Override
+  public Predicate toPredicate(Root<MyEntity> root, CriteriaQuery<?> query, CriteriaBuilder criteriaBuilder) {
+    Expression<Integer> expr = root.get("myColumn").as(Integer.class);
+    if (this.minValue != null && this.maxValue != null) {
+      return criteriaBuilder.between(expr, this.minValue, this.maxValue);
+    } else if (this.minValue != null) {
+      return criteriaBuilder.greaterThanOrEqualTo(expr, this.minValue);
+    } else if (this.maxValue != null) {
+      return criteriaBuilder.lessThanOrEqualTo(expr, this.maxValue);
+    } else {
+      return criteriaBuilder.conjunction();
+    }
+  }
+}
+```
+
+And then:
+
+```java
+@RestController
+public class MyController {
+
+  @RequestMapping(value = "/entities", method = RequestMethod.GET)
+  public DataTablesOutput<MyEntity> list(@Valid DataTablesInput input) {
+    return myRepository.findAll(input, new IntegerRangeSpecification(input.getColumn("myField")));
+  }
+}
+```
+
+With two text inputs on the client side:
+
+```js
+const minValueInput = $("input#minValue");
+const maxValueInput = $("input#maxValue");
+
+const onBoundChange = () => {
+  table.column($columnIndex).search(minValueInput.val() + ';' + maxValueInput.val()).draw();
+};
+
+minValueInput.on("input", onBoundChange);
+maxValueInput.on("input", onBoundChange);
+```
+
+### Range of dates
+
+```java
+class DateRangeSpecification implements Specification<MyEntity> {
+  private final LocalDate minValue;
+  private final LocalDate maxValue;
+
+  DateRangeSpecification(Column column) {
+    String value = column.getSearch().getValue();
+    column.setSearchable(false); // either here or in the table definition
+    if (!hasText(value)) {
+      minValue = maxValue = null;
+      return;
+    }
+    String[] bounds = value.split(";");
+    minValue = parseValue(bounds, 0);
+    maxValue = parseValue(bounds, 1);
+  }
+
+  private LocalDate parseValue(String[] bounds, int index) {
+    if (bounds.length > index && hasText(bounds[index])) {
+      try {
+        return LocalDate.parse(bounds[index]);
+      } catch (DateTimeParseException e) {
+        return null;
+      }
+    }
+    return null;
+  }
+
+  @Override
+  public Predicate toPredicate(Root<MyEntity> root, CriteriaQuery<?> query, CriteriaBuilder criteriaBuilder) {
+    Expression<LocalDate> expr = root.get("myColumn").as(LocalDate.class);
+    if (this.minValue != null && this.maxValue != null) {
+      return criteriaBuilder.between(expr, this.minValue, this.maxValue);
+    } else if (minValue != null) {
+      return criteriaBuilder.greaterThanOrEqualTo(expr, this.minValue);
+    } else if (maxValue != null) {
+      return criteriaBuilder.lessThanOrEqualTo(expr, this.maxValue);
+    } else {
+      return criteriaBuilder.conjunction();
+    }
+  }
+}
+```
+
+And then:
+
+```java
+@RestController
+public class MyController {
+
+  @RequestMapping(value = "/entities", method = RequestMethod.GET)
+  public DataTablesOutput<MyEntity> list(@Valid DataTablesInput input) {
+    return myRepository.findAll(input, new DateRangeSpecification(input.getColumn("myField")));
+  }
+}
+```
+
+Back to [top](#contents).
+
 
 ## Troubleshooting
 
@@ -611,4 +882,4 @@ Please see [here](#manage-non-searchable-fields).
 The versions `>= 5.0.0` of the library are not compatible with Spring 4 (Spring Boot 1.x), please use the previous versions.
 
 
-Back to [top](#spring-data-jpa-datatables).
+Back to [top](#contents).
