@@ -46,6 +46,7 @@ public class UserRestController {
   - [Search on a rendered column](#search-on-a-rendered-column)
   - [Use with the SearchPanes extension](#use-with-the-searchpanes-extension)
   - [Fetch lazy fields](#fetch-lazy-fields)
+  - [Search for a specific value in a column](#search-for-a-specific-value-in-a-column)
 - [Examples of additional specification](#examples-of-additional-specification)
   - [Specific date](#specific-date)
   - [Range of integers](#range-of-integers)
@@ -702,6 +703,22 @@ public class MyController {
 ```
 firstResult/maxResults specified with collection fetch; applying in memory
 ```
+
+### Search for a specific value in a column
+
+By default, adding a search value will be converted to a `WHERE <column> LIKE %<value>%` clause.
+
+You can have an exact match (`WHERE <column> IN (<values>)`) with:
+
+```js
+// single value
+myTable.column($columnIndex).search("value1+").draw();
+
+// multiple values
+myTable.column($columnIndex).search("value1+value2+value3").draw();
+```
+
+Note: the column in the database will be inferred as a string. For more complex use cases, you will need a proper specification.
 
 
 ## Examples of additional specification
