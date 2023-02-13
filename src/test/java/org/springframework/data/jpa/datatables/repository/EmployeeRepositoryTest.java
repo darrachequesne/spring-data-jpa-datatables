@@ -294,6 +294,27 @@ public class EmployeeRepositoryTest {
         );
     }
 
+    @Test
+    void withSearchPanesAndAPreFilteringSpecification() {
+        Map<String, Set<String>> searchPanes = new HashMap<>();
+        searchPanes.put("position", new HashSet<>(asList("Software Engineer", "Integration Specialist")));
+        searchPanes.put("age", emptySet());
+
+        input.setSearchPanes(searchPanes);
+
+        DataTablesOutput<Employee> output = employeeRepository.findAll(input, null, new SoftwareEngineersOnly<>());
+        assertThat(output.getRecordsFiltered()).isEqualTo(2);
+        assertThat(output.getSearchPanes()).isNotNull();
+
+        assertThat(output.getSearchPanes().getOptions().get("position")).containsOnly(
+                new SearchPanes.Item("Software Engineer", "Software Engineer", 2, 2)
+        );
+        assertThat(output.getSearchPanes().getOptions().get("age")).containsOnly(
+                new SearchPanes.Item("28", "28", 1, 1),
+                new SearchPanes.Item("41", "41", 1, 1)
+        );
+    }
+
     private static DataTablesInput getBasicInput() {
         DataTablesInput input = new DataTablesInput();
         input.addColumn("id", true, true, "");

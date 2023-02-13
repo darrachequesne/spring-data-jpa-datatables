@@ -91,8 +91,7 @@ public class DataTablesRepositoryImpl<T, ID extends Serializable> extends Simple
       output.setRecordsFiltered(data.getTotalElements());
 
       if (input.getSearchPanes() != null) {
-        SpecificationBuilder<T> specificationSearchPaneBuilder = new SpecificationBuilder<>(input);
-        output.setSearchPanes(computeSearchPanes(input, specificationSearchPaneBuilder.buildSearchPane()));
+        output.setSearchPanes(computeSearchPanes(input, specification));
       }
     } catch (Exception e) {
       log.warn("error while fetching records", e);
