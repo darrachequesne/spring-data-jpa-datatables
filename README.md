@@ -45,6 +45,7 @@ public class UserRestController {
   - [Limit the exposed attributes of the entities](#limit-the-exposed-attributes-of-the-entities)
   - [Search on a rendered column](#search-on-a-rendered-column)
   - [Use with the SearchPanes extension](#use-with-the-searchpanes-extension)
+  - [Fetch lazy fields](#fetch-lazy-fields)
 - [Examples of additional specification](#examples-of-additional-specification)
   - [Specific date](#specific-date)
   - [Range of integers](#range-of-integers)
@@ -675,6 +676,33 @@ Regarding the deserialization issue detailed [above](#5-fix-the-serialization--d
 | [Custom serialization](#solution-n1---custom-serialization) | YES                                          |
 | [POST requests](#solution-n2---post-requests)               | NO                                           |
 | [Manual serialization](#solution-n3---manual-serialization) | NO                                           |
+
+### Fetch lazy fields
+
+Fields marked with `FetchType.LAZY` can be manually fetched with an additional specification:
+
+```java
+@RestController
+public class MyController {
+
+  @RequestMapping(value = "/entities", method = RequestMethod.GET)
+  public DataTablesOutput<MyEntity> list(@Valid DataTablesInput input) {
+    return myRepository.findAll(input, (root, query, criteriaBuilder) -> {
+      if (query.getResultType() != Long.class) {
+        root.fetch("relatedEntity", JoinType.LEFT);
+      }
+      return null;
+    });
+  }
+}
+```
+
+**Important**: trying to load a `@OneToMany` or `@ManyToMany` relationship with this method will result in the following warning by Hibernate:
+
+```
+firstResult/maxResults specified with collection fetch; applying in memory
+```
+
 
 ## Examples of additional specification
 
