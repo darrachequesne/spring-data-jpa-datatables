@@ -9,6 +9,11 @@ import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+/**
+ * The format of the payload sent by the client.
+ *
+ * @see <a href="https://datatables.net/manual/server-side#Sent-parameters">datatables.net reference</a>
+ */
 @Data
 public class DataTablesInput {
   /**
@@ -55,7 +60,6 @@ public class DataTablesInput {
   /**
    * Order parameter
    */
-  @NotEmpty
   private List<Order> order = new ArrayList<>();
 
   /**
