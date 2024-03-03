@@ -1,5 +1,6 @@
 # History
 
+- [6.0.2](#602-2024-03-03) (Mar 2024)
 - [6.0.1](#601-2023-02-12) (Feb 2023)
 - [6.0.0](#600-2023-01-02) (Jan 2023)
 - [5.2.0](#520-2022-05-19) (May 2022)
@@ -15,6 +16,16 @@
 
 
 # Release notes
+
+## [6.0.2](https://github.com/darrachequesne/spring-data-jpa-datatables/compare/v6.0.1...v6.0.2) (2024-03-03)
+
+
+### Bug Fixes
+
+* allow order array to be empty ([a214d5b](https://github.com/darrachequesne/spring-data-jpa-datatables/commit/a214d5bb199fff4ccd578c3bbb71ee64f3a0f198))
+* apply any prefiltering specification to the search panes ([e83b4d5](https://github.com/darrachequesne/spring-data-jpa-datatables/commit/e83b4d580c7cc021059c46322e99155051400214))
+
+
 
 ## [6.0.1](https://github.com/darrachequesne/spring-data-jpa-datatables/compare/v6.0.0...v6.0.1) (2023-02-12)
 
