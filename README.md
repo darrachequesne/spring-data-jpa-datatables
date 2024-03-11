@@ -45,7 +45,7 @@ public class UserRestController {
   - [Limit the exposed attributes of the entities](#limit-the-exposed-attributes-of-the-entities)
   - [Search on a rendered column](#search-on-a-rendered-column)
   - [Use with the SearchPanes extension](#use-with-the-searchpanes-extension)
-  - [Fetch lazy fields](#fetch-lazy-fields)
+  - [Handle `@OneToMany` and `@ManyToMany` relationships](#handle-onetomany-and-manytomany-relationships)
   - [Search for a specific value in a column](#search-for-a-specific-value-in-a-column)
 - [Examples of additional specification](#examples-of-additional-specification)
   - [Specific date](#specific-date)
@@ -678,31 +678,124 @@ Regarding the deserialization issue detailed [above](#5-fix-the-serialization--d
 | [POST requests](#solution-n2---post-requests)               | NO                                           |
 | [Manual serialization](#solution-n3---manual-serialization) | NO                                           |
 
-### Fetch lazy fields
+### Handle `@OneToMany` and `@ManyToMany` relationships
 
-Fields marked with `FetchType.LAZY` can be manually fetched with an additional specification:
+For performance reasons, the library will not fetch `@OneToMany` and `@ManyToMany` relationships. This means that you may encounter the following errors:
+
+- when accessing a related entity in your code:
+
+```
+org.hibernate.LazyInitializationException: failed to lazily initialize a collection of role: xxxx: could not initialize proxy - no Session
+```
+
+- or during the serialization to JSON:
+
+```
+org.springframework.http.converter.HttpMessageNotWritableException: Could not write JSON: failed to lazily initialize a collection of role [...]
+```
+
+There are several possible solutions to this problem:
+
+| Method                                                                          | Total number of queries |
+|---------------------------------------------------------------------------------|-------------------------|
+| [With `FetchType.EAGER`](#with-fetchtypeeager)                                  | `3 + 1 per entity`      |
+| [With `spring.jpa.open-in-view` to `true`](#with-springjpaopen-in-view-to-true) | `3 + 1 per entity`      |
+| [With `Hibernate.initialize()`](#with-hibernateinitialize)                      | `3 + 1 per entity`      |
+| [With a FETCH JOIN query](#with-a-fetch-join-query) (recommended)               | `4`                     |
+
+#### With `FetchType.EAGER`
+
+By using `FetchType.EAGER`, the related entities will automatically be loaded by the persistence provider.
 
 ```java
-@RestController
-public class MyController {
+@Entity
+public class User {
+  @Id private long id;
 
-  @RequestMapping(value = "/entities", method = RequestMethod.GET)
-  public DataTablesOutput<MyEntity> list(@Valid DataTablesInput input) {
-    return myRepository.findAll(input, (root, query, criteriaBuilder) -> {
-      if (query.getResultType() != Long.class) {
-        root.fetch("relatedEntity", JoinType.LEFT);
-      }
-      return null;
-    });
+  @ManyToMany(fetch = FetchType.EAGER)
+  @JoinTable(
+    name = "users_groups",
+    joinColumns = { @JoinColumn(name = "user_id") },
+    inverseJoinColumns = { @JoinColumn(name = "group_id") }
+  )
+  private List<Group> groups = new ArrayList<>();
+
+  // ...
+}
+```
+
+Downside: the `Group` entities will be loaded whenever you load an `User` entity, which may not always be necessary.
+
+Note: you can log the SQL queries by setting `spring.jpa.show-sql` to `true` in your configuration:
+
+```
+Hibernate: select count(*) from users u1_0
+Hibernate: select u1_0.id,u1_0.name from users u1_0 where 1=1 order by u1_0.id asc offset ? rows fetch first ? rows only
+Hibernate: select g1_0.user_id,g1_1.id,g1_1.name from user_groups g1_0 join groups g1_1 on g1_1.id=g1_0.group_id where g1_0.user_id=?
+Hibernate: select g1_0.user_id,g1_1.id,g1_1.name from user_groups g1_0 join groups g1_1 on g1_1.id=g1_0.group_id where g1_0.user_id=?
+[...] (one per user entity in the output)
+Hibernate: select count(u1_0.id) from users u1_0 where 1=1
+```
+
+#### With `spring.jpa.open-in-view` to `true`
+
+With `spring.jpa.open-in-view: true` in your configuration, Spring will create a new Hibernate Session available during the whole HTTP request, so the related entities will automatically be loaded when needed.
+
+Downside: this option might lead to performance issues and is generally not recommended, so please use with caution.
+
+See also: https://www.baeldung.com/spring-open-session-in-view
+
+#### With `Hibernate.initialize()`
+
+```java
+
+@Repository
+public class CustomUserRepository {
+  private final UserRepository userRepository;
+
+  @Transactional(readOnly = true)
+  public DataTablesOutput<User> findAll(DataTablesInput input) {
+    DataTablesOutput<User> output = userRepository.findAll(input);
+
+    output.getData().forEach(user -> Hibernate.initialize(user.getGroups()));
+
+    return output;
   }
 }
 ```
 
-**Important**: trying to load a `@OneToMany` or `@ManyToMany` relationship with this method will result in the following warning by Hibernate:
+Downside: like the previous solutions, this method will generate one additional SQL query per user entity.
 
+#### With a FETCH JOIN query
+
+```java
+@Repository
+public class CustomUserRepository {
+  private final UserRepository userRepository;
+  private final EntityManager entityManager;
+
+  @Transactional(readOnly = true)
+  public DataTablesOutput<User> findAll(DataTablesInput input) {
+    DataTablesOutput<User> output = userRepository.findAll(input);
+
+    List<Long> ids = output.getData().stream().map(User::getId).collect(Collectors.toList());
+
+    Map<Long, List<Group>> userGroups = entityManager
+      .createQuery("SELECT u FROM User u LEFT JOIN FETCH u.groups WHERE u.id IN :ids", User.class)
+      .setParameter("ids", ids)
+      .getResultList()
+      .stream()
+      .collect(Collectors.toMap(User::getId, User::getGroups));
+
+    output.getData().forEach(user -> user.setGroups(userGroups.get(user.getId())));
+
+    return output;
+  }
+}
 ```
-firstResult/maxResults specified with collection fetch; applying in memory
-```
+
+While a bit harder to read, this method only triggers one additional SQL query to fetch all the `Group` entities.
+
 
 ### Search for a specific value in a column
 
