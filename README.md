@@ -194,11 +194,11 @@ Client-side:
 
 ```javascript
 $('table#sample').DataTable({
-  'ajax': {
-    'contentType': 'application/json',
-    'url': '/data/users',
-    'type': 'POST',
-    'data': function(d) {
+  ajax: {
+    contentType: 'application/json',
+    url: '/data/users',
+    type: 'POST',
+    data: function(d) {
       return JSON.stringify(d);
     }
   }
