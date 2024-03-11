@@ -670,7 +670,7 @@ $(document).ready(function() {
 }
 ```
 
-Regarding the deserialization issue detailed [above](#5-fix-the-serialization--deserialization-of-the-query-parameters), here is the compatibility matrix:
+Regarding the deserialization issue detailed [above](#step-6---fix-the-serialization--deserialization-of-the-query-parameters), here is the compatibility matrix:
 
 | Solution                                                    | Compatibility with the SearchPanes extension |
 |-------------------------------------------------------------|----------------------------------------------|
@@ -1007,7 +1007,7 @@ Back to [top](#contents).
 
 - `Invalid property 'columns[0][data]' of bean class [org.springframework.data.jpa.datatables.mapping.DataTablesInput]`
 
-Please see [here](#5-fix-the-serialization--deserialization-of-the-query-parameters).
+Please see [here](#step-6---fix-the-serialization--deserialization-of-the-query-parameters).
 
 - `java.lang.IllegalArgumentException: Unable to locate Attribute with the the given name ...`
 
