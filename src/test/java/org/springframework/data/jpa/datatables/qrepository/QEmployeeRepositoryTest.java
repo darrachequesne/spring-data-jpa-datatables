@@ -37,6 +37,8 @@ public class QEmployeeRepositoryTest extends EmployeeRepositoryTest {
     @Test
     @Override
     public void withAnAdditionalSpecification() {
+        DataTablesInput input = createInput();
+
         DataTablesOutput<Employee> output = employeeRepository.findAll(input, QEmployee.employee.position.eq("Software Engineer"));
         assertThat(output.getRecordsFiltered()).isEqualTo(2);
         assertThat(output.getRecordsTotal()).isEqualTo(Employee.ALL.size());
@@ -45,7 +47,7 @@ public class QEmployeeRepositoryTest extends EmployeeRepositoryTest {
     @Test
     @Override
     public void withAPreFilteringSpecification() {
-        DataTablesOutput<Employee> output = employeeRepository.findAll(input, null, QEmployee.employee.position.eq("Software Engineer"));
+        DataTablesOutput<Employee> output = employeeRepository.findAll(createInput(), null, QEmployee.employee.position.eq("Software Engineer"));
         assertThat(output.getRecordsFiltered()).isEqualTo(2);
         assertThat(output.getRecordsTotal()).isEqualTo(2);
     }

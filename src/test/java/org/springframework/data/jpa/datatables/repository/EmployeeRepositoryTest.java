@@ -13,8 +13,10 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 import java.util.function.Function;
-import org.junit.jupiter.api.BeforeEach;
+
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestInstance;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.jpa.datatables.Config;
@@ -29,9 +31,8 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 @ExtendWith(SpringExtension.class)
 @ContextConfiguration(classes = Config.class)
+@TestInstance(TestInstance.Lifecycle.PER_CLASS)
 public class EmployeeRepositoryTest {
-    protected DataTablesInput input;
-
     @Autowired
     private EmployeeRepository employeeRepository;
 
@@ -43,16 +44,14 @@ public class EmployeeRepositoryTest {
         return employeeRepository.findAll(input, converter);
     }
 
-    @BeforeEach
+    @BeforeAll
     public void init() {
-        employeeRepository.deleteAll();
         employeeRepository.saveAll(Employee.ALL);
-        input = getBasicInput();
     }
 
     @Test
     void basic() {
-        DataTablesOutput<Employee> output = getOutput(input);
+        DataTablesOutput<Employee> output = getOutput(createInput());
         assertThat(output.getDraw()).isEqualTo(1);
         assertThat(output.getError()).isNull();
         assertThat(output.getRecordsFiltered()).isEqualTo(Employee.ALL.size());
@@ -62,6 +61,7 @@ public class EmployeeRepositoryTest {
 
     @Test
     void paginated() {
+        DataTablesInput input = createInput();
         input.setDraw(2);
         input.setLength(5);
         input.setStart(5);
@@ -75,6 +75,8 @@ public class EmployeeRepositoryTest {
 
     @Test
     void sortAscending() {
+        DataTablesInput input = createInput();
+
         input.addOrder("age", true);
 
         DataTablesOutput<Employee> output = getOutput(input);
@@ -83,6 +85,8 @@ public class EmployeeRepositoryTest {
 
     @Test
     void sortDescending() {
+        DataTablesInput input = createInput();
+
         input.addOrder("age", false);
 
         DataTablesOutput<Employee> output = getOutput(input);
@@ -91,6 +95,8 @@ public class EmployeeRepositoryTest {
 
     @Test
     void globalFilter() {
+        DataTablesInput input = createInput();
+
         input.getSearch().setValue("William");
 
         DataTablesOutput<Employee> output = getOutput(input);
@@ -99,6 +105,8 @@ public class EmployeeRepositoryTest {
 
     @Test
     void globalFilterWithMultiplePages() {
+        DataTablesInput input = createInput();
+
         input.getSearch().setValue("e");
         input.setLength(1);
 
@@ -110,6 +118,8 @@ public class EmployeeRepositoryTest {
 
     @Test
     void globalFilterIgnoreCaseIgnoreSpace() {
+        DataTablesInput input = createInput();
+
         input.getSearch().setValue(" aMoS  ");
 
         DataTablesOutput<Employee> output = getOutput(input);
@@ -118,6 +128,8 @@ public class EmployeeRepositoryTest {
 
     @Test
     void columnFilter() {
+        DataTablesInput input = createInput();
+
         input.getColumn("lastName").setSearchValue("  AmOs ");
 
         DataTablesOutput<Employee> output = getOutput(input);
@@ -126,6 +138,8 @@ public class EmployeeRepositoryTest {
 
     @Test
     void multipleColumnFilters() {
+        DataTablesInput input = createInput();
+
         input.getColumn("age").setSearchValue("28");
         input.getColumn("position").setSearchValue("Software");
 
@@ -135,6 +149,8 @@ public class EmployeeRepositoryTest {
 
     @Test
     void columnFilterWithMultipleCases() {
+        DataTablesInput input = createInput();
+
         input.getColumn("position").setSearchValue("Accountant+Junior Technical Author");
 
         DataTablesOutput<Employee> output = getOutput(input);
@@ -144,6 +160,8 @@ public class EmployeeRepositoryTest {
 
     @Test
     void columnFilterWithNoCase() {
+        DataTablesInput input = createInput();
+
         input.getColumn("position").setSearchValue("+");
 
         DataTablesOutput<Employee> output = getOutput(input);
@@ -152,6 +170,8 @@ public class EmployeeRepositoryTest {
 
     @Test
     void zeroLength() {
+        DataTablesInput input = createInput();
+
         input.setLength(0);
 
         DataTablesOutput<Employee> output = getOutput(input);
@@ -161,6 +181,8 @@ public class EmployeeRepositoryTest {
 
     @Test
     void negativeLength() {
+        DataTablesInput input = createInput();
+
         input.setLength(-1);
 
         DataTablesOutput<Employee> output = getOutput(input);
@@ -170,6 +192,8 @@ public class EmployeeRepositoryTest {
 
     @Test
     void multipleColumnFiltersOnManyToOneRelationship() {
+        DataTablesInput input = createInput();
+
         input.getColumn("office.city").setSearchValue("new york");
         input.getColumn("office.country").setSearchValue("USA");
 
@@ -180,6 +204,8 @@ public class EmployeeRepositoryTest {
 
     @Test
     void withConverter() {
+        DataTablesInput input = createInput();
+
         input.getColumn("firstName").setSearchValue("airi");
 
         DataTablesOutput<EmployeeDto> output = getOutput(input, employee ->
@@ -189,14 +215,14 @@ public class EmployeeRepositoryTest {
 
     @Test
     protected void withAnAdditionalSpecification() {
-        DataTablesOutput<Employee> output = employeeRepository.findAll(input, new SoftwareEngineersOnly<>());
+        DataTablesOutput<Employee> output = employeeRepository.findAll(createInput(), new SoftwareEngineersOnly<>());
         assertThat(output.getRecordsFiltered()).isEqualTo(2);
         assertThat(output.getRecordsTotal()).isEqualTo(Employee.ALL.size());
     }
 
     @Test
     protected void withAPreFilteringSpecification() {
-        DataTablesOutput<Employee> output = employeeRepository.findAll(input, null, new SoftwareEngineersOnly<>());
+        DataTablesOutput<Employee> output = employeeRepository.findAll(createInput(), null, new SoftwareEngineersOnly<>());
         assertThat(output.getRecordsFiltered()).isEqualTo(2);
         assertThat(output.getRecordsTotal()).isEqualTo(2);
     }
@@ -210,6 +236,8 @@ public class EmployeeRepositoryTest {
 
     @Test
     void columnFilterWithNull() {
+        DataTablesInput input = createInput();
+
         input.getColumn("comment").setSearchValue("NULL");
 
         DataTablesOutput<Employee> output = getOutput(input);
@@ -218,6 +246,8 @@ public class EmployeeRepositoryTest {
 
     @Test
     void columnFilterWithNullEscaped() {
+        DataTablesInput input = createInput();
+
         input.getColumn("comment").setSearchValue("\\NULL");
 
         DataTablesOutput<Employee> output = getOutput(input);
@@ -226,6 +256,8 @@ public class EmployeeRepositoryTest {
 
     @Test
     void columnFilterWithEscapeCharacters() {
+        DataTablesInput input = createInput();
+
         input.getColumn("comment").setSearchValue("foo~");
         DataTablesOutput<Employee> output = getOutput(input);
         assertThat(output.getData()).containsOnly(Employee.ASHTON_COX);
@@ -241,6 +273,8 @@ public class EmployeeRepositoryTest {
 
     @Test
     void columnFilterWithValueOrNull() {
+        DataTablesInput input = createInput();
+
         input.getColumn("comment").setSearchValue("@foo@@+NULL");
 
         DataTablesOutput<Employee> output = getOutput(input);
@@ -249,6 +283,8 @@ public class EmployeeRepositoryTest {
 
     @Test
     void columnFilterBoolean() {
+        DataTablesInput input = createInput();
+
         input.getColumn("isWorkingRemotely").setSearchValue("true");
 
         DataTablesOutput<Employee> output = getOutput(input);
@@ -257,6 +293,8 @@ public class EmployeeRepositoryTest {
 
     @Test
     void columnFilterBooleanBothCases() {
+        DataTablesInput input = createInput();
+
         input.getColumn("isWorkingRemotely").setSearchValue("true+false");
 
         DataTablesOutput<Employee> output = getOutput(input);
@@ -265,6 +303,8 @@ public class EmployeeRepositoryTest {
 
     @Test
     protected void unknownColumn() {
+        DataTablesInput input = createInput();
+
         input.addColumn("unknown", true, true, "test");
 
         DataTablesOutput<Employee> output = getOutput(input);
@@ -273,6 +313,8 @@ public class EmployeeRepositoryTest {
 
     @Test
     void withSearchPanes() {
+        DataTablesInput input = createInput();
+
         Map<String, Set<String>> searchPanes = new HashMap<>();
         searchPanes.put("position", new HashSet<>(asList("Software Engineer", "Integration Specialist")));
         searchPanes.put("age", emptySet());
@@ -296,6 +338,8 @@ public class EmployeeRepositoryTest {
 
     @Test
     void withSearchPanesAndAPreFilteringSpecification() {
+        DataTablesInput input = createInput();
+
         Map<String, Set<String>> searchPanes = new HashMap<>();
         searchPanes.put("position", new HashSet<>(asList("Software Engineer", "Integration Specialist")));
         searchPanes.put("age", emptySet());
@@ -315,7 +359,7 @@ public class EmployeeRepositoryTest {
         );
     }
 
-    private static DataTablesInput getBasicInput() {
+    protected static DataTablesInput createInput() {
         DataTablesInput input = new DataTablesInput();
         input.addColumn("id", true, true, "");
         input.addColumn("firstName", true, true, "");
