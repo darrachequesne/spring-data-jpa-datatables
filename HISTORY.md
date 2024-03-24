@@ -1,5 +1,6 @@
 # History
 
+- [6.0.3](#603-2024-03-24) (Mar 2024)
 - [6.0.2](#602-2024-03-03) (Mar 2024)
 - [6.0.1](#601-2023-02-12) (Feb 2023)
 - [6.0.0](#600-2023-01-02) (Jan 2023)
@@ -16,6 +17,15 @@
 
 
 # Release notes
+
+## [6.0.3](https://github.com/darrachequesne/spring-data-jpa-datatables/compare/v6.0.2...v6.0.3) (2024-03-24)
+
+
+### Bug Fixes
+
+* **sqlserver:** prevent cast from NVARCHAR to VARCHAR ([f1e0ecd](https://github.com/darrachequesne/spring-data-jpa-datatables/commit/f1e0ecdcc73c3983683d4ddbcfe62fdc7862a70b))
+
+
 
 ## [6.0.2](https://github.com/darrachequesne/spring-data-jpa-datatables/compare/v6.0.1...v6.0.2) (2024-03-03)
 
