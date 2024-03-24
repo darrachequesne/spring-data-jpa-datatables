@@ -55,6 +55,17 @@ public class Config {
   }
 
   @Bean
+  @Profile("sqlserver")
+  public DataSource dataSource_SQLServer() throws SQLException {
+    DriverManagerDataSource dataSource = new DriverManagerDataSource();
+    dataSource.setDriverClassName("com.microsoft.sqlserver.jdbc.SQLServerDriver");
+    dataSource.setUrl("jdbc:sqlserver://localhost:1433;encrypt=false;");
+    dataSource.setUsername("sa");
+    dataSource.setPassword("Changeit_123");
+    return dataSource;
+  }
+
+  @Bean
   public SessionFactory entityManagerFactory(DataSource dataSource) throws Exception {
     LocalSessionFactoryBean factory = new LocalSessionFactoryBean();
     factory.setPackagesToScan(Config.class.getPackage().getName());

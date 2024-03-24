@@ -34,7 +34,16 @@ class GlobalFilter implements Filter {
     @Override
     public Predicate createPredicate(From<?, ?> from, CriteriaBuilder criteriaBuilder, String attributeName) {
         Expression<?> expression = from.get(attributeName);
-        return criteriaBuilder.like(criteriaBuilder.lower(expression.as(String.class)), escapedRawValue, '~');
+        return criteriaBuilder.like(criteriaBuilder.lower(castAsStringIfNeeded(expression)), escapedRawValue, '~');
+    }
+
+    @SuppressWarnings("unchecked")
+    private Expression<String> castAsStringIfNeeded(Expression<?> expression) {
+        if (expression.getJavaType() == String.class) {
+            return (Expression<String>) expression;
+        } else {
+            return expression.as(String.class);
+        }
     }
 
     @Override
