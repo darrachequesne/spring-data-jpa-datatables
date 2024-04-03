@@ -64,7 +64,7 @@
 			<dependency>
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-dependencies</artifactId>
-				<version>3.0.0</version>
+				<version>3.2.4</version>
 				<type>pom</type>
 				<scope>import</scope>
 			</dependency>
@@ -166,7 +166,6 @@
 		<dependency>
 			<groupId>com.microsoft.sqlserver</groupId>
 			<artifactId>mssql-jdbc</artifactId>
-			<version>12.6.1.jre11</version>
 			<scope>test</scope>
 		</dependency>
 
