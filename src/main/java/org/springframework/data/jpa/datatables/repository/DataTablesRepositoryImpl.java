@@ -118,6 +118,9 @@ public class DataTablesRepositoryImpl<T, ID extends Serializable> extends Simple
       this.entityManager.createQuery(query).getResultList().forEach(objects -> {
         String value = String.valueOf(objects[0]);
         long count = (long) objects[1];
+        // FIXME the number of items after filtering is the same as the total number of items, so the 'searchPanes.viewTotal'
+        //  feature will not work properly. Fixing this would require two distinct queries, one with filtering and the other
+        //  without. Reference: https://datatables.net/reference/feature/searchPanes.viewTotal
         items.add(new SearchPanes.Item(value, value, count, count));
       });
 

@@ -667,7 +667,37 @@ $(document).ready(function() {
       data : 'status'
     }]
   });
-}
+});
+```
+
+With the [`searchPanes.cascadePanes`](https://datatables.net/reference/feature/searchPanes.cascadePanes) feature:
+
+```js
+$(document).ready(function() {
+  var table = $('table#sample').DataTable({
+    ajax : '/data/users',
+    serverSide: true,
+    dom: 'Pfrtip',
+    columns : [{
+      data : 'id'
+    }, {
+      data : 'mail'
+    }, {
+      data : 'position',
+      searchPanes: {
+        show: true,
+      }
+    }, {
+      data : 'status',
+      searchPanes: {
+        show: true,
+      }
+    }],
+    searchPanes: {
+      cascadePanes: true,
+    },
+  });
+});
 ```
 
 Regarding the deserialization issue detailed [above](#step-6---fix-the-serialization--deserialization-of-the-query-parameters), here is the compatibility matrix:
