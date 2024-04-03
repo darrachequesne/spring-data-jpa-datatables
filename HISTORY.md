@@ -1,5 +1,6 @@
 # History
 
+- [6.0.4](#604-2024-04-03) (Apr 2024)
 - [6.0.3](#603-2024-03-24) (Mar 2024)
 - [6.0.2](#602-2024-03-03) (Mar 2024)
 - [6.0.1](#601-2023-02-12) (Feb 2023)
@@ -17,6 +18,15 @@
 
 
 # Release notes
+
+## [6.0.4](https://github.com/darrachequesne/spring-data-jpa-datatables/compare/v6.0.3...v6.0.4) (2024-04-03)
+
+
+### Bug Fixes
+
+* properly compute search panes with related entities ([495cfbc](https://github.com/darrachequesne/spring-data-jpa-datatables/commit/495cfbc4cf6e110bf7b6dcb47d7bfd8587056169))
+
+
 
 ## [6.0.3](https://github.com/darrachequesne/spring-data-jpa-datatables/compare/v6.0.2...v6.0.3) (2024-03-24)
 
