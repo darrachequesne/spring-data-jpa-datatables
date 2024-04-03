@@ -3,11 +3,9 @@ package org.springframework.data.jpa.datatables.repository;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.criteria.CriteriaBuilder;
 import jakarta.persistence.criteria.CriteriaQuery;
+import jakarta.persistence.criteria.Path;
 import jakarta.persistence.criteria.Root;
 import lombok.extern.slf4j.Slf4j;
-import org.hibernate.query.sqm.tree.domain.AbstractSqmFrom;
-import org.hibernate.query.sqm.tree.domain.SqmPath;
-import org.hibernate.query.sqm.tree.from.SqmAttributeJoin;
 import org.springframework.data.domain.Page;
 import org.springframework.data.jpa.datatables.SpecificationBuilder;
 import org.springframework.data.jpa.datatables.mapping.DataTablesInput;
@@ -109,8 +107,10 @@ public class DataTablesRepositoryImpl<T, ID extends Serializable> extends Simple
       CriteriaBuilder criteriaBuilder = this.entityManager.getCriteriaBuilder();
       CriteriaQuery<Object[]> query = criteriaBuilder.createQuery(Object[].class);
       Root<T> root = query.from(getDomainClass());
-      query.multiselect(root.get(attribute), criteriaBuilder.count(root));
-      query.groupBy(root.get(attribute));
+      Path<?> path = getPath(root, attribute);
+
+      query.multiselect(path, criteriaBuilder.count(root));
+      query.groupBy(path);
       query.where(specification.toPredicate(root, query, criteriaBuilder));
 
       List<SearchPanes.Item> items = new ArrayList<>();
@@ -125,6 +125,15 @@ public class DataTablesRepositoryImpl<T, ID extends Serializable> extends Simple
     });
 
     return new SearchPanes(options);
+  }
+
+  private Path<?> getPath(Root<T> root, String attribute) {
+    String[] parts = attribute.split("\\.");
+    Path<?> path = root;
+    for (String part : parts) {
+      path = path.get(part);
+    }
+    return path;
   }
 
 }

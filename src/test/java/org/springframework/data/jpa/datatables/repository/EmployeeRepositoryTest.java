@@ -318,12 +318,15 @@ public class EmployeeRepositoryTest {
         Map<String, Set<String>> searchPanes = new HashMap<>();
         searchPanes.put("position", new HashSet<>(asList("Software Engineer", "Integration Specialist")));
         searchPanes.put("age", emptySet());
+        searchPanes.put("office.city", emptySet());
 
         input.setSearchPanes(searchPanes);
 
         DataTablesOutput<Employee> output = getOutput(input);
         assertThat(output.getRecordsFiltered()).isEqualTo(3);
         assertThat(output.getSearchPanes()).isNotNull();
+
+        assertThat(output.getSearchPanes().getOptions().size()).isEqualTo(3);
 
         assertThat(output.getSearchPanes().getOptions().get("position")).containsOnly(
                 new SearchPanes.Item("Software Engineer", "Software Engineer", 2, 2),
@@ -333,6 +336,11 @@ public class EmployeeRepositoryTest {
                 new SearchPanes.Item("28", "28", 1, 1),
                 new SearchPanes.Item("41", "41", 1, 1),
                 new SearchPanes.Item("61", "61", 1, 1)
+        );
+        assertThat(output.getSearchPanes().getOptions().get("office.city")).containsOnly(
+                new SearchPanes.Item("London", "London", 1, 1),
+                new SearchPanes.Item("New York", "New York", 1, 1),
+                new SearchPanes.Item("San Francisco", "San Francisco", 1, 1)
         );
     }
 
