@@ -106,20 +106,20 @@
 			<artifactId>hibernate-core</artifactId>
 			<version>6.1.4.Final</version>
 		</dependency>
+
+		<!-- QueryDSL -->
 		<dependency>
-			<groupId>com.querydsl</groupId>
+			<groupId>io.github.openfeign.querydsl</groupId>
 			<artifactId>querydsl-apt</artifactId>
-			<version>5.0.0</version>
 			<classifier>jakarta</classifier>
+			<version>6.10.1</version>
 		</dependency>
-
 		<dependency>
-			<groupId>com.querydsl</groupId>
+			<groupId>io.github.openfeign.querydsl</groupId>
 			<artifactId>querydsl-jpa</artifactId>
-			<version>5.0.0</version>
-			<classifier>jakarta</classifier>
+			<version>6.10.1</version>
 		</dependency>
-
+		
 		<dependency>
 			<groupId>jakarta.annotation</groupId>
 			<artifactId>jakarta.annotation-api</artifactId>
