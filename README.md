@@ -1,4 +1,4 @@
-[![Build Status](https://github.com/darrachequesne/spring-data-jpa-datatables/workflows/CI/badge.svg?branch=main)](https://github.com/darrachequesne/spring-data-jpa-datatables/actions)
+[![Build Status](https://github.com/darrachequesne/spring-data-jpa-datatables/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/darrachequesne/spring-data-jpa-datatables/actions)
 [![Maven Central](https://maven-badges.herokuapp.com/maven-central/com.github.darrachequesne/spring-data-jpa-datatables/badge.svg)](https://maven-badges.herokuapp.com/maven-central/com.github.darrachequesne/spring-data-jpa-datatables)
 
 # spring-data-jpa-datatables
