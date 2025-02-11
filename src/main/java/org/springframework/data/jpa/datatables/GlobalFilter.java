@@ -9,6 +9,7 @@ import jakarta.persistence.criteria.CriteriaBuilder;
 import jakarta.persistence.criteria.Expression;
 import jakarta.persistence.criteria.From;
 import jakarta.persistence.criteria.Predicate;
+import org.hibernate.query.criteria.JpaExpression;
 
 /**
  * Filter which creates a basic "WHERE ... LIKE ..." clause
@@ -42,7 +43,7 @@ class GlobalFilter implements Filter {
         if (expression.getJavaType() == String.class) {
             return (Expression<String>) expression;
         } else {
-            return expression.as(String.class);
+            return ((JpaExpression<?>) expression).cast(String.class);
         }
     }
 
