@@ -1,23 +1,43 @@
 # History
 
-- [6.0.4](#604-2024-04-03) (Apr 2024)
-- [6.0.3](#603-2024-03-24) (Mar 2024)
-- [6.0.2](#602-2024-03-03) (Mar 2024)
-- [6.0.1](#601-2023-02-12) (Feb 2023)
-- [6.0.0](#600-2023-01-02) (Jan 2023)
-- [5.2.0](#520-2022-05-19) (May 2022)
-- [5.1.0](#510-2021-03-17) (Mar 2021)
-- [5.0.0](#500-2018-03-01) (Mar 2018)
-- [4.3](#43-2017-12-24) (Dec 2017)
-- [4.2](#42-2017-12-24) (Dec 2017)
-- [4.1](#41-2017-04-05) (Apr 2017)
-- [4.0](#40-2017-03-06) (Mar 2017)
-- [3.1](#31-2016-12-16) (Dec 2016)
-- [3.0](#30-2016-11-19) (Nov 2016)
-
+| Version                  | Release date  | Spring Boot compatibility |
+|--------------------------|---------------|---------------------------|
+| [7.0.0](#700-2025-02-13) | February 2025 | `>= 3.4.0`                |
+| [6.0.4](#604-2024-04-03) | April 2024    | "                         |
+| [6.0.3](#603-2024-03-24) | March 2024    | "                         |
+| [6.0.2](#602-2024-03-03) | March 2024    | "                         |
+| [6.0.1](#601-2023-02-12) | February 2023 | "                         |
+| [6.0.0](#600-2023-01-02) | January 2023  | `>= 3.O.0 && < 3.4.0`     |
+| [5.2.0](#520-2022-05-19) | May 2022      | "                         |
+| [5.1.0](#510-2021-03-17) | March 2021    | "                         |
+| [5.0.0](#500-2018-03-01) | March 2018    | `>= 2.O.0 && < 3.0.0`     |
+| [4.3](#43-2017-12-24)    | December 2017 | "                         |
+| [4.2](#42-2017-12-24)    | December 2017 | "                         |
+| [4.1](#41-2017-04-05)    | April 2017    | "                         |
+| [4.0](#40-2017-03-06)    | March 2017    | "                         |
+| [3.1](#31-2016-12-16)    | December 2016 | "                         |
+| [3.0](#30-2016-11-19)    | November 2016 | `>= 1.O.0 && < 2.0.0`     |
 
 
 # Release notes
+
+## [7.0.0](https://github.com/darrachequesne/spring-data-jpa-datatables/compare/v6.0.4...v7.0.0) (2025-02-13)
+
+### Features
+
+* upgrade to Spring Boot 3.4.0 ([fd5c9f7](https://github.com/darrachequesne/spring-data-jpa-datatables/commit/fd5c9f7aac04babf7d73370d39d19b33c2310571))
+
+⚠ BREAKING CHANGE ⚠
+
+`hibernate-core` is upgraded from `6.4.x` to `6.6.x`, which contains an important breaking change regarding type casts:
+
+> `Expression.as()` doesn’t do anymore a real type conversions, it’s just an unsafe typecast on the Expression object itself.
+
+Reference: https://docs.jboss.org/hibernate/orm/6.6/migration-guide/migration-guide.html#criteria-query
+
+Note: this change is not compatible with older versions of Spring Boot, as `JpaExpression.cast()` was added in `hibernate-core@6.6`.
+
+
 
 ## [6.0.4](https://github.com/darrachequesne/spring-data-jpa-datatables/compare/v6.0.3...v6.0.4) (2024-04-03)
 
