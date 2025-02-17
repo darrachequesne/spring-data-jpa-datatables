@@ -2,6 +2,7 @@
 
 | Version                  | Release date  | Spring Boot compatibility |
 |--------------------------|---------------|---------------------------|
+| [7.0.1](#701-2025-02-18) | February 2025 | "                         |
 | [7.0.0](#700-2025-02-13) | February 2025 | `>= 3.4.0`                |
 | [6.0.4](#604-2024-04-03) | April 2024    | "                         |
 | [6.0.3](#603-2024-03-24) | March 2024    | "                         |
@@ -20,6 +21,15 @@
 
 
 # Release notes
+
+## [7.0.1](https://github.com/darrachequesne/spring-data-jpa-datatables/compare/v7.0.0...v7.0.1) (2025-02-18)
+
+
+### Bug Fixes
+
+* properly compute search panes with related entities ([cc4b439](https://github.com/darrachequesne/spring-data-jpa-datatables/commit/cc4b439f2a7b30070c9fa1f4bcb9dab2ceb0bfc0))
+
+
 
 ## [7.0.0](https://github.com/darrachequesne/spring-data-jpa-datatables/compare/v6.0.4...v7.0.0) (2025-02-13)
 
