@@ -20,12 +20,14 @@ public class DataTablesInputTest {
         queryParams.put("searchPanes.attr3.test", "4");
         queryParams.put("searchPanes.attr4.0", "5");
         queryParams.put("ignored", "6");
+        queryParams.put("searchPanes.a.t.t.r.5.0", "7");
 
-        input.parseSearchPanesFromQueryParams(queryParams, asList("attr1", "attr2"));
+        input.parseSearchPanesFromQueryParams(queryParams, asList("attr1", "attr2", "a.t.t.r.5"));
 
         assertThat(input.getSearchPanes()).containsOnly(
-                entry("attr1", new HashSet<>(asList("1", "2"))),
-                entry("attr2", new HashSet<>(asList("3")))
+                entry("attr1", Set.of("1", "2")),
+                entry("attr2", Set.of("3")),
+                entry("a.t.t.r.5", Set.of("7"))
         );
     }
 }

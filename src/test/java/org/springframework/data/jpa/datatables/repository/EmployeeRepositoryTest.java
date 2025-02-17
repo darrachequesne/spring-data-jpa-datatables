@@ -367,6 +367,26 @@ public class EmployeeRepositoryTest {
         );
     }
 
+    @Test
+    void withSearchPanesAndFilterOnRelationship() {
+        DataTablesInput input = createInput();
+
+        Map<String, Set<String>> searchPanes = new HashMap<>();
+        searchPanes.put("position", emptySet());
+        searchPanes.put("age", emptySet());
+        searchPanes.put("office.city", Set.of("London", "New York"));
+
+        input.setSearchPanes(searchPanes);
+
+        DataTablesOutput<Employee> output = getOutput(input);
+        assertThat(output.getRecordsFiltered()).isEqualTo(3);
+
+        assertThat(output.getSearchPanes().getOptions().get("office.city")).containsOnly(
+                new SearchPanes.Item("London", "London", 2, 2),
+                new SearchPanes.Item("New York", "New York", 1, 1)
+        );
+    }
+
     protected static DataTablesInput createInput() {
         DataTablesInput input = new DataTablesInput();
         input.addColumn("id", true, true, "");

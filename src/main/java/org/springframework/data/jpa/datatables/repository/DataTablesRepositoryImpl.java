@@ -107,7 +107,7 @@ public class DataTablesRepositoryImpl<T, ID extends Serializable> extends Simple
       CriteriaBuilder criteriaBuilder = this.entityManager.getCriteriaBuilder();
       CriteriaQuery<Object[]> query = criteriaBuilder.createQuery(Object[].class);
       Root<T> root = query.from(getDomainClass());
-      Path<?> path = getPath(root, attribute);
+      Path<?> path = SpecificationBuilder.getPathRecursively(root, attribute);
 
       query.multiselect(path, criteriaBuilder.count(root));
       query.groupBy(path);
@@ -128,15 +128,6 @@ public class DataTablesRepositoryImpl<T, ID extends Serializable> extends Simple
     });
 
     return new SearchPanes(options);
-  }
-
-  private Path<?> getPath(Root<T> root, String attribute) {
-    String[] parts = attribute.split("\\.");
-    Path<?> path = root;
-    for (String part : parts) {
-      path = path.get(part);
-    }
-    return path;
   }
 
 }

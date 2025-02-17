@@ -28,7 +28,8 @@ public class SpecificationBuilder<T> extends AbstractPredicateBuilder<Specificat
             if (input.getSearchPanes() != null) {
                 input.getSearchPanes().forEach((attribute, values) -> {
                     if (!values.isEmpty()) {
-                        predicates.columns.add(root.get(attribute).in(values));
+                        Predicate predicate = SpecificationBuilder.getPathRecursively(root, attribute).in(values);
+                        predicates.columns.add(predicate);
                     }
                 });
             }
@@ -88,5 +89,14 @@ public class SpecificationBuilder<T> extends AbstractPredicateBuilder<Specificat
 
             return columns.isEmpty() ? criteriaBuilder.conjunction() : criteriaBuilder.and(columns.toArray(new Predicate[0]));
         }
+    }
+
+    public static Path<?> getPathRecursively(Root<?> root, String attribute) {
+        String[] parts = attribute.split("\\.");
+        Path<?> path = root;
+        for (String part : parts) {
+            path = path.get(part);
+        }
+        return path;
     }
 }

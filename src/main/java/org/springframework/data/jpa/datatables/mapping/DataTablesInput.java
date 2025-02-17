@@ -6,8 +6,6 @@ import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 import java.util.*;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 /**
  * The format of the payload sent by the client.
@@ -16,13 +14,6 @@ import java.util.regex.Pattern;
  */
 @Data
 public class DataTablesInput {
-  /**
-   * Format: <code>searchPanes.$attribute.0</code> (<code>searchPanes[$attribute][0]</code> without jquery.spring-friendly.js)
-   *
-   * @see <a href="https://github.com/DataTables/SearchPanes/blob/5e6d3229cd90594cc67d6d266321f1c922fc9231/src/searchPanes.ts#L119-L137">source</a>
-   */
-  private static final Pattern SEARCH_PANES_REGEX = Pattern.compile("^searchPanes\\.(\\w+)\\.\\d+$");
-
   /**
    * Draw counter. This is used by DataTables to ensure that the Ajax returns from server-side
    * processing requests are drawn in sequence by DataTables (Ajax requests are asynchronous and
@@ -137,17 +128,20 @@ public class DataTablesInput {
 
   public void parseSearchPanesFromQueryParams(Map<String, String> queryParams, Collection<String> attributes) {
     Map<String, Set<String>> searchPanes = new HashMap<>();
-    attributes.forEach(attribute -> searchPanes.put(attribute, new HashSet<>()));
 
-    queryParams.forEach((key, value) -> {
-      Matcher matcher = SEARCH_PANES_REGEX.matcher(key);
-      if (matcher.matches()) {
-        String attribute = matcher.group(1);
-        if (attributes.contains(attribute)) {
-          searchPanes.get(attribute).add(value);
+    for (String attribute : attributes) {
+      Set<String> values = new HashSet<>();
+      for (int i = 0; ; i++) {
+        String paramName = "searchPanes." + attribute + "." + i;
+        String paramValue = queryParams.get(paramName);
+        if (paramValue != null) {
+          values.add(paramValue);
+        } else {
+          break;
         }
       }
-    });
+      searchPanes.put(attribute, values);
+    }
 
     this.searchPanes = searchPanes;
   }
