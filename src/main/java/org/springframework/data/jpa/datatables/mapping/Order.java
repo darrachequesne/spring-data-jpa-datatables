@@ -8,10 +8,14 @@ import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
 
+import java.io.Serial;
+import java.io.Serializable;
+
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class Order {
+public class Order implements Serializable {
+  @Serial private static final long serialVersionUID = 4855306115483811642L;
 
   /**
    * Column to which ordering should be applied. This is an index reference to the columns array of

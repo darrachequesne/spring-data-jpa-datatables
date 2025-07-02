@@ -5,6 +5,9 @@ import lombok.Data;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
+
+import java.io.Serial;
+import java.io.Serializable;
 import java.util.*;
 
 /**
@@ -13,7 +16,9 @@ import java.util.*;
  * @see <a href="https://datatables.net/manual/server-side#Sent-parameters">datatables.net reference</a>
  */
 @Data
-public class DataTablesInput {
+public class DataTablesInput implements Serializable {
+  @Serial private static final long serialVersionUID = 4977905421750437988L;
+
   /**
    * Draw counter. This is used by DataTables to ensure that the Ajax returns from server-side
    * processing requests are drawn in sequence by DataTables (Ajax requests are asynchronous and

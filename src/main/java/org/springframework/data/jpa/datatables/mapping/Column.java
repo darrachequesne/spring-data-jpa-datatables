@@ -7,10 +7,14 @@ import lombok.NoArgsConstructor;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 
+import java.io.Serial;
+import java.io.Serializable;
+
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class Column {
+public class Column implements Serializable {
+  @Serial private static final long serialVersionUID = 5646239805793775339L;
 
   /**
    * Column's data source

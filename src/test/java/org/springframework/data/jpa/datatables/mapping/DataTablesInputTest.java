@@ -1,7 +1,8 @@
 package org.springframework.data.jpa.datatables.mapping;
 
-import org.junit.jupiter.api.Test;;
+import org.junit.jupiter.api.Test;
 
+import java.io.*;
 import java.util.*;
 
 import static java.util.Arrays.asList;
@@ -29,5 +30,29 @@ public class DataTablesInputTest {
                 entry("attr2", Set.of("3")),
                 entry("a.t.t.r.5", Set.of("7"))
         );
+    }
+
+    @Test
+    public void testJavaSerialization() throws Exception {
+        DataTablesInput input = new DataTablesInput();
+        input.setDraw(1);
+        input.setStart(0);
+        input.setLength(10);
+        input.setSearch(new Search("test", false));
+        input.setOrder(Collections.singletonList(new Order(0, "asc")));
+
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        try (ObjectOutputStream oos = new ObjectOutputStream(baos)) {
+            oos.writeObject(input);
+        }
+
+        try (ObjectInputStream ois = new ObjectInputStream(new ByteArrayInputStream(baos.toByteArray()))) {
+            DataTablesInput deserialized = (DataTablesInput) ois.readObject();
+            assertThat(deserialized.getDraw()).isEqualTo(input.getDraw());
+            assertThat(deserialized.getStart()).isEqualTo(input.getStart());
+            assertThat(deserialized.getLength()).isEqualTo(input.getLength());
+            assertThat(deserialized.getSearch().getValue()).isEqualTo(input.getSearch().getValue());
+            assertThat(deserialized.getOrder().get(0).getColumn()).isEqualTo(input.getOrder().get(0).getColumn());
+        }
     }
 }
