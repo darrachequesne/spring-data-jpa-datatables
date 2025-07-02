@@ -8,6 +8,7 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.jpa.datatables.TestApplication;
 import org.springframework.data.jpa.datatables.model.Employee;
+import org.springframework.http.MediaType;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.util.MultiValueMap;
@@ -16,6 +17,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @ExtendWith(SpringExtension.class)
@@ -92,5 +94,50 @@ class EmployeeControllerTest {
 
     mvc.perform(get("/employees").queryParams(MultiValueMap.fromSingleValue(query)))
         .andExpect(status().is4xxClientError());
+  }
+
+  @Test
+  void withPOST(@Autowired MockMvc mvc) throws Exception {
+    mvc.perform(
+            post("/employees")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(
+"""
+{
+  "draw": "1",
+  "start": "0",
+  "length": "10",
+
+  "search": {
+    "value": "",
+    "regex": false
+  },
+
+  "order": [
+    {
+      "column": 0,
+      "dir": "asc"
+    }
+  ],
+
+  "columns": [
+    {
+      "data": "id",
+      "searchable": true,
+      "orderable": true,
+      "search": {
+        "value": "",
+        "regex": false
+      }
+    }
+  ]
+}
+"""))
+        .andExpect(status().isOk())
+        .andExpect(jsonPath("draw").value(1))
+        .andExpect(jsonPath("recordsTotal").value(6))
+        .andExpect(jsonPath("recordsFiltered").value(6))
+        .andExpect(jsonPath("data[0].firstName").value("Brenden"))
+        .andExpect(jsonPath("error").isEmpty());
   }
 }
