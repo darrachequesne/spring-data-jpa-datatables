@@ -2,6 +2,7 @@
 
 | Version                  | Release date  | Spring Boot compatibility |
 |--------------------------|---------------|---------------------------|
+| [7.1.0](#710-2025-07-02) | July 2025     | "                         |
 | [7.0.1](#701-2025-02-18) | February 2025 | "                         |
 | [7.0.0](#700-2025-02-13) | February 2025 | `>= 3.4.0`                |
 | [6.0.4](#604-2024-04-03) | April 2024    | "                         |
@@ -21,6 +22,14 @@
 
 
 # Release notes
+
+## [7.1.0](https://github.com/darrachequesne/spring-data-jpa-datatables/compare/v7.0.1...v7.1.0) (2025-07-02)
+
+`spring-boot-dependencies` was updated from version `3.4.0` (Nov 2024) to `3.5.3` (Jun 2025).
+
+Note: version ranges in `<dependencyManagement>` are supported starting with Maven 4 (https://issues.apache.org/jira/browse/MNG-4463).
+
+
 
 ## [7.0.1](https://github.com/darrachequesne/spring-data-jpa-datatables/compare/v7.0.0...v7.0.1) (2025-02-18)
 
