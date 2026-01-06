@@ -361,7 +361,7 @@ public class UserRestController {
 
 The `DataTablesInput` class maps the fields sent by the client (listed [there](https://datatables.net/manual/server-side)).
 
-[Spring documentation](http://docs.spring.io/spring-data/jpa/docs/current/reference/html/#specifications) for `Specification`
+Spring documentation for `Specification`: https://docs.spring.io/spring-data/jpa/reference/jpa/specifications.html
 
 ## How to
 
