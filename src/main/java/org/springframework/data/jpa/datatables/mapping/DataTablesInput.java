@@ -13,7 +13,7 @@ import java.util.*;
 /**
  * The format of the payload sent by the client.
  *
- * @see <a href="https://datatables.net/manual/server-side#Sent-parameters">datatables.net reference</a>
+ * @see <a href="https://datatables.net/manual/server-side#Sent-parameters">https://datatables.net/manual/server-side#Sent-parameters</a>
  */
 @Data
 public class DataTablesInput implements Serializable {

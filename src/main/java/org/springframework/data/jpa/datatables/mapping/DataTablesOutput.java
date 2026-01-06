@@ -8,6 +8,11 @@ import java.io.Serializable;
 import java.util.Collections;
 import java.util.List;
 
+/**
+ * The format of the payload returned by the server.
+ *
+ * @see <a href="https://datatables.net/manual/server-side#Returned-data">https://datatables.net/manual/server-side#Returned-data</a>
+ */
 @Data
 public class DataTablesOutput<T> implements Serializable {
   @Serial private static final long serialVersionUID = -5222336791460405793L;

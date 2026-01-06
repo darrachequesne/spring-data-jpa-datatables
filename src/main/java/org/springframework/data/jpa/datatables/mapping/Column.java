@@ -19,7 +19,7 @@ public class Column implements Serializable {
   /**
    * Column's data source
    * 
-   * @see http://datatables.net/reference/option/columns.data
+   * @see <a href="https://datatables.net/reference/option/columns.data">https://datatables.net/reference/option/columns.data</a>
    */
   @NotBlank
   private String data;
@@ -27,14 +27,14 @@ public class Column implements Serializable {
   /**
    * Column's name
    * 
-   * @see http://datatables.net/reference/option/columns.name
+   * @see <a href="https://datatables.net/reference/option/columns.name">https://datatables.net/reference/option/columns.name</a>
    */
   private String name;
 
   /**
    * Flag to indicate if this column is searchable (true) or not (false).
    * 
-   * @see http://datatables.net/reference/option/columns.searchable
+   * @see <a href="https://datatables.net/reference/option/columns.searchable">https://datatables.net/reference/option/columns.searchable</a>
    */
   @NotNull
   private Boolean searchable;
@@ -42,7 +42,7 @@ public class Column implements Serializable {
   /**
    * Flag to indicate if this column is orderable (true) or not (false).
    * 
-   * @see http://datatables.net/reference/option/columns.orderable
+   * @see <a href="https://datatables.net/reference/option/columns.orderable">https://datatables.net/reference/option/columns.orderable</a>
    */
   @NotNull
   private Boolean orderable;

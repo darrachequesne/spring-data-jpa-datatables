@@ -8,6 +8,11 @@ import java.io.Serializable;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * Mapping for the SearchPanes extension.
+ *
+ * @see <a href="https://datatables.net/extensions/searchpanes/">https://datatables.net/extensions/searchpanes/</a>
+ */
 @Data
 @AllArgsConstructor
 public class SearchPanes implements Serializable {
