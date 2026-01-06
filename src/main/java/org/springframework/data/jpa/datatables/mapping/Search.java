@@ -6,10 +6,14 @@ import lombok.NoArgsConstructor;
 
 import jakarta.validation.constraints.NotNull;
 
+import java.io.Serial;
+import java.io.Serializable;
+
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class Search {
+public class Search implements Serializable {
+  @Serial private static final long serialVersionUID = -9209797224565963947L;
 
   /**
    * Global search value. To be applied to all columns which have searchable as true.

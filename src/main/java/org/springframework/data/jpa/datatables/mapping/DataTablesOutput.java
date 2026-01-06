@@ -3,11 +3,14 @@ package org.springframework.data.jpa.datatables.mapping;
 import com.fasterxml.jackson.annotation.JsonView;
 import lombok.Data;
 
+import java.io.Serial;
+import java.io.Serializable;
 import java.util.Collections;
 import java.util.List;
 
 @Data
-public class DataTablesOutput<T> {
+public class DataTablesOutput<T> implements Serializable {
+  @Serial private static final long serialVersionUID = -5222336791460405793L;
 
   /**
    * The draw counter that this object is a response to - from the draw parameter sent as part of
