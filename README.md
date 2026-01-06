@@ -59,7 +59,7 @@ public class UserRestController {
 <dependency>
   <groupId>com.github.darrachequesne</groupId>
   <artifactId>spring-data-jpa-datatables</artifactId>
-  <version>7.1.0</version>
+  <version>8.0.0</version>
 </dependency>
 ```
 
@@ -67,6 +67,7 @@ Compatibility with Spring Boot:
 
 | Version       | Spring Boot version   |
 |---------------|-----------------------|
+| 8.x           | `>= 4.0.0`            |
 | 7.x           | `>= 3.4.0`            |
 | 6.x           | `>= 3.0.0 && < 3.4.0` |
 | 5.x           | `>= 2.O.0 && < 3.0.0` |
