@@ -24,12 +24,12 @@ public class QuerydslJpaRepository<T, ID extends Serializable> extends SimpleJpa
   private final EntityManager entityManager;
 
   public QuerydslJpaRepository(
-      JpaEntityInformation<T, ID> entityInformation, EntityManager entityManager) {
+      JpaEntityInformation<T, ?> entityInformation, EntityManager entityManager) {
     this(entityInformation, entityManager, SimpleEntityPathResolver.INSTANCE);
   }
 
   public QuerydslJpaRepository(
-      JpaEntityInformation<T, ID> entityInformation,
+      JpaEntityInformation<T, ?> entityInformation,
       EntityManager entityManager,
       EntityPathResolver resolver) {
     super(entityInformation, entityManager);

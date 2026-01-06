@@ -294,11 +294,7 @@ public interface DataTablesRepository<T, ID extends Serializable> {
 }
 ```
 
-**Note**: since version 2.0, QueryDSL is also supported:
-* replace `DataTablesRepositoryFactoryBean` with `QDataTablesRepositoryFactoryBean`
-* replace `DataTablesRepository` with `QDataTablesRepository`
-
-and your repositories will now expose:
+**Note**: QueryDSL is also supported, you can simply replace `DataTablesRepository` with `QDataTablesRepository` and your repositories will now expose:
 
 ```java
 public interface QDataTablesRepository<T, ID extends Serializable> {

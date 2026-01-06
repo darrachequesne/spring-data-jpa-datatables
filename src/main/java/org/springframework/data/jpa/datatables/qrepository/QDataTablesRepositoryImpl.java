@@ -39,7 +39,7 @@ public class QDataTablesRepositoryImpl<T, ID extends Serializable>
     this(entityInformation, entityManager, DEFAULT_ENTITY_PATH_RESOLVER);
   }
 
-  public QDataTablesRepositoryImpl(JpaEntityInformation<T, ID> entityInformation,
+  public QDataTablesRepositoryImpl(JpaEntityInformation<T, ?> entityInformation,
       EntityManager entityManager, EntityPathResolver resolver) {
     super(entityInformation, entityManager);
     EntityPath<T> path = resolver.createPath(entityInformation.getJavaType());
