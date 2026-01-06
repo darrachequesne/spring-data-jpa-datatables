@@ -2,9 +2,11 @@ package org.springframework.data.jpa.datatables.repository;
 
 import org.springframework.beans.factory.FactoryBean;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.support.JpaEntityInformation;
 import org.springframework.data.jpa.repository.support.JpaRepositoryFactory;
 import org.springframework.data.jpa.repository.support.JpaRepositoryFactoryBean;
 import org.springframework.data.repository.core.RepositoryMetadata;
+import org.springframework.data.repository.core.support.RepositoryComposition;
 import org.springframework.data.repository.core.support.RepositoryFactorySupport;
 
 import jakarta.persistence.EntityManager;
@@ -28,9 +30,11 @@ public class DataTablesRepositoryFactoryBean<R extends JpaRepository<T, ID>, T, 
 
   private static class DataTablesRepositoryFactory<T, ID extends Serializable>
       extends JpaRepositoryFactory {
+    private final EntityManager entityManager;
 
     public DataTablesRepositoryFactory(EntityManager entityManager) {
       super(entityManager);
+      this.entityManager = entityManager;
     }
 
     @Override
@@ -41,6 +45,26 @@ public class DataTablesRepositoryFactoryBean<R extends JpaRepository<T, ID>, T, 
       } else {
         return super.getRepositoryBaseClass(metadata);
       }
+    }
+
+    @Override
+    protected RepositoryComposition.RepositoryFragments getRepositoryFragments(
+        RepositoryMetadata metadata) {
+      RepositoryComposition.RepositoryFragments fragments = super.getRepositoryFragments(metadata);
+
+      if (DataTablesRepository.class.isAssignableFrom(metadata.getRepositoryInterface())) {
+
+        JpaEntityInformation<?, Serializable> entityInformation =
+            getEntityInformation(metadata.getDomainType());
+
+        DataTablesRepositoryImpl<?, ?> fragmentImplementation =
+            new DataTablesRepositoryImpl<>(entityInformation, entityManager);
+
+        return RepositoryComposition.RepositoryFragments.just(fragmentImplementation)
+            .append(fragments);
+      }
+
+      return fragments;
     }
   }
 }

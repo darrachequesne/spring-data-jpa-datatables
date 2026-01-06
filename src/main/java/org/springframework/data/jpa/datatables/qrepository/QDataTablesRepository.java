@@ -3,22 +3,18 @@ package org.springframework.data.jpa.datatables.qrepository;
 import com.querydsl.core.types.Predicate;
 import org.springframework.data.jpa.datatables.mapping.DataTablesInput;
 import org.springframework.data.jpa.datatables.mapping.DataTablesOutput;
-import org.springframework.data.querydsl.QuerydslPredicateExecutor;
+import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.repository.NoRepositoryBean;
-import org.springframework.data.repository.PagingAndSortingRepository;
 
 import java.io.Serializable;
 import java.util.function.Function;
 
 /**
- * Convenience interface to allow pulling in {@link PagingAndSortingRepository} and
- * {@link QuerydslPredicateExecutor} functionality in one go.
- * 
+ *
  * @author Damien Arrachequesne
  */
 @NoRepositoryBean
-public interface QDataTablesRepository<T, ID extends Serializable>
-    extends PagingAndSortingRepository<T, ID>, QuerydslPredicateExecutor<T> {
+public interface QDataTablesRepository<T, ID extends Serializable> extends JpaRepository<T, ID> {
 
   /**
    * Returns the filtered list for the given {@link DataTablesInput}.

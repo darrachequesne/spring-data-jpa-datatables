@@ -77,9 +77,16 @@ public class DataTablesRepositoryImpl<T, ID extends Serializable> extends Simple
       output.setRecordsTotal(recordsTotal);
 
       SpecificationBuilder<T> specificationBuilder = new SpecificationBuilder<>(input);
-      Specification<T> specification = Specification.where(specificationBuilder.build())
-              .and(additionalSpecification)
-              .and(preFilteringSpecification);
+      Specification<T> specification = specificationBuilder.build();
+
+      if (additionalSpecification != null) {
+        specification = specification.and(additionalSpecification);
+      }
+
+      if (preFilteringSpecification != null) {
+        specification = specification.and(preFilteringSpecification);
+      }
+
       Page<T> data = findAll(specification, specificationBuilder.createPageable());
 
       @SuppressWarnings("unchecked")
