@@ -24,11 +24,13 @@ import static java.util.Collections.unmodifiableSet;
 class ColumnFilter extends GlobalFilter {
     private final Set<String> values;
     private final Set<Boolean> booleanValues;
+    private final boolean hasValueSeparator;
     private boolean addNullCase;
     private boolean isBooleanComparison;
 
     ColumnFilter(String filterValue) {
         super(filterValue);
+        hasValueSeparator = filterValue.contains("+");
 
         isBooleanComparison = true;
         Set<String> values = new HashSet<>();
@@ -93,6 +95,6 @@ class ColumnFilter extends GlobalFilter {
     }
 
     private boolean isBasicFilter() {
-        return values.size() == 1 && !addNullCase && !isBooleanComparison;
+        return !hasValueSeparator && values.size() == 1 && !addNullCase && !isBooleanComparison;
     }
 }
