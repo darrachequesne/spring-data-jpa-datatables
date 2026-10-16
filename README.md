@@ -212,7 +212,7 @@ Server-side:
 ```java
 @RestController
 public class MyController {
-  @RequestMapping(value = '/data/users', method = RequestMethod.POST)
+  @RequestMapping(value = "/data/users", method = RequestMethod.POST)
   public DataTablesOutput<User> getUsers(@Valid @RequestBody DataTablesInput input) {
     return userRepository.findAll(input);
   }
@@ -270,7 +270,7 @@ public interface DataTablesRepository<T, ID extends Serializable> {
         DataTablesInput input
     );
 
-    DataTablesOutput<R> findAll(
+    <R> DataTablesOutput<R> findAll(
         DataTablesInput input,
         Function<T, R> converter
     );
@@ -286,7 +286,7 @@ public interface DataTablesRepository<T, ID extends Serializable> {
         Specification<T> preFilteringSpecification
     );
 
-    DataTablesOutput<R> findAll(
+    <R> DataTablesOutput<R> findAll(
         DataTablesInput input,
         Specification<T> additionalSpecification,
         Specification<T> preFilteringSpecification,
@@ -304,7 +304,7 @@ public interface QDataTablesRepository<T, ID extends Serializable> {
         DataTablesInput input
     );
 
-    DataTablesOutput<R> findAll(
+    <R> DataTablesOutput<R> findAll(
         DataTablesInput input,
         Function<T, R> converter
     );
@@ -320,7 +320,7 @@ public interface QDataTablesRepository<T, ID extends Serializable> {
         Predicate preFilteringPredicate
     );
 
-    DataTablesOutput<R> findAll(
+    <R> DataTablesOutput<R> findAll(
         DataTablesInput input,
         Predicate additionalPredicate,
         Predicate preFilteringPredicate,
@@ -346,7 +346,7 @@ public class UserRestController {
   // or with some preprocessing
   @RequestMapping(value = "/data/users", method = RequestMethod.GET)
   public DataTablesOutput<User> getUsers(@Valid DataTablesInput input) {
-    ColumnParameter parameter0 = input.getColumns().get(0);
+    Column parameter0 = input.getColumns().get(0);
     Specification additionalSpecification = getAdditionalSpecification(parameter0.getSearch().getValue());
     parameter0.getSearch().setValue("");
     return userRepository.findAll(input, additionalSpecification);
