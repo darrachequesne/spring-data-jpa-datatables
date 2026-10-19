@@ -159,6 +159,30 @@ public class EmployeeRepositoryTest {
     }
 
     @Test
+    void columnFilterWithSingleExactValue() {
+        DataTablesInput input = createInput();
+
+        input.getColumn("position").setSearchValue("Software Engineer+");
+
+        DataTablesOutput<Employee> output = getOutput(input);
+        assertThat(output.getError()).isNull();
+        assertThat(output.getRecordsFiltered()).isEqualTo(2);
+        assertThat(output.getData()).containsOnly(Employee.BRENDEN_WAGNER, Employee.BRADLEY_GREER);
+    }
+
+    @Test
+    void columnFilterWithSingleExactValueDoesNotMatchSubstring() {
+        DataTablesInput input = createInput();
+
+        input.getColumn("position").setSearchValue("Software+");
+
+        DataTablesOutput<Employee> output = getOutput(input);
+        assertThat(output.getError()).isNull();
+        assertThat(output.getRecordsFiltered()).isZero();
+        assertThat(output.getData()).isEmpty();
+    }
+
+    @Test
     void columnFilterWithNoCase() {
         DataTablesInput input = createInput();
 
