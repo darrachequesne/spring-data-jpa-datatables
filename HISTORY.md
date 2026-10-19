@@ -2,6 +2,7 @@
 
 | Version                  | Release date  | Spring Boot version |
 |--------------------------|---------------|---------------------|
+| [8.0.1](#801-2026-10-19) | October 2026  | `4.0.1`             |
 | [8.0.0](#800-2026-01-06) | January 2026  | `4.0.1`             |
 | [7.1.0](#710-2025-07-02) | July 2025     | `3.5.3`             |
 | [7.0.1](#701-2025-02-18) | February 2025 | "                   |
@@ -20,6 +21,14 @@
 | [4.0](#40-2017-03-06)    | March 2017    | `-`                 |
 | [3.1](#31-2016-12-16)    | December 2016 | `-`                 |
 | [3.0](#30-2016-11-19)    | November 2016 | `-`                 |
+
+## [8.0.1](https://github.com/darrachequesne/spring-data-jpa-datatables/compare/v8.0.0...v8.0.1) (2026-10-19)
+
+
+### Bug fixes
+
+* honor single-value exact column filter ([390b886](https://github.com/darrachequesne/spring-data-jpa-datatables/commit/390b8866021a4b44800f5b7c34e748d59831d532))
+
 
 
 ## [8.0.0](https://github.com/darrachequesne/spring-data-jpa-datatables/compare/v7.1.0...v8.0.0) (2026-01-06)
